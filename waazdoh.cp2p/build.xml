@@ -1,0 +1,27 @@
+<project>
+	<property name="projectname" value="cp2p" />
+
+	<target name="p2p.check.uptodate">
+		<uptodate property="p2p.notrequired" targetfile="target/build.trig">
+			<srcfiles dir="src/" />
+			<srcfiles dir="./" includes="*.xml" excludes="target" />
+		</uptodate>
+	</target>
+
+	<target name="cp2p_dobuild" unless="p2p.notrequired">
+		<echo file="target/build.trig">Done</echo>
+
+		<!-- <exec command="${mvn} package" failonerror="true" /> -->
+		<exec command="${mvn} install" failonerror="true" />
+	</target>
+
+	<target name="build" depends="p2p.check.uptodate, cp2p_dobuild">
+		<echo>Done</echo>
+	</target>
+
+	<target name="clean">
+		<deltree dir="bin" />
+		<exec command="${mvn} clean" failonerror="false" />
+	</target>
+
+</project>

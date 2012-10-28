@@ -1,0 +1,23 @@
+<project>
+	<property name="projectname" value="waazdoh.tests" />
+
+	<target name="tests.check.uptodate">
+		<uptodate property="tests.notrequired" targetfile="target/build.trig">
+			<srcfiles dir="src/" />
+			<srcfiles dir="./" includes="*.xml" excludes="target" />
+		</uptodate>
+	</target>
+
+	<target name="waazdohtests_dobuild" unless="tests.notrequired">
+		<echo file="target/build.trig">Done</echo>
+		<echo file="../waazdoh.client/target/tests.build.trig">Done</echo>
+		<echo file="../waazdoh.service/target/tests.build.trig">Done</echo>
+		
+		<exec command="${mvn} package" failonerror="true" />
+		<exec command="${mvn} install" failonerror="true" />
+	</target>
+
+	<target name="build" depends="tests.check.uptodate, waazdohtests_dobuild">
+		<echo>Done</echo>
+	</target>
+</project>

@@ -1,0 +1,27 @@
+<project>
+	<property name="projectname" value="waazdoh.common" />
+
+	<target name="common.check.uptodate">
+		<uptodate property="common.notrequired" targetfile="target/build.trig">
+			<srcfiles dir="src/" />
+			<srcfiles dir="./" includes="*.xml" excludes="target" />
+		</uptodate>
+	</target>
+
+	<target name="waazdohcommon_dobuild" unless="common.notrequired">
+		<echo file="target/build.trig">Done</echo>
+		<echo file="../waazdoh.client/target/common.build.trig">Done</echo>
+		<echo file="../waazdoh.service/target/common.build.trig">Done</echo>
+		
+		<exec command="${mvn} install" failonerror="true" />
+	</target>
+
+	<target name="build" depends="common.check.uptodate, waazdohcommon_dobuild">
+		<echo>Done</echo>
+	</target>
+	
+	<target name="clean" >
+		<deltree dir="bin"/>
+		<exec command="${mvn} clean" failonerror="false" />
+	</target>
+</project>

@@ -1,0 +1,21 @@
+<project>
+	<property name="projectname" value="waazdoh.editor" />
+
+	<target name="appt.check.uptodate">
+		<uptodate property="appt.notrequired" targetfile="target/build.trig">
+			<srcfiles dir="src/" />
+			<srcfiles dir="./" includes="*.xml" excludes="target" />
+			<srcfiles dir="./" includes="*.trig" excludes="target" />
+		</uptodate>
+	</target>
+
+	<target name="waazdohappt_dobuild" unless="appt.notrequired">
+		<exec command="${mvn} install" failonerror="true" />
+		<echo file="target/build.trig">Done</echo>
+		<delete file="../waazdoh.swt/target/build.trig" />
+	</target>
+
+	<target name="build" depends="appt.check.uptodate, waazdohappt_dobuild">
+		<echo>Done</echo>
+	</target>
+</project>

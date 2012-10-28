@@ -1,0 +1,28 @@
+<project>
+	<property name="projectname" value="waazdoh.audio" />
+
+	<target name="waazdoh.audio.check.uptodate">
+		<uptodate property="waazdoh.audio.notrequired" targetfile="target/build.trig">
+			<srcfiles dir="src/" />
+			<srcfiles dir="./" includes="*.xml" excludes="target" />
+		</uptodate>
+	</target>
+
+	<target name="waazdoh.audio_dobuild" unless="waazdoh.audio.notrequired">
+		<echo file="target/build.trig">Done</echo>
+		<echo file="../waazdoh.client/target/waazdoh.audio.build.trig">Done</echo>
+		<echo file="../waazdoh.common/build.waazdoh.audio.trig">Done</echo>
+		
+		<exec command="${mvn} install" failonerror="true" />
+	</target>
+
+	<target name="build" depends="waazdoh.audio.check.uptodate, waazdoh.audio_dobuild">
+		<echo>Done</echo>
+	</target>
+
+	<target name="clean">
+		<deltree dir="bin" />
+		<exec command="${mvn} clean" failonerror="false" />
+	</target>
+
+</project>

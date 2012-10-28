@@ -1,0 +1,251 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<packaging>jar</packaging>
+	<version>0.5.1</version>
+	<name>waazdoh.swt</name>
+	<url>http://maven.apache.org</url>
+	<groupId>waazdoh</groupId>
+	<artifactId>waazdoh.swt</artifactId>
+
+	<properties>
+		<cxf.version>2.4.2</cxf.version>
+		<izpack-standalone.version>4.3.5</izpack-standalone.version>
+		<app.dir>target/webapp</app.dir>
+		<exe.version>0.5.1.0</exe.version>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5.1</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
+				<artifactId>launch4j-plugin</artifactId>
+				<version>1.5.0.0</version>
+				<executions>
+					<execution>
+						<id>l4j-clui</id>
+						<phase>install</phase>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
+						<configuration>
+							<headerType>gui</headerType>
+							<outfile>target/waazdoh-app-distribution/bin/waazdoh.exe</outfile>
+							<jar>target/waazdoh-app-distribution/bin/waazdoh-app-jar-with-dependencies.jar</jar>
+							<errTitle>Waazdoh</errTitle>
+							<classPath>
+								<mainClass>waazdoh.swt.AppLauncher</mainClass>
+								<addDependencies>false</addDependencies>
+								<preCp>anything</preCp>
+							</classPath>
+							<jre>
+								<path>../jre</path>
+								<minVersion>1.5.0</minVersion>
+							</jre>
+							<versionInfo>
+								<fileVersion>${exe.version}</fileVersion>
+								<txtFileVersion>${exe.version}</txtFileVersion>
+								<fileDescription>Waazdog client</fileDescription>
+								<copyright>Copyright</copyright>
+								<productVersion>${exe.version}</productVersion>
+								<txtProductVersion>${exe.version}</txtProductVersion>
+								<productName>Waazdoh client</productName>
+								<internalName>waazdohclient</internalName>
+								<originalFilename>waazdoh.exe</originalFilename>
+							</versionInfo>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2.2</version>
+
+				<executions>
+					<execution>
+						<id>make-package</id> <!-- this is used for inheritance merges -->
+						<phase>install</phase> <!-- bind to the packaging phase -->
+						<goals>
+							<goal>single</goal>
+						</goals>
+
+						<configuration>
+							<descriptors>
+								<descriptor>src/assemble/distribution.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
+						<phase>install</phase> <!-- bind to the packaging phase -->
+						<goals>
+							<goal>single</goal>
+						</goals>
+
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>waazdoh.swt.AppLauncher</mainClass>
+								</manifest>
+							</archive>
+							<descriptors>
+								<descriptor>src/assemble/jar.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+		<!-- Name of the generated WAR file -->
+		<finalName>waazdoh-app</finalName>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>waazdoh</groupId>
+			<artifactId>waazdoh.common</artifactId>
+			<version>1.0.2-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
+			<artifactId>launch4j-plugin</artifactId>
+			<version>1.5.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>waazdoh</groupId>
+			<artifactId>waazdoh.client</artifactId>
+			<version>1.0.2-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>waazdoh</groupId>
+			<artifactId>waazdoh.editor</artifactId>
+			<version>1.0.2-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>waazdoh</groupId>
+			<artifactId>waazdoh.cutils</artifactId>
+			<version>1.0.2-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>waazdoh</groupId>
+			<artifactId>waazdoh.cp2p</artifactId>
+			<version>1.0.2-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>${swt.groupId}</groupId>
+			<artifactId>${swt.artifactId}</artifactId>
+			<version>3.8</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jface</groupId>
+			<artifactId>org.eclipse.jface</artifactId>
+			<version>3.8.0.v20120521-2329</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging-api</artifactId>
+			<version>1.1</version>
+		</dependency>
+
+		<!-- <dependency> <groupId>org.codehaus.plexus</groupId> <artifactId>plexus-utils</artifactId> 
+			<version>1.5.6</version> </dependency> -->
+	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>mac</id>
+			<activation>
+				<os>
+					<name>mac os x</name>
+				</os>
+			</activation>
+			<properties>
+				<swt.groupId>org.eclipse.swt.carbon</swt.groupId>
+				<swt.artifactId>macosx</swt.artifactId>
+			</properties>
+		</profile>
+		<profile>
+			<id>windows</id>
+			<activation>
+				<os>
+					<family>windows</family>
+					<arch>amd64</arch>
+				</os>
+			</activation>
+			<properties>
+				<swt.groupId>org.eclipse.swt</swt.groupId>
+				<swt.artifactId>org.eclipse.swt.win32.win32.x86_64</swt.artifactId>
+			</properties>
+		</profile>
+		<profile>
+			<id>linux64</id>
+			<activation>
+				<os>
+					<family>linux</family>
+					<arch>amd64</arch>
+				</os>
+			</activation>
+			<properties>
+				<swt.groupId>org.eclipse.swt</swt.groupId>
+				<swt.artifactId>org.eclipse.swt.gtk.linux.x86_64</swt.artifactId>
+			</properties>
+		</profile>
+		<profile>
+			<id>linux32</id>
+			<activation>
+				<os>
+					<family>linux</family>
+					<arch>x86</arch>
+				</os>
+			</activation>
+			<properties>
+				<swt.groupId>org.eclipse.swt</swt.groupId>
+				<swt.artifactId>org.eclipse.swt.gtk.linux.x86</swt.artifactId>
+			</properties>
+		</profile>
+	</profiles>
+
+	<repositories>
+		<repository>
+			<id>swt-repo</id>
+			<url>https://swt-repo.googlecode.com/svn/repo/</url>
+		</repository>
+		<repository>
+			<id>swt-eclipse-repo</id>
+			<url>http://maven.eclipse.org/nexus/content/repositories/testing/</url>
+		</repository>
+		<repository>
+			<id>for_jnlp_servlet</id>
+			<name>For jnlp-servlet</name>
+			<url>http://dev.joget.org/archiva/repository/internal</url>
+		</repository>
+	</repositories>
+
+</project>
