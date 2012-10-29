@@ -30,6 +30,7 @@ public class Song {
 	private JBean storedbean;
 	private MEnvironment env;
 	private MOutput output;
+	private MID copyof;
 
 	// new song
 	public Song(MEnvironment env) {
@@ -113,6 +114,7 @@ public class Song {
 			b.add("id").setValue(id.toString());
 			b.addAttribute("name", getName());
 			b.addAttribute("version", version);
+			b.addAttribute("copyof", "" + copyof);
 			//
 			b.addAttribute("creator", creatorid.toString());
 			//
@@ -147,6 +149,7 @@ public class Song {
 		storedbean = bean.find("song");
 		if (storedbean != null) {
 			id = new MID(storedbean.get("id").getValue());
+			copyof = storedbean.getIDAttribute("copyof");
 			creatorid = new UserID(storedbean.getAttribute("creator"));
 			version = storedbean.getAttribute("version");
 			this.name = bean.getAttribute("name");
@@ -276,8 +279,12 @@ public class Song {
 	}
 
 	public synchronized boolean save() {
-		creatorid = env.getUserID();
-	
+		if (!env.getUserID().equals(creatorid)) {
+			copyof = getID().copy();
+			id = new MID();
+			creatorid = env.getUserID();
+		}
+
 		List<TrackGroup> ts = trackgroups;
 		for (TrackGroup track : ts) {
 			track.save();

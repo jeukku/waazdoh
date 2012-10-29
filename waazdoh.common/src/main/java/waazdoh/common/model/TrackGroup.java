@@ -11,7 +11,6 @@ import org.utils.xml.JBean;
 
 import waazdoh.CMusic;
 
-
 public class TrackGroup {
 	private static final String BEANNAME = "trackgroup";
 	private MID id;
@@ -31,6 +30,7 @@ public class TrackGroup {
 	private UserID creatorid;
 	private String version;
 	private MEnvironment env;
+	private MID copyof;
 
 	public TrackGroup(UserID user, MEnvironment env) {
 		this.env = env;
@@ -59,6 +59,7 @@ public class TrackGroup {
 		}
 		//
 		id = new MID(btrack.get("id").getValue());
+		copyof = btrack.getIDAttribute("copyof");
 		name = btrack.getAttribute("name");
 		created = Long.parseLong(btrack.getAttribute("timestamp"));
 		muted = btrack.getAttributeBoolean("muted");
@@ -96,6 +97,7 @@ public class TrackGroup {
 		bt.addAttribute("timestamp", "" + created);
 		bt.addAttribute("creator", creatorid.toString());
 		bt.addAttribute("version", version);
+		bt.addAttribute("copyof", "" + copyof);
 		//
 		List<Track> ts = this.tracks;
 		JBean btracks = bt.add("tracks").add("list");
@@ -127,7 +129,11 @@ public class TrackGroup {
 	}
 
 	public synchronized boolean save() {
-		creatorid = env.getUserID();
+		if (!env.getUserID().equals(creatorid)) {
+			copyof = getID().copy();
+			id = new MID();
+			creatorid = env.getUserID();
+		}
 
 		for (Track track : tracks) {
 			track.save();

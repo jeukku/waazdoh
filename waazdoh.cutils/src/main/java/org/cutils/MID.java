@@ -47,4 +47,8 @@ public class MID {
 			throw new IllegalArgumentException("id value length " + substring.length());
 		}		
 	}
+
+	public MID copy() {
+		return new MID(this.toString());
+	}
 }

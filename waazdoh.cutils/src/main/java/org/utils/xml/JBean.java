@@ -325,7 +325,7 @@ public class JBean implements Comparable<JBean> {
 
 	public MID getIDAttribute(String string) {
 		String sid = getAttribute(string);
-		if (sid == null) {
+		if (sid == null || sid.equals("null")) {
 			return null;
 		} else {
 			return new MID(sid);

@@ -37,6 +37,7 @@ public class Track {
 	private float framerate = CMusic.DEFAULT_SAMPLERATE;
 
 	private List<TrackListener> listeners = new LinkedList<TrackListener>();
+	private MID copyof;
 
 	public Track(UserID creatorid, MEnvironment env) {
 		this.env = env;
@@ -218,7 +219,11 @@ public class Track {
 	}
 
 	public void save() {
-		creatorid = env.getUserID();		
+		if(!env.getUserID().equals(creatorid)) {
+			copyof = getID().copy();
+			id = new MID();
+			creatorid = env.getUserID();		
+		}
 		
 		if (!storedbean.equals(getTrackBean())) {
 			modified();
