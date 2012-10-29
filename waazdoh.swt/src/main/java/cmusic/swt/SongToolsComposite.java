@@ -21,6 +21,8 @@ import cmusic.app.ESong;
 import cmusic.app.audio.MAudioListener;
 import cmusic.swt.components.AudioLevelMeter;
 import cmusic.swt.layouts.SplitLayout;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.GridData;
 
 public class SongToolsComposite extends Composite {
 	private App app;
@@ -34,8 +36,12 @@ public class SongToolsComposite extends Composite {
 	public SongToolsComposite(App napp, Composite parent, int style) {
 		super(parent, style);
 		this.app = napp;
-		setLayout(new RowLayout(SWT.HORIZONTAL));
+		GridLayout gridLayout = new GridLayout(11, false);
+		gridLayout.horizontalSpacing = 2;
+		gridLayout.marginHeight = 1;
+		setLayout(gridLayout);
 		Composite composite_1 = new Composite(this, SWT.NONE);
+		composite_1.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 4, 1));
 		composite_1.setLayout(new RowLayout(SWT.HORIZONTAL));
 		Button bplay = new Button(composite_1, SWT.NONE);
 		bplay.setText("play");
@@ -76,41 +82,45 @@ public class SongToolsComposite extends Composite {
 		brecord.setImage(SWTResourceManager.getImage(SongToolsComposite.class,
 				"/media-record.png"));
 
-		Composite clevels = new Composite(this, SWT.NONE);
+		Composite clevels = new Composite(this, SWT.BORDER);
+		GridData gd_clevels = new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1);
+		gd_clevels.heightHint = 30;
+		gd_clevels.widthHint = 63;
+		clevels.setLayoutData(gd_clevels);
 		clevels.setLayout(new SplitLayout(clevels));
-		clevels.setLayoutData(new RowData(89, 49));
 		outputLevelMeter = new AudioLevelMeter(clevels, SWT.NONE);
 		inputLevelMeter = new AudioLevelMeter(clevels, SWT.NONE);
-		ltime = new Label(this, SWT.CENTER);
-		ltime.setLayoutData(new RowData(223, 36));
+		ltime = new Label(this, SWT.BORDER | SWT.CENTER);
+		ltime.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
 		ltime.setAlignment(SWT.CENTER);
 		ltime.setFont(SWTResourceManager.getFont("Ubuntu", 24, SWT.NORMAL));
 		ltime.setText("00:00:0000");
 		
-		laudiostate = new Label(this, SWT.BORDER);
-		laudiostate.setLayoutData(new RowData(82, SWT.DEFAULT));
-
-		Label separator = new Label(this, SWT.SEPARATOR | SWT.VERTICAL);
-		separator.setLayoutData(new RowData(2, 25));
-
-		Label lblZoom = new Label(this, SWT.NONE);
-		lblZoom.setText("zoom");
-
-		final Spinner spinner = new Spinner(this, SWT.BORDER);
-		spinner.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent arg0) {
-				if (app != null) {
-					app.zoom(Integer.parseInt("0" + spinner.getText()));
-				}
-			}
-		});
-		spinner.setMaximum(100000);
-		spinner.setMinimum(1);
-		spinner.setSelection(100);
-
-		Label separator2 = new Label(this, SWT.SEPARATOR);
-		separator2.setLayoutData(new RowData(2, 26));
+		laudiostate = new Label(this, SWT.BORDER | SWT.WRAP);
+		GridData gd_laudiostate = new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1);
+		gd_laudiostate.heightHint = 36;
+		gd_laudiostate.widthHint = 84;
+		laudiostate.setLayoutData(gd_laudiostate);
+		
+				Label lblZoom = new Label(this, SWT.NONE);
+				lblZoom.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+				lblZoom.setText("zoom");
+		
+				final Spinner spinner = new Spinner(this, SWT.BORDER);
+				spinner.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+				spinner.addModifyListener(new ModifyListener() {
+					public void modifyText(ModifyEvent arg0) {
+						if (app != null) {
+							app.zoom(Integer.parseInt("0" + spinner.getText()));
+						}
+					}
+				});
+				spinner.setMaximum(100000);
+				spinner.setMinimum(1);
+				spinner.setSelection(100);
+		new Label(this, SWT.NONE);
 		Button bpublish = new Button(this, SWT.NONE);
+		bpublish.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
 		bpublish.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {

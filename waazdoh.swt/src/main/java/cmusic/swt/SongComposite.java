@@ -67,7 +67,6 @@ public class SongComposite extends Composite implements ESongListener {
 		scrolledComposite = new ScrolledComposite(this, SWT.BORDER
 				| SWT.H_SCROLL | SWT.V_SCROLL);
 		scrolledComposite.setExpandVertical(true);
-		scrolledComposite.setExpandHorizontal(true);
 
 		trackgroups = new Composite(scrolledComposite, SWT.NONE);
 		RowFillLayout trackgroupslayout = new RowFillLayout();
