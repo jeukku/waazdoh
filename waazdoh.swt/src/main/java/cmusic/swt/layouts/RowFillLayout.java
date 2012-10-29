@@ -9,10 +9,13 @@ import org.eclipse.swt.widgets.Layout;
 public class RowFillLayout extends Layout {
 	private Composite widthcomposite;
 
-	public RowFillLayout(Composite widthcomposite) {
-		this.widthcomposite = widthcomposite;
+	public RowFillLayout() {
 	}
 
+	public void setWidthComposite(Composite nwidthcomposite) {
+		this.widthcomposite = nwidthcomposite;
+	}
+	
 	@Override
 	protected Point computeSize(Composite composite, int wHint, int hHint,
 			boolean flushCache) {

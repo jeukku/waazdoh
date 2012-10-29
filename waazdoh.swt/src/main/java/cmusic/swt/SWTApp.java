@@ -161,7 +161,9 @@ public class SWTApp {
 				1, 1));
 
 		cnotifications = new Composite(composite, SWT.NONE);
-		RowFillLayout rl_cnotifications = new RowFillLayout(composite);
+		RowFillLayout rl_cnotifications = new RowFillLayout();
+		rl_cnotifications.setWidthComposite(composite);
+		
 		cnotifications.setLayout(rl_cnotifications);
 
 		createInfo(shell);

@@ -70,7 +70,9 @@ public class SongComposite extends Composite implements ESongListener {
 		scrolledComposite.setExpandHorizontal(true);
 
 		trackgroups = new Composite(scrolledComposite, SWT.NONE);
-		trackgroups.setLayout(new RowFillLayout(scrolledComposite));
+		RowFillLayout trackgroupslayout = new RowFillLayout();
+		trackgroupslayout.setWidthComposite(scrolledComposite);
+		trackgroups.setLayout(trackgroupslayout);
 		scrolledComposite.setContent(trackgroups);
 		addTrackGroups();
 	}
@@ -87,10 +89,10 @@ public class SongComposite extends Composite implements ESongListener {
 	private Song getSong() {
 		return song.getSong();
 	}
-	
+
 	@Override
 	public void zoomChanged(int zoom) {
-		// TODO Auto-generated method stub	
+		// TODO Auto-generated method stub
 	}
 
 	private void add(TrackGroup trackgroup) {

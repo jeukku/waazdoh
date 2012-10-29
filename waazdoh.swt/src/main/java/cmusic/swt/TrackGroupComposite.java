@@ -72,7 +72,9 @@ public class TrackGroupComposite extends Composite {
 		bnewtrack.setText("New Tack");
 
 		ctracks = new Composite(this, SWT.BORDER);
-		ctracks.setLayout(new RowFillLayout(this));
+		RowFillLayout ctrackslayout = new RowFillLayout();
+		ctrackslayout.setWidthComposite(this);
+		ctracks.setLayout(ctrackslayout);
 		addTracks();
 		//
 		trackgroup.addListener(new TrackGroupListener() {
