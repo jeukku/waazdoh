@@ -28,13 +28,13 @@ public class TrackGroup {
 	private long modified;
 	private JBean storedbean;
 	private List<TrackGroupListener> listeners;
-	private UserID creator;
+	private UserID creatorid;
 	private String version;
 	private MEnvironment env;
 
 	public TrackGroup(UserID user, MEnvironment env) {
 		this.env = env;
-		this.creator = user;
+		this.creatorid = user;
 		this.version = CMusic.version;
 		id = new MID();
 		created = System.currentTimeMillis();
@@ -63,13 +63,13 @@ public class TrackGroup {
 		created = Long.parseLong(btrack.getAttribute("timestamp"));
 		muted = btrack.getAttributeBoolean("muted");
 		modified = btrack.getAttributeLong("modified");
-		creator = btrack.getUserAttribute("creator");
+		creatorid = btrack.getUserAttribute("creator");
 		version = btrack.getAttribute("version");
 		//
 		boolean ret = true;
 		List<JBean> btracks = btrack.get("tracks").get("list").getChildren();
 		for (JBean jBean : btracks) {
-			Track track = new Track(creator, env);
+			Track track = new Track(creatorid, env);
 			if (track.load(new MID(jBean.getValue()))) {
 				if (!tracks.add(track)) {
 					ret = false;
@@ -94,7 +94,7 @@ public class TrackGroup {
 		bt.addAttribute("name", name);
 		bt.addAttribute("modified", modified);
 		bt.addAttribute("timestamp", "" + created);
-		bt.addAttribute("creator", creator.toString());
+		bt.addAttribute("creator", creatorid.toString());
 		bt.addAttribute("version", version);
 		//
 		List<Track> ts = this.tracks;
@@ -127,6 +127,8 @@ public class TrackGroup {
 	}
 
 	public synchronized boolean save() {
+		creatorid = env.getUserID();
+
 		for (Track track : tracks) {
 			track.save();
 		}
@@ -150,7 +152,7 @@ public class TrackGroup {
 	}
 
 	public Track newTrack() {
-		Track t = new Track(creator, env);
+		Track t = new Track(creatorid, env);
 		addTrack(t);
 		return t;
 	}

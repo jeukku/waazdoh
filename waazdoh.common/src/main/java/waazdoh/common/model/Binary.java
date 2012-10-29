@@ -34,7 +34,7 @@ public class Binary {
 	//
 	public final static String TYPE_STREAM = "audiostream";
 	private String type = TYPE_STREAM;
-	private UserID creator;
+	private UserID creatorid;
 	private String version;
 	private String comment = "";
 	private long usedtime;
@@ -47,7 +47,7 @@ public class Binary {
 		this.service = service;
 		this.id = new MID();
 		if (service != null) {
-			this.creator = service.getUserID();
+			this.creatorid = service.getUserID();
 		}
 		version = CMusic.version;
 		this.comment = comment;
@@ -177,7 +177,7 @@ public class Binary {
 		this.id = new MID(b.getAttribute("id"));
 		this.length = b.getAttributeInt("length");
 		this.storedcrc = new MCRC(b.getAttributeLong("crc"));
-		this.creator = new UserID(b.getAttribute("creator"));
+		this.creatorid = new UserID(b.getAttribute("creator"));
 		this.version = b.getAttribute("version");
 		this.comment = b.getAttribute("comment");
 	}
@@ -199,6 +199,7 @@ public class Binary {
 	}
 
 	public void save() {
+		creatorid = service.getUserID();		
 		service.write(getID(), getBean());
 	}
 
@@ -216,7 +217,7 @@ public class Binary {
 	}
 
 	public boolean isOK() {
-		if (id == null || storedcrc == null || creator == null) {
+		if (id == null || storedcrc == null || creatorid == null) {
 			return false;
 		}
 		return true;
@@ -227,7 +228,7 @@ public class Binary {
 		b.addAttribute("id", id.toString());
 		b.addAttribute("length", "" + length);
 		b.addAttribute("crc", "" + currentCRC().getValue());
-		b.addAttribute("creator", creator.toString());
+		b.addAttribute("creator", creatorid.toString());
 		b.addAttribute("version", version);
 		b.addAttribute("comment", "" + comment);
 		return b;

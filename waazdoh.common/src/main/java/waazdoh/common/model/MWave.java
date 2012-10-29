@@ -143,6 +143,8 @@ public class MWave {
 				false);
 		try {
 			File file = env.getBinarySource().getBinaryFile(binary.getID());
+			log.info("reading " + file + " exists:" + file.exists());
+			
 			AudioInputStream flacAIS = new FlacAudioFileReader()
 					.getAudioInputStream(file);
 

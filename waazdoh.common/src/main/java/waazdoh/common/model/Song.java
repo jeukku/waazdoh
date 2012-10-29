@@ -18,7 +18,6 @@ import org.utils.xml.XML;
 import waazdoh.CMusic;
 import waazdoh.emodel.ETrack;
 
-
 public class Song {
 	private MID id;
 	private List<TrackGroup> trackgroups = new LinkedList<TrackGroup>();
@@ -95,14 +94,6 @@ public class Song {
 		this.env = null;
 		listeners = null;
 		trackgroups = null;
-	}
-
-	public boolean save(StringWriter sw) {
-		XML beanxml = getAsXML();
-		log.info("saving " + beanxml);
-		sw.write(beanxml.toString());
-		//
-		return true;
 	}
 
 	@Override
@@ -285,6 +276,8 @@ public class Song {
 	}
 
 	public synchronized boolean save() {
+		creatorid = env.getUserID();
+	
 		List<TrackGroup> ts = trackgroups;
 		for (TrackGroup track : ts) {
 			track.save();

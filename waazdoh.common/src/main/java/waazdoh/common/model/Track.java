@@ -218,6 +218,8 @@ public class Track {
 	}
 
 	public void save() {
+		creatorid = env.getUserID();		
+		
 		if (!storedbean.equals(getTrackBean())) {
 			modified();
 			JBean trackBean = getTrackBean();
