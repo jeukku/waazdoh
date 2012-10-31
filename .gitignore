@@ -7,7 +7,6 @@
 *~
 .metadata
 *.class
-bin
 build
 target
 #*.jar
