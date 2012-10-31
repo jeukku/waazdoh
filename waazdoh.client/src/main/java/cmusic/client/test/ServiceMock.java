@@ -1,8 +1,6 @@
 package cmusic.client.test;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.cutils.JBeanResponse;
@@ -10,6 +8,7 @@ import org.cutils.MID;
 import org.cutils.MURL;
 import org.cutils.UserID;
 import org.utils.xml.JBean;
+import org.utils.xml.XML;
 
 import waazdoh.service.CMService;
 
@@ -26,22 +25,35 @@ public class ServiceMock implements CMService {
 		String gname = "users";
 		addBGroup(gusersid.toString(), gname);
 		addBGroup(new MID().toString(), "test");
-		
+
 	}
 
 	private void addBGroup(String gid, String gname) {
-		JBean b = new JBean("bookmarkgroup");
-		b.addAttribute("id", gid);
-		b.addAttribute("name", gname);
+		String sxml = "<response> <bookmarkgroup>		  <owner>1b32558c-827d-4f4c-83bf-b9ea4a313db6</owner>		  <name>users</name>"
+				+ "  <groupid>"
+				+ gid
+				+ "</groupid>		  <created>2012-09-14T03:27:05.200Z</created> <bookmarks> <bookmark>"
+				+ "		  <objectid>1b32558c-827d-4f4c-83bf-b9ea4a313db6</objectid>		  <created>Tue Sep 18 10:35:50 UTC 2012</created>		  <bookmarkid>8fbdff42-16f1-4619-9083-1624b8ed4ef4.141a553a-7664-4752-a176-3d19b8faf34e</bookmarkid> </bookmark> <bookmark>"
+				+ "		  <objectid>1b32558c-827d-4f4c-83bf-b9ea4a313db6</objectid>"
+				+ "		  <created>Thu Sep 20 07:25:19 UTC 2012</created>		  <bookmarkid>6b8f96a2-db16-452f-8038-df8d4c681d2d.15d64b78-4fb0-4948-8543-73cf49cdf627</bookmarkid> </bookmark> </bookmarks> </bookmarkgroup>"
+				+ "		  </response>";
+
+		JBean b = new JBean(new XML(sxml));
 		groups.put(gid, b);
 	}
 
 	@Override
 	public JBeanResponse getUser(UserID userid) {
-		// TODO Auto-generated method stub
-		return null;
+		String sxml = "<response> <user> <uid>"
+				+ userid
+				+ "</uid><profile><pictureURL>https://twimg0-a.akamaihd.net/profile_images/2297908262/rhp37rm35mul5uf0zom6_reasonably_small.jpeg</pictureURL>	  <name>Juuso</name> <info>me!!!</info> </profile> <name>test"
+				+ userid
+				+ "</name>		  </user> <success>true</success> </response>";
+		JBeanResponse r = JBeanResponse.getTrue();
+		r.setBean(new JBean(new XML(sxml)));
+		return r;
 	}
-	
+
 	@Override
 	public boolean setSession(String username, String session) {
 		this.username = username;
