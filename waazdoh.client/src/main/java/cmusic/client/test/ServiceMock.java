@@ -1,6 +1,8 @@
 package cmusic.client.test;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.cutils.JBeanResponse;
@@ -86,9 +88,14 @@ public class ServiceMock implements CMService {
 	}
 
 	@Override
-	public JBeanResponse search(String filter, int index, int i) {
-		// TODO Auto-generated method stub
-		return null;
+	public JBeanResponse search(String filter, int index, int count) {
+		JBeanResponse ret = JBeanResponse.getTrue();
+		HashSet<String> list = new HashSet<String>();
+		for (int i = index; i < count; i++) {
+			list.add("" + new MID());
+		}
+		ret.getBean().addList("items", list);
+		return ret;
 	}
 
 	@Override

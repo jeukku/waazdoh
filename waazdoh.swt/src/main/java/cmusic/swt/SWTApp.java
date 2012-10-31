@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.cutils.JBeanResponse;
 import org.cutils.MID;
+import org.cutils.MLogger;
 import org.cutils.UserID;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
@@ -11,6 +12,7 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -21,7 +23,9 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.utils.xml.JBean;
 
+import waazdoh.MJob;
 import waazdoh.common.model.Song;
 import cmusic.app.App;
 import cmusic.client.BookmarksListener;
@@ -46,6 +50,8 @@ public class SWTApp {
 	private Label linfo;
 	private Menu menuusers;
 	private Menu menubookmarks;
+
+	private MLogger log = MLogger.getLogger(this);
 
 	public SWTApp(App app) {
 		this.app = app;
@@ -322,20 +328,76 @@ public class SWTApp {
 		}
 
 		if (found == null) {
-			MenuItem i = new MenuItem(parent, SWT.None);
+			MenuItem i = new MenuItem(parent, SWT.CASCADE);
 			i.setText("object");
 			i.setData(oid);
 
 			if (parent == menuusers) {
-				String userid = oid;
+				final String userid = oid;
 				i.setText("user " + userid);
 				WUser o = app.getClient().getUser(new UserID(userid));
 				i.setText("" + o.getName());
+				//
+				Menu m = new Menu(i);
+				i.setMenu(m);
+
+				initUserMenu(m, userid);
 			} else {
 				JBeanResponse o = app.getClient().getService()
 						.read(new MID(oid));
 				i.setText("" + o);
 			}
+		}
+	}
+
+	private void initUserMenu(final Menu m, final String userid) {
+		app.getClient().getJobs().addJob(new MJob() {
+			@Override
+			public boolean run() {
+				final List<MID> result = app.getClient().searchSongs(userid, 0,
+						200);
+				//
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						for (MID mid : result) {
+							initObjectMenu(mid, m);
+						}
+					}
+				});
+				return true;
+			}
+
+		});
+	}
+
+	private void initObjectMenu(final MID mid, Menu m) {
+		JBeanResponse resp = app.getClient().getService().read(mid);
+		if (resp != null) {
+			JBean obean = resp.getBean().get("song");
+			if (obean != null) {
+				MenuItem mi = new MenuItem(m, SWT.None);
+				mi.setText("" + mid);
+
+				String name = obean.getAttribute("name");
+				if (name != null) {
+					mi.setText(name);
+					mi.addSelectionListener(new SelectionListener() {
+						@Override
+						public void widgetSelected(SelectionEvent arg0) {
+							app.getClient().loadSong(mid);
+						}
+
+						@Override
+						public void widgetDefaultSelected(SelectionEvent arg0) {
+							// TODO Auto-generated method stub
+						}
+					});
+				}
+			} else {
+				log.info("not adding to bookmark menu " + obean);
+			}
+		} else {
+			log.info("not found " + mid);
 		}
 	}
 }

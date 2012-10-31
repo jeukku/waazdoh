@@ -12,6 +12,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import waazdoh.common.model.Song;
@@ -23,6 +24,7 @@ import cmusic.app.App;
 import cmusic.app.ESong;
 import cmusic.app.ESongListener;
 import cmusic.swt.layouts.RowFillLayout;
+import org.eclipse.swt.layout.RowData;
 
 public class SongComposite extends Composite implements ESongListener {
 	private ESong song;
@@ -66,12 +68,18 @@ public class SongComposite extends Composite implements ESongListener {
 		bnewtg.setText("New Trackgroup");
 		scrolledComposite = new ScrolledComposite(this, SWT.BORDER
 				| SWT.H_SCROLL | SWT.V_SCROLL);
+		scrolledComposite.setExpandHorizontal(true);
 		scrolledComposite.setExpandVertical(true);
 
 		trackgroups = new Composite(scrolledComposite, SWT.NONE);
+//		Label test = new Label(trackgroups, SWT.BORDER);
+//		test.setLayoutData(new RowData(179, 43));
+//		test.setText("TEST");
+
 		RowFillLayout trackgroupslayout = new RowFillLayout();
 		trackgroupslayout.setWidthComposite(scrolledComposite);
 		trackgroups.setLayout(trackgroupslayout);
+
 		scrolledComposite.setContent(trackgroups);
 		addTrackGroups();
 	}
