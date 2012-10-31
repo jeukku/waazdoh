@@ -272,7 +272,9 @@ public class App {
 	}
 
 	public String getInfo() {
-		return getClient().getInfoText() + " version:" + VERSION;
+
+		return (getClient() != null ? getClient().getInfoText() : "Client null")
+				+ " version:" + VERSION;
 	}
 
 	public void zoom(int zoom) {

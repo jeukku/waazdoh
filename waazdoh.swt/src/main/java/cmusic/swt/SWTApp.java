@@ -1,5 +1,10 @@
 package cmusic.swt;
 
+import java.util.List;
+
+import org.cutils.JBeanResponse;
+import org.cutils.MID;
+import org.cutils.UserID;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.DisposeEvent;
@@ -18,10 +23,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import waazdoh.common.model.Song;
-
 import cmusic.app.App;
+import cmusic.client.BookmarksListener;
 import cmusic.client.ClientListener;
 import cmusic.client.MClient;
+import cmusic.client.WBookmark;
+import cmusic.client.WBookmarkGroup;
+import cmusic.client.WBookmarkGroupListener;
+import cmusic.client.WUser;
 import cmusic.swt.layouts.RowFillLayout;
 import cmusic.swt.updater.Updater;
 
@@ -35,6 +44,8 @@ public class SWTApp {
 	private Composite composite;
 	private Composite cnotifications;
 	private Label linfo;
+	private Menu menuusers;
+	private Menu menubookmarks;
 
 	public SWTApp(App app) {
 		this.app = app;
@@ -163,10 +174,14 @@ public class SWTApp {
 		cnotifications = new Composite(composite, SWT.NONE);
 		RowFillLayout rl_cnotifications = new RowFillLayout();
 		rl_cnotifications.setWidthComposite(composite);
-		
+
 		cnotifications.setLayout(rl_cnotifications);
 
 		createInfo(shell);
+
+		if (app == null) {
+			createMenu();
+		}
 
 		shell.layout();
 	}
@@ -197,43 +212,130 @@ public class SWTApp {
 	private void clientLoggedIn() {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				Menu menu = new Menu(shell, SWT.BAR);
-				shell.setMenuBar(menu);
-				MenuItem mntmNewSubmenu = new MenuItem(menu, SWT.CASCADE);
-				mntmNewSubmenu.setText("Content");
-				Menu menu_1 = new Menu(mntmNewSubmenu);
-				mntmNewSubmenu.setMenu(menu_1);
-				MenuItem mntmNewItem = new MenuItem(menu_1, SWT.NONE);
-				mntmNewItem.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						app.newSong();
-					}
-				});
-				mntmNewItem.setText("New Song");
-				//
-				MenuItem menuApplicationItem = new MenuItem(menu, SWT.CASCADE);
-				menuApplicationItem.setText("Application");
-				Menu menuApplication = new Menu(menuApplicationItem);
-				menuApplicationItem.setMenu(menuApplication);
-				MenuItem miApplicationSettings = new MenuItem(menuApplication,
-						SWT.NONE);
-				miApplicationSettings
-						.addSelectionListener(new SelectionAdapter() {
-							@Override
-							public void widgetSelected(SelectionEvent e) {
-								PreferencesDialog dialog = new PreferencesDialog(
-										shell, app);
-								dialog.open();
-							}
-						});
-				miApplicationSettings.setText("Settings");
-
-				//
-				layout.topControl = mainview;
-				cstack.layout();
-				shell.layout();
+				createMenu();
 			}
 		});
+	}
+
+	private void createMenu() {
+		Menu menu = new Menu(shell, SWT.BAR);
+		shell.setMenuBar(menu);
+		MenuItem contentmenuitem = new MenuItem(menu, SWT.CASCADE);
+		contentmenuitem.setText("Content");
+		Menu contentmenu = new Menu(contentmenuitem);
+		contentmenuitem.setMenu(contentmenu);
+
+		MenuItem mntmNewItem = new MenuItem(contentmenu, SWT.NONE);
+		mntmNewItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				app.newSong();
+			}
+		});
+		mntmNewItem.setText("New Song");
+		//
+		MenuItem menuApplicationItem = new MenuItem(menu, SWT.CASCADE);
+		menuApplicationItem.setText("Application");
+		Menu menuApplication = new Menu(menuApplicationItem);
+		menuApplicationItem.setMenu(menuApplication);
+
+		MenuItem settingsmenuitem = new MenuItem(menuApplication, SWT.NONE);
+		settingsmenuitem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				PreferencesDialog dialog = new PreferencesDialog(shell, app);
+				dialog.open();
+			}
+		});
+		settingsmenuitem.setText("Settings");
+		//
+		MenuItem menuUsersItem = new MenuItem(menu, SWT.CASCADE);
+		menuUsersItem.setText("Users");
+		menuusers = new Menu(menuUsersItem);
+		menuUsersItem.setMenu(menuusers);
+
+		MenuItem menuBookmarksItem = new MenuItem(menu, SWT.CASCADE);
+		menuBookmarksItem.setText("Bookmarks");
+		menubookmarks = new Menu(menuBookmarksItem);
+		menuBookmarksItem.setMenu(menubookmarks);
+
+		initBookmarkGroups();
+
+		app.getClient().getBookmarks().addListener(new BookmarksListener() {
+			@Override
+			public void groupAdded(WBookmarkGroup group) {
+				handleBookmarkGroup(group);
+			}
+		});
+
+		//
+		layout.topControl = mainview;
+		cstack.layout();
+		shell.layout();
+	}
+
+	private void initBookmarkGroups() {
+		List<WBookmarkGroup> groups = app.getClient().getBookmarks()
+				.getBookmarkGroups();
+		for (WBookmarkGroup group : groups) {
+			handleBookmarkGroup(group);
+		}
+	}
+
+	private void handleBookmarkGroup(WBookmarkGroup group) {
+		Menu parent;
+		if (group.getName().equals("users")) {
+			parent = menuusers;
+		} else {
+			MenuItem i = new MenuItem(menubookmarks, SWT.CASCADE);
+			i.setText(group.getName());
+			Menu m = new Menu(i);
+			i.setMenu(m);
+
+			MenuItem test = new MenuItem(m, SWT.None);
+			test.setText("testitem");
+
+			parent = m;
+		}
+		//
+		List<WBookmark> bmarks = group.getBookmarks();
+		for (WBookmark wBookmark : bmarks) {
+			addBookmark(parent, wBookmark);
+		}
+		//
+		group.addListener(new WBookmarkGroupListener() {
+
+		});
+	}
+
+	private void addBookmark(Menu parent, WBookmark wBookmark) {
+		String oid = wBookmark.getObjectID();
+
+		MenuItem found = null;
+		MenuItem[] items = parent.getItems();
+		for (MenuItem menuItem : items) {
+			if (menuItem.getData().equals(oid)) {
+				// already added
+				found = menuItem;
+				break;
+			}
+		}
+
+		if (found == null) {
+			MenuItem i = new MenuItem(parent, SWT.None);
+			i.setText("object");
+			i.setData(oid);
+
+			if (parent == menuusers) {
+				String userid = oid;
+				i.setText("user " + userid);
+				WUser o = app.getClient().getUser(new UserID(userid));
+				i.setText("" + o.getName());
+			} else {
+				JBeanResponse o = app.getClient().getService()
+						.read(new MID(oid));
+				i.setText("" + o);
+			}
+		}
 	}
 }

@@ -24,7 +24,6 @@ import waazdoh.common.model.Song;
 import waazdoh.common.model.StaticObjectFactory;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
-
 import cmusic.client.rest.RestClient;
 import cmusic.client.test.ServiceMock;
 
@@ -34,6 +33,8 @@ public class MClient implements ReportingService, MEnvironment {
 	private CMService service;
 	private Set<ClientListener> listeners = new HashSet<ClientListener>();
 	private Map<MID, Song> songs = new HashMap<MID, Song>();
+	private Map<UserID, WUser> users = new HashMap<UserID, WUser>();
+
 	private boolean running = true;
 	private MPreferences preferences;
 	private MBinarySource source;
@@ -41,6 +42,7 @@ public class MClient implements ReportingService, MEnvironment {
 	private Thread memoryt;
 	private MLogger log = MLogger.getLogger(this);
 	private MObjectFactory objectfactory;
+	private WBookmarks bookmarks;
 
 	public MClient(MPreferences p, MBinarySource wavesource)
 			throws MalformedURLException {
@@ -48,7 +50,7 @@ public class MClient implements ReportingService, MEnvironment {
 		//
 		this.preferences = p;
 		this.source = wavesource;
-		if("true".equals(p.get(MPreferences.SERVICE_MOCK))) {
+		if ("true".equals(p.get(MPreferences.SERVICE_MOCK))) {
 			service = new ServiceMock();
 		} else {
 			service = new RestClient(getServiceURL(), source);
@@ -195,7 +197,9 @@ public class MClient implements ReportingService, MEnvironment {
 		}
 	}
 
-	private void fireLoggedIn() {
+	private void loggedIn() {
+		bookmarks = new WBookmarks(service);
+
 		for (ClientListener clientListener : listeners) {
 			clientListener.loggedIn();
 		}
@@ -268,7 +272,7 @@ public class MClient implements ReportingService, MEnvironment {
 			if (service.setSession(username, session)) {
 				source.setService(service);
 				startMemoryHandlingThread();
-				fireLoggedIn();
+				loggedIn();
 				return true;
 			} else {
 				return false;
@@ -341,4 +345,19 @@ public class MClient implements ReportingService, MEnvironment {
 			}
 		}
 	}
+
+	public WBookmarks getBookmarks() {
+		return bookmarks;
+	}
+
+	public WUser getUser(UserID userid) {
+		if (users.get(userid) != null) {
+			return users.get(userid);
+		} else {
+			JBeanResponse b = getService().getUser(userid);
+			WUser u = new WUser(b.getBean());
+			return u;
+		}
+	}
+
 }

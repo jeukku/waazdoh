@@ -25,7 +25,7 @@ public class MBeanStorage {
 		file.mkdirs();
 	}
 
-	public JBeanResponse getBean(MID id) {
+	public JBeanResponse getBean(String id) {
 		try {
 			File f = getFile(id);
 			if (f.exists()) {
@@ -54,12 +54,12 @@ public class MBeanStorage {
 		}
 	}
 
-	private File getFile(MID id) {
+	private File getFile(String id) {
 		File f = new File(path + File.separator + id);
 		return f;
 	}
 
-	public void addBean(MID id, JBeanResponse response) {
+	public void addBean(String id, JBeanResponse response) {
 		try {
 			File f = getFile(id);
 			FileWriter fw;

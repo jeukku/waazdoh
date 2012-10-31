@@ -28,9 +28,9 @@ public interface MBinarySource {
 
 	void clearMemory(int suggestedmemorytreshold);
 
-	JBeanResponse getBean(MID id);
+	JBeanResponse getBean(String string);
 
-	void addBean(MID id, JBeanResponse response);
+	void addBean(String string, JBeanResponse response);
 
 	String getInfoText();
 

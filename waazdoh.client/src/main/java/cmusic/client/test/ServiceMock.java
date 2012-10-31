@@ -1,6 +1,8 @@
 package cmusic.client.test;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.cutils.JBeanResponse;
@@ -11,14 +13,35 @@ import org.utils.xml.JBean;
 
 import waazdoh.service.CMService;
 
-
 public class ServiceMock implements CMService {
 	private String username;
 	private String session;
 	private MID userid = new MID();
+	private Map<String, JBean> groups = new HashMap<String, JBean>();
 
 	private static Map<MID, JBeanResponse> objects = new HashMap<MID, JBeanResponse>();
 
+	public ServiceMock() {
+		MID gusersid = new MID();
+		String gname = "users";
+		addBGroup(gusersid.toString(), gname);
+		addBGroup(new MID().toString(), "test");
+		
+	}
+
+	private void addBGroup(String gid, String gname) {
+		JBean b = new JBean("bookmarkgroup");
+		b.addAttribute("id", gid);
+		b.addAttribute("name", gname);
+		groups.put(gid, b);
+	}
+
+	@Override
+	public JBeanResponse getUser(UserID userid) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	@Override
 	public boolean setSession(String username, String session) {
 		this.username = username;
@@ -93,4 +116,20 @@ public class ServiceMock implements CMService {
 		return null;
 	}
 
+	@Override
+	public JBeanResponse getBookmarkGroup(String id) {
+		JBeanResponse ret = JBeanResponse.getTrue();
+		ret.setBean(groups.get(id));
+		return ret;
+	}
+
+	@Override
+	public Map<String, String> getBookmarkGroups() {
+		Map<String, String> ret = new HashMap<String, String>();
+		for (String id : groups.keySet()) {
+			JBean b = groups.get(id);
+			ret.put(id, b.getAttribute("name"));
+		}
+		return ret;
+	}
 }

@@ -2,6 +2,7 @@ package cmusic.client.rest;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,7 +15,6 @@ import org.utils.xml.JBean;
 
 import waazdoh.common.model.MBinarySource;
 import waazdoh.service.CMService;
-
 import cmusic.client.URLCaller;
 
 public class RestClient implements CMService {
@@ -131,8 +131,22 @@ public class RestClient implements CMService {
 	}
 
 	@Override
+	public JBeanResponse getUser(UserID userid) {
+		JBeanResponse b = source.getBean(userid.toString());
+		if (b == null) {
+			List<String> params = new LinkedList<String>();
+			params.add(userid.toString());
+			b = get("users", "get", true, params);
+			//
+			source.addBean(userid.toString(), b);
+		}
+		
+		return b;
+	}
+
+	@Override
 	public JBeanResponse read(MID id) {
-		JBeanResponse bean = source.getBean(id);
+		JBeanResponse bean = source.getBean(id.toString());
 		if (bean != null) {
 			return bean;
 		} else {
@@ -140,7 +154,7 @@ public class RestClient implements CMService {
 			params.add(id.toString());
 			JBeanResponse response = get("objects", "read", false, params);
 			if (response.isSuccess()) {
-				source.addBean(id, response);
+				source.addBean(id.toString(), response);
 			}
 			return response;
 		}
@@ -151,7 +165,7 @@ public class RestClient implements CMService {
 		// TODO
 		JBeanResponse resp = new JBeanResponse();
 		resp.setBean(b);
-		source.addBean(id, resp);
+		source.addBean(id.toString(), resp);
 		return resp;
 	}
 
@@ -241,6 +255,38 @@ public class RestClient implements CMService {
 			log.info("exception with response " + sbody);
 			return JBeanResponse.getError("ERROR " + sbody);
 		}
+	}
+
+	@Override
+	public HashMap<String, String> getBookmarkGroups() {
+		JBeanResponse ret = get("bookmarks", "listgroups", true, null);
+		if (ret.isSuccess()) {
+			HashMap<String, String> list = new HashMap<String, String>();
+
+			JBean bgroups = ret.getBean().get("bookmarkgroups");
+			List<JBean> cs = bgroups.getChildren();
+			for (JBean groupbean : cs) {
+				/*
+				 * <group> <name>users</name>
+				 * <groupid>fac8093e-c9ed-43b6-99bd-7fc9207f3c7d</groupid>
+				 * </group>
+				 */
+				log.info("bookmarkgroup " + groupbean);
+				list.put(groupbean.getAttribute("groupid"),
+						groupbean.getAttribute("name"));
+			}
+
+			return list;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public JBeanResponse getBookmarkGroup(String id) {
+		List<String> params = new LinkedList<String>();
+		params.add(id.toString());
+		return get("bookmarks", "getgroup", true, params);
 	}
 
 	@Override

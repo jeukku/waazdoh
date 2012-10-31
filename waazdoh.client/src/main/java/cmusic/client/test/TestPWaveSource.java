@@ -11,7 +11,6 @@ import org.cutils.MPreferences;
 import waazdoh.common.model.Binary;
 import waazdoh.common.model.MBinarySource;
 import waazdoh.common.model.MBinaryStorage;
-import waazdoh.common.model.MEnvironment;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
 
@@ -20,7 +19,7 @@ public class TestPWaveSource implements MBinarySource {
 	private MPreferences preferences;
 	private MBinaryStorage storage;
 	private CMService service;
-	private Map<MID, JBeanResponse> beans = new HashMap<MID, JBeanResponse>();
+	private Map<String, JBeanResponse> beans = new HashMap<String, JBeanResponse>();
 
 	public TestPWaveSource(MPreferences p) {
 		this.preferences = p;
@@ -84,12 +83,12 @@ public class TestPWaveSource implements MBinarySource {
 	}
 
 	@Override
-	public void addBean(MID id, JBeanResponse response) {
+	public void addBean(String id, JBeanResponse response) {
 		beans.put(id, response);
 	}
 
 	@Override
-	public JBeanResponse getBean(MID id) {
+	public JBeanResponse getBean(String id) {
 		return beans.get(id);
 	}
 

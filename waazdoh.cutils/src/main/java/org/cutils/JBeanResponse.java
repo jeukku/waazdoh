@@ -15,7 +15,7 @@ public class JBeanResponse {
 	private static final String AUTHENTICATION_FAILED_MESSAGE = "auth failed";
 	private JBean bean = new JBean("response");
 	private MLogger log = MLogger.getLogger(this);
-	
+
 	public JBeanResponse(Object o) {
 		if (o instanceof String) {
 			String string = (String) o;
@@ -44,60 +44,65 @@ public class JBeanResponse {
 			}
 		}
 	}
-	
+
 	public JBeanResponse() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	@Override
 	public String toString() {
 		return "" + toXML();
 	}
-	
+
 	public XML toXML() {
 		return bean.toXML();
 	}
-	
+
 	public JBean getBean() {
 		return bean;
 	}
-	
+
 	public void setBean(JBean bean) {
 		this.bean = bean;
 	}
-	
+
 	public static JBeanResponse getTrue() {
 		JBeanResponse ret = new JBeanResponse();
 		ret.bean.addAttribute("success", "true");
 		return ret;
 	}
-	
+
 	public static JBeanResponse getError(String s) {
 		JBeanResponse ret = getFalse();
 		ret.bean.addAttribute("error", s);
 		return ret;
 	}
-	
+
 	public List<MID> getIDList() {
 		List<MID> ret = new LinkedList<MID>();
-		List<JBean> ids = bean.get("items").getChildren();
-		for (JBean jBean : ids) {
-			ret.add(new MID(jBean.getValue()));
+		JBean items = bean.get("items");
+		if (items != null) {
+			List<JBean> ids = items.getChildren();
+			for (JBean jBean : ids) {
+				ret.add(new MID(jBean.getValue()));
+			}
+			return ret;
+		} else {
+			return null;
 		}
-		return ret;
 	}
-	
+
 	public static JBeanResponse getFalse() {
 		JBeanResponse ret = new JBeanResponse();
 		ret.bean.addAttribute("success", "false");
 		return ret;
 	}
-	
+
 	public static JBeanResponse getAuthenticationError() {
 		JBeanResponse f = getError(AUTHENTICATION_FAILED_MESSAGE);
 		return f;
 	}
-	
+
 	public boolean isSuccess() {
 		Boolean asuccess = bean.getAttributeBoolean("success");
 		if (asuccess != null) {

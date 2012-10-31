@@ -1,5 +1,8 @@
 package waazdoh.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.cutils.JBeanResponse;
 import org.cutils.MID;
 import org.cutils.MURL;
@@ -33,5 +36,11 @@ public interface CMService {
 	String getInfoText();
 
 	JBeanResponse reportDownload(MID id, boolean success);
+
+	JBeanResponse getBookmarkGroup(String id);
+
+	Map<String, String> getBookmarkGroups();
+
+	JBeanResponse getUser(UserID userid);
 
 }

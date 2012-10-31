@@ -15,7 +15,6 @@ import waazdoh.common.model.MBinaryStorage;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
 
-
 public class P2PBinarySource implements MBinarySource {
 	P2PServer server;
 	//
@@ -58,7 +57,7 @@ public class P2PBinarySource implements MBinarySource {
 	public File getBinaryFile(MID id) {
 		return this.storage.getBinaryFile(id);
 	}
-	
+
 	@Override
 	public String getMemoryUsageInfo() {
 		String info = "";
@@ -69,9 +68,9 @@ public class P2PBinarySource implements MBinarySource {
 
 	@Override
 	public boolean reload(Binary binary) {
-		return this.storage.reload(binary)!=null;
+		return this.storage.reload(binary) != null;
 	}
-	
+
 	@Override
 	public String getInfoText() {
 		String info = "server:" + server.getInfoText();
@@ -94,7 +93,7 @@ public class P2PBinarySource implements MBinarySource {
 	}
 
 	@Override
-	public synchronized void addBean(MID id, JBeanResponse response) {
+	public synchronized void addBean(String id, JBeanResponse response) {
 		beanstorage.addBean(id, response);
 	}
 
@@ -107,7 +106,7 @@ public class P2PBinarySource implements MBinarySource {
 	}
 
 	@Override
-	public JBeanResponse getBean(MID id) {
+	public JBeanResponse getBean(String id) {
 		return beanstorage.getBean(id);
 	}
 
@@ -125,8 +124,10 @@ public class P2PBinarySource implements MBinarySource {
 
 	@Override
 	public void clearMemory(int suggestedmemorytreshold) {
-		storage.clearMemory(suggestedmemorytreshold);
-		server.clearMemory(suggestedmemorytreshold);
+		if (storage != null)
+			storage.clearMemory(suggestedmemorytreshold);
+		if (service != null)
+			server.clearMemory(suggestedmemorytreshold);
 	}
 
 	public synchronized Binary getOrDownload(MID fsid) {
