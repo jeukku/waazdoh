@@ -98,7 +98,7 @@ public class CommandLine {
 			try {
 				int index = 0;
 				List<MID> songs = client.searchSongs("song", index, 1000);
-				if (false && songs.size() > 0) {
+				if (songs.size() > 0) {
 					index += songs.size();
 					for (MID mid : songs) {
 						log.info("addownload? " + mid);
