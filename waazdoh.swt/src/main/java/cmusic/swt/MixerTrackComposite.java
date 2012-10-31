@@ -51,7 +51,7 @@ public class MixerTrackComposite extends Composite {
 				false, 1, 1);
 		gd_ltrackname.widthHint = 135;
 		ltrackname.setLayoutData(gd_ltrackname);
-		ltrackname.setText(eTrack.getName());
+		ltrackname.setText("" + eTrack.getName());
 		ltrackname.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent arg0) {
@@ -131,7 +131,7 @@ public class MixerTrackComposite extends Composite {
 				.getColor(SWT.COLOR_WIDGET_DARK_SHADOW));
 		canvas.setOutput(track);
 		canvas.setZoom(s.getZoom());
-		
+
 		app.addListener(new AppListenerAdapter() {
 			@Override
 			public void recordingTrackChanged(Track changedtrack) {

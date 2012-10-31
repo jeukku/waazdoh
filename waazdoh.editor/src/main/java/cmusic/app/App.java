@@ -82,6 +82,11 @@ public class App {
 						}
 
 						@Override
+						public void songLoaded(Song song) {
+							clientSongLoaded(song);
+						}
+
+						@Override
 						public void loggedIn() {
 							clientLoggedIn();
 						}
@@ -115,10 +120,11 @@ public class App {
 		client.newSong(); // TODO remove
 	}
 
+	private void clientSongLoaded(Song song) {
+		selectSong(new ESong(song));
+	}
+
 	private void clientNewSong(Song s) {
-		// TODO remove
-		s.addTrackGroup();
-		//
 		selectSong(new ESong(s));
 	}
 
@@ -142,9 +148,14 @@ public class App {
 	public void songChanged(ESong s) {
 		setCurrentSong(s);
 		//
-		for (AppListener listener : listeners) {
+		LinkedList<AppListener> ls = getListeners();
+		for (AppListener listener : ls) {
 			listener.songChanged(s);
 		}
+	}
+
+	private LinkedList<AppListener> getListeners() {
+		return new LinkedList<AppListener>(listeners);
 	}
 
 	public void addListener(AppListener songsListener) {

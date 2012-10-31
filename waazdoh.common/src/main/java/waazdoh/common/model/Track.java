@@ -61,7 +61,7 @@ public class Track {
 
 	private synchronized boolean parseBean(JBean btrack) {
 		if (btrack.get("object") != null) {
-			btrack = btrack.get("object").get("track");
+			btrack = btrack.get("object").get("track");	
 		}
 
 		comment = btrack.getAttribute("comment");

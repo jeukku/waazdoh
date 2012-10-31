@@ -118,6 +118,11 @@ public class SWTApp {
 			}
 
 			@Override
+			public void songLoaded(Song song) {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
 			public void loggedIn() {
 				clientLoggedIn();
 			}

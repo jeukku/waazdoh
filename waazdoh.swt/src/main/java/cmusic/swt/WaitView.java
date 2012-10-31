@@ -61,6 +61,12 @@ public class WaitView extends Composite {
 						}
 
 						@Override
+						public void songLoaded(Song song) {
+							// TODO Auto-generated method stub
+
+						}
+
+						@Override
 						public void loggedIn() {
 							// TODO Auto-generated method stub
 

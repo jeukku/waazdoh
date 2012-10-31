@@ -255,6 +255,12 @@ public class MClient implements ReportingService, MEnvironment {
 				song = null;
 			}
 		}
+		
+		Set<ClientListener> ls = listeners;
+		for (ClientListener clientListener : ls) {
+			clientListener.songLoaded(song);
+		}
+		
 		return song;
 	}
 
