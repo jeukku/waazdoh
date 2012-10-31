@@ -45,7 +45,10 @@ public class AppLauncher {
 			e.printStackTrace();
 			String message = "" +e;
 			String title = "failed to start";
+			MLogger.getLogger(e).error(e);
+			MLogger.getLogger(e).error(message);
 			ErrorDialog.openError(null, title, message, new Status(IStatus.ERROR, title, message ));
+			System.exit(1);
 		}
 	}
 }
