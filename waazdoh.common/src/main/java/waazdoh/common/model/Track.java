@@ -190,6 +190,7 @@ public class Track {
 		bt.addAttribute("created", created);
 		bt.addAttribute("modified", modifytime);
 		bt.addAttribute("muted", muted);
+		bt.addAttribute("name", name);
 		bt.addAttribute("version", version);
 		bt.addAttribute("creator", creatorid.toString());
 
