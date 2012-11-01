@@ -27,7 +27,6 @@ public class TCPNode {
 
 	private Channel channel;
 	private MLogger log = MLogger.getLogger(this);
-	private ClientBootstrap bootstrap;
 	private long created = System.currentTimeMillis();
 
 	private MTimedFlag connectionwaiter;
@@ -41,6 +40,8 @@ public class TCPNode {
 	private long lastmessage = System.currentTimeMillis();
 
 	private boolean closed;
+
+	public final static NodeConnectionFactory connectionfactory = new NodeConnectionFactory();
 
 	public TCPNode(MHost host2, int port2, Node node) {
 		this.host = host2;
@@ -86,10 +87,8 @@ public class TCPNode {
 				&& (connectionwaiter == null || connectionwaiter.isTriggered())) {
 			log.debug("creating connection " + this + " trigger "
 					+ connectionwaiter);
-			ClientBootstrap bs = getBootstrap();
-			ChannelFuture future = bs.connect(new InetSocketAddress(host
-					.toString(), port));
-			future.awaitUninterruptibly(200);
+			channel = TCPNode.connectionfactory.connect(this, host, port);
+
 			connectionwaiter = new MTimedFlag(10000);
 		}
 	}
@@ -100,102 +99,8 @@ public class TCPNode {
 				+ (System.currentTimeMillis() - lastmessage) + "]";
 	}
 
-	public synchronized ClientBootstrap getBootstrap() {
-		if (bootstrap == null) {
-			NioClientSocketChannelFactory factory = new NioClientSocketChannelFactory(
-					Executors.newCachedThreadPool(),
-					Executors.newCachedThreadPool());
-			bootstrap = new ClientBootstrap(factory);
-			bootstrap.setPipelineFactory(new NodePipelineFactory());
-		}
-		return bootstrap;
-	}
-
-	private class NodeHandler extends SimpleChannelHandler {
-		@Override
-		public void channelConnected(ChannelHandlerContext ctx,
-				ChannelStateEvent e) throws Exception {
-			if (channel != null) {
-				log.info("channel already exists... should close " + channel);
-			}
-			//
-			channel = e.getChannel();
-			if (!closed) {
-				log.info("channel connected " + channel);
-				//
-				sendMessages(node.getMessages());
-			} else {
-				channel.close();
-			}
-		}
-
-		@Override
-		public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
-				throws Exception {
-			super.channelClosed(ctx, e);
-			log.info("channel closed " + e);
-			channel = null;
-			if (shouldGiveUp()) {
-				offline = true;
-			}
-			trigger();
-		}
-
-		@Override
-		public void channelDisconnected(ChannelHandlerContext ctx,
-				ChannelStateEvent e) throws Exception {
-			super.channelDisconnected(ctx, e);
-			log.info("channel disconnected " + e);
-			channel = null;
-			trigger();
-		}
-
-		@Override
-		public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
-				throws Exception {
-			if (!(e.getCause() instanceof ConnectException)) {
-				log.info("Exception with " + host + ":" + port + " e:" + e);
-				log.error(e.getCause());
-			} else {
-				log.debug("Connection failed " + ctx);
-			}
-			close();
-			channel = null;
-			trigger();
-		}
-
-		public void trigger() {
-			if (connectionwaiter != null) {
-				connectionwaiter.trigger();
-			}
-		}
-
-		@Override
-		public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
-				throws Exception {
-			log.info("TCPNode messageReceived " + e);
-			touch();
-			//
-			List<MMessage> messages = (List<MMessage>) e.getMessage();
-			List<MMessage> response = node.incomingMessages(messages);
-			sendMessages(response);
-		}
-
-	}
-
 	private void touch() {
 		lastmessage = System.currentTimeMillis();
-	}
-
-	private class NodePipelineFactory implements ChannelPipelineFactory {
-		@Override
-		public ChannelPipeline getPipeline() throws Exception {
-			ChannelPipeline pipeline = Channels.pipeline();
-			pipeline.addLast("zipencoder", new ZipEncoder());
-			pipeline.addLast("zipdecoder", new ZipDecoder());
-			pipeline.addLast("channels", new NodeHandler());
-			return pipeline;
-		}
 	}
 
 	public synchronized void close() {
@@ -242,4 +147,53 @@ public class TCPNode {
 		}
 	}
 
+	public void channelConnected() {
+		if (!closed) {
+			log.info("channel connected " + channel);
+			//
+			sendMessages(node.getMessages());
+		} else {
+			channel.close();
+		}
+	}
+
+	public void channelClosed() {
+		if (shouldGiveUp()) {
+			offline = true;
+		}
+
+		trigger();
+	}
+
+	public void trigger() {
+		if (connectionwaiter != null) {
+			connectionwaiter.trigger();
+		}
+	}
+
+	public void channelDisconnected() {
+		channel = null;
+		trigger();
+	}
+
+	public void channelException(ChannelHandlerContext ctx, ExceptionEvent e) {
+		if (!(e.getCause() instanceof ConnectException)) {
+			log.info("Exception with " + host + ":" + port + " e:" + e);
+			log.error(e.getCause());
+		} else {
+			log.debug("Connection failed " + ctx);
+		}
+		close();
+		channel = null;
+		trigger();
+	}
+
+	public void messageReceived(MessageEvent e) {
+		touch();
+		//
+		List<MMessage> messages = (List<MMessage>) e.getMessage();
+		List<MMessage> response = node.incomingMessages(messages);
+		sendMessages(response);
+
+	}
 }
