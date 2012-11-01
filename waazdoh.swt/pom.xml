@@ -33,7 +33,7 @@
 				<executions>
 					<execution>
 						<id>l4j-clui</id>
-						<phase>deploy</phase>
+						<phase>install</phase>
 						<goals>
 							<goal>launch4j</goal>
 						</goals>
