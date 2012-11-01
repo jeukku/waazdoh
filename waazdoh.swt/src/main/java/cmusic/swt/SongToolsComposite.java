@@ -36,13 +36,21 @@ public class SongToolsComposite extends Composite {
 	public SongToolsComposite(App napp, Composite parent, int style) {
 		super(parent, style);
 		this.app = napp;
-		GridLayout gridLayout = new GridLayout(11, false);
-		gridLayout.horizontalSpacing = 2;
+		GridLayout gridLayout = new GridLayout(10, false);
+		gridLayout.marginWidth = 1;
+		gridLayout.verticalSpacing = 0;
+		gridLayout.horizontalSpacing = 0;
 		gridLayout.marginHeight = 1;
 		setLayout(gridLayout);
 		Composite composite_1 = new Composite(this, SWT.NONE);
-		composite_1.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 4, 1));
-		composite_1.setLayout(new RowLayout(SWT.HORIZONTAL));
+		composite_1.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, true, 4, 1));
+		RowLayout rl_composite_1 = new RowLayout(SWT.HORIZONTAL);
+		rl_composite_1.spacing = 0;
+		rl_composite_1.marginTop = 0;
+		rl_composite_1.marginRight = 0;
+		rl_composite_1.marginLeft = 0;
+		rl_composite_1.marginBottom = 0;
+		composite_1.setLayout(rl_composite_1);
 		Button bplay = new Button(composite_1, SWT.NONE);
 		bplay.setText("play");
 		bplay.addSelectionListener(new SelectionAdapter() {
@@ -84,21 +92,23 @@ public class SongToolsComposite extends Composite {
 
 		Composite clevels = new Composite(this, SWT.BORDER);
 		GridData gd_clevels = new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1);
-		gd_clevels.heightHint = 30;
+		gd_clevels.heightHint = 28;
 		gd_clevels.widthHint = 63;
 		clevels.setLayoutData(gd_clevels);
 		clevels.setLayout(new SplitLayout(clevels));
 		outputLevelMeter = new AudioLevelMeter(clevels, SWT.NONE);
 		inputLevelMeter = new AudioLevelMeter(clevels, SWT.NONE);
 		ltime = new Label(this, SWT.BORDER | SWT.CENTER);
-		ltime.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+		GridData gd_ltime = new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1);
+		gd_ltime.heightHint = 33;
+		ltime.setLayoutData(gd_ltime);
 		ltime.setAlignment(SWT.CENTER);
-		ltime.setFont(SWTResourceManager.getFont("Ubuntu", 24, SWT.NORMAL));
+		ltime.setFont(SWTResourceManager.getFont("Meiryo", 16, SWT.NORMAL));
 		ltime.setText("00:00:0000");
 		
 		laudiostate = new Label(this, SWT.BORDER | SWT.WRAP);
 		GridData gd_laudiostate = new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1);
-		gd_laudiostate.heightHint = 36;
+		gd_laudiostate.heightHint = 30;
 		gd_laudiostate.widthHint = 84;
 		laudiostate.setLayoutData(gd_laudiostate);
 		
@@ -118,9 +128,17 @@ public class SongToolsComposite extends Composite {
 				spinner.setMaximum(100000);
 				spinner.setMinimum(1);
 				spinner.setSelection(100);
-		new Label(this, SWT.NONE);
-		Button bpublish = new Button(this, SWT.NONE);
-		bpublish.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+		
+		Composite actionscomposite = new Composite(this, SWT.NONE);
+		RowLayout rl_actionscomposite = new RowLayout(SWT.HORIZONTAL);
+		rl_actionscomposite.marginBottom = 0;
+		rl_actionscomposite.spacing = 0;
+		rl_actionscomposite.marginLeft = 0;
+		rl_actionscomposite.marginRight = 0;
+		rl_actionscomposite.marginTop = 0;
+		actionscomposite.setLayout(rl_actionscomposite);
+		actionscomposite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
+		Button bpublish = new Button(actionscomposite, SWT.RIGHT);
 		bpublish.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {

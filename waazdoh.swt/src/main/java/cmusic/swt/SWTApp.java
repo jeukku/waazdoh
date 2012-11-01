@@ -153,16 +153,22 @@ public class SWTApp {
 	 */
 	protected void createContents() {
 		shell = new Shell();
+		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		shell.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
 				System.exit(0); // TODO didn't close on bluetile otherwise :(
 			}
 		});
 		//
-		shell.setSize(450, 300);
+		shell.setSize(672, 198);
 		shell.setMaximized(true);
 		shell.setText("Waazdoh");
-		shell.setLayout(new GridLayout(1, false));
+		GridLayout gl_shell = new GridLayout(1, false);
+		gl_shell.verticalSpacing = 1;
+		gl_shell.marginWidth = 1;
+		gl_shell.marginHeight = 1;
+		gl_shell.horizontalSpacing = 1;
+		shell.setLayout(gl_shell);
 
 		cstack = new Composite(shell, SWT.NONE);
 		cstack.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));

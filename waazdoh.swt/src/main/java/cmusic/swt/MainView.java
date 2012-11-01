@@ -9,11 +9,13 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 
 import cmusic.app.App;
 import cmusic.app.ESong;
+import org.eclipse.swt.layout.GridData;
 
 public class MainView extends Composite {
 	private App app;
@@ -24,13 +26,54 @@ public class MainView extends Composite {
 	public MainView(App app, Composite parent, int style) {
 		super(parent, style);
 		this.app = app;
-		setLayout(new TitleLayout());
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.horizontalSpacing = 1;
+		gridLayout.marginHeight = 1;
+		gridLayout.verticalSpacing = 1;
+		gridLayout.marginWidth = 1;
+		setLayout(gridLayout);
 		//
 		songtools = new SongToolsComposite(app, this, SWT.NONE);
-		//
+		GridData gd_songtools = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+		gd_songtools.heightHint = 25;
+		songtools.setLayoutData(gd_songtools);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		new Label(songtools, SWT.NONE);
+		
 		songTabs = new CTabFolder(this, SWT.BORDER);
-		songTabs.setSelectionBackground(Display.getCurrent().getSystemColor(
-				SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+		songTabs.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		songTabs.setMaximized(true);
 		//
 		if (app != null) {
 			app.addListener(new AppListenerAdapter() {
