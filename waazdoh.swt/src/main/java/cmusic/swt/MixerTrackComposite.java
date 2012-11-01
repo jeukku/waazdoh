@@ -37,13 +37,26 @@ public class MixerTrackComposite extends Composite {
 		super(parent, SWT.BORDER);
 		this.track = eTrack;
 		this.song = s;
-		setLayout(new GridLayout(2, false));
+		GridLayout gridLayout = new GridLayout(2, false);
+		gridLayout.marginHeight = 0;
+		gridLayout.verticalSpacing = 0;
+		gridLayout.marginWidth = 0;
+		gridLayout.horizontalSpacing = 0;
+		setLayout(gridLayout);
 
 		Composite composite = new Composite(this, SWT.NONE);
+		GridData gd_composite = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_composite.heightHint = 59;
+		composite.setLayoutData(gd_composite);
 		composite.setLayout(new RowLayout(SWT.VERTICAL));
 
 		Composite top = new Composite(composite, SWT.NONE);
-		top.setLayout(new GridLayout(2, false));
+		GridLayout gl_top = new GridLayout(2, false);
+		gl_top.verticalSpacing = 0;
+		gl_top.marginWidth = 0;
+		gl_top.horizontalSpacing = 0;
+		gl_top.marginHeight = 0;
+		top.setLayout(gl_top);
 
 		//
 		final Text ltrackname = new Text(top, SWT.NONE);
@@ -60,7 +73,12 @@ public class MixerTrackComposite extends Composite {
 		});
 
 		Composite cbuttons = new Composite(top, SWT.NONE);
-		cbuttons.setLayout(new RowLayout(SWT.HORIZONTAL));
+		RowLayout rl_cbuttons = new RowLayout(SWT.HORIZONTAL);
+		rl_cbuttons.marginRight = 0;
+		rl_cbuttons.marginTop = 0;
+		rl_cbuttons.marginLeft = 0;
+		rl_cbuttons.marginBottom = 0;
+		cbuttons.setLayout(rl_cbuttons);
 		final Button brecord = new Button(cbuttons, SWT.TOGGLE);
 
 		brecord.addSelectionListener(new SelectionAdapter() {
@@ -97,12 +115,17 @@ public class MixerTrackComposite extends Composite {
 		bimport.setText("Import");
 		//
 		Composite bottom = new Composite(composite, SWT.NONE);
-		bottom.setLayoutData(new RowData(205, 29));
-		bottom.setLayout(new GridLayout(2, false));
+		bottom.setLayoutData(new RowData(205, 25));
+		GridLayout gl_bottom = new GridLayout(2, false);
+		gl_bottom.verticalSpacing = 0;
+		gl_bottom.marginWidth = 0;
+		gl_bottom.marginHeight = 0;
+		gl_bottom.horizontalSpacing = 0;
+		bottom.setLayout(gl_bottom);
 
 		final Spinner svolume = new Spinner(bottom, SWT.NONE);
 		svolume.setDigits(2);
-		GridData gd_svolume = new GridData(SWT.LEFT, SWT.FILL, false, false, 1,
+		GridData gd_svolume = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1,
 				1);
 		gd_svolume.heightHint = 22;
 		svolume.setLayoutData(gd_svolume);
@@ -126,7 +149,9 @@ public class MixerTrackComposite extends Composite {
 		 */
 
 		canvas = new AudioCanvas(this, SWT.BORDER);
-		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		GridData gd_canvas = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+		gd_canvas.heightHint = 59;
+		canvas.setLayoutData(gd_canvas);
 		canvas.setBackground(SWTResourceManager
 				.getColor(SWT.COLOR_WIDGET_DARK_SHADOW));
 		canvas.setOutput(track);

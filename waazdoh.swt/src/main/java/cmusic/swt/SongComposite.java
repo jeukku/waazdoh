@@ -66,8 +66,7 @@ public class SongComposite extends Composite implements ESongListener {
 			}
 		});
 		bnewtg.setText("New Trackgroup");
-		scrolledComposite = new ScrolledComposite(this, SWT.BORDER
-				| SWT.H_SCROLL | SWT.V_SCROLL);
+		scrolledComposite = new ScrolledComposite(this, SWT.BORDER | SWT.V_SCROLL);
 		scrolledComposite.setExpandHorizontal(true);
 		scrolledComposite.setExpandVertical(true);
 
@@ -77,7 +76,7 @@ public class SongComposite extends Composite implements ESongListener {
 //		test.setText("TEST");
 
 		RowFillLayout trackgroupslayout = new RowFillLayout();
-		trackgroupslayout.setWidthComposite(scrolledComposite);
+		trackgroupslayout.setWidthComposite(this);
 		trackgroups.setLayout(trackgroupslayout);
 
 		scrolledComposite.setContent(trackgroups);
