@@ -3,9 +3,9 @@ package waazdoh.common.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.cutils.MID;
-import org.cutils.MLogger;
-import org.utils.xml.JBean;
+import waazdoh.cutils.MID;
+import waazdoh.cutils.MLogger;
+import waazdoh.cutils.xml.JBean;
 
 public class StaticObjectFactory implements MObjectFactory {
 	private Map<MID, MWave> waves = new HashMap<MID, MWave>();

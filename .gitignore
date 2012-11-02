@@ -20,7 +20,7 @@ tmp
 .cache
 .old
 .dat
-.exe
+*.exe
 *.sqlite
 cmusic.web/static/js/cmusic.js
 cmusic.web/webapp/js/cmusic.js

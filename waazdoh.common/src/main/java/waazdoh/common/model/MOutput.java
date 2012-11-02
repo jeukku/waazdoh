@@ -12,7 +12,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
-import org.cutils.MLogger;
+import waazdoh.cutils.MLogger;
 
 public class MOutput {
 	private List<WaveList> channels;

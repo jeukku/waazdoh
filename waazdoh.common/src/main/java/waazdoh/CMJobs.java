@@ -3,7 +3,7 @@ package waazdoh;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.cutils.MLogger;
+import waazdoh.cutils.MLogger;
 
 public class CMJobs {
 	private static final int MAX_UNNEEDED = 2;

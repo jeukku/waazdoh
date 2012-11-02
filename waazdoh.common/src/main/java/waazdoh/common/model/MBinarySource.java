@@ -2,9 +2,8 @@ package waazdoh.common.model;
 
 import java.io.File;
 
-import org.cutils.JBeanResponse;
-import org.cutils.MID;
-
+import waazdoh.cutils.JBeanResponse;
+import waazdoh.cutils.MID;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
 

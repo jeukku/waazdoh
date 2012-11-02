@@ -1,6 +1,6 @@
 package waazdoh.service;
 
-import org.cutils.MID;
+import waazdoh.cutils.MID;
 
 public interface ReportingService {
 

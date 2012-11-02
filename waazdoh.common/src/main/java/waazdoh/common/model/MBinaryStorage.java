@@ -14,11 +14,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.cutils.MCRC;
-import org.cutils.MID;
-import org.cutils.MLogger;
-import org.cutils.MPreferences;
-
+import waazdoh.cutils.MCRC;
+import waazdoh.cutils.MID;
+import waazdoh.cutils.MLogger;
+import waazdoh.cutils.MPreferences;
 import waazdoh.service.CMService;
 
 

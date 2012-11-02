@@ -27,20 +27,63 @@
 			</plugin>
 
 			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2.2</version>
+
+				<executions>
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
+						<phase>package</phase> <!-- bind to the packaging phase -->
+						<goals>
+							<goal>single</goal>
+						</goals>
+
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>waazdoh.swt.AppLauncher</mainClass>
+								</manifest>
+							</archive>
+							<outputDirectory>
+								target/waazdoh-app-${app.arch}-distribution/bin/
+							</outputDirectory>
+							<descriptors>
+								<descriptor>src/assemble/jar.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>make-package</id> <!-- this is used for inheritance merges -->
+						<phase>install</phase> <!-- bind to the packaging phase -->
+						<goals>
+							<goal>single</goal>
+						</goals>
+
+						<configuration>
+							<descriptors>
+								<descriptor>src/assemble/distribution.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
 				<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
 				<artifactId>launch4j-plugin</artifactId>
 				<version>1.5.0.0</version>
 				<executions>
 					<execution>
 						<id>l4j-clui</id>
-						<phase>install</phase>
+						<phase>package</phase>
 						<goals>
 							<goal>launch4j</goal>
 						</goals>
 						<configuration>	
-							<headerType>console</headerType>
-							<outfile>target/waazdoh-app-distribution/bin/waazdoh.exe</outfile>
-							<jar>target/waazdoh-app-distribution/bin/waazdoh-app-jar-with-dependencies.jar</jar>
+							<headerType>gui</headerType>
+							<outfile>src/main/app/bin/waazdoh.exe</outfile>
+							<jar>target/waazdoh-app-${app.arch}-distribution/bin/waazdoh-app-${app.arch}-with-dep.jar</jar>
 							<errTitle>Waazdoh</errTitle>
 							<classPath>
 								<mainClass>waazdoh.swt.AppLauncher</mainClass>
@@ -67,50 +110,9 @@
 					</execution>
 				</executions>
 			</plugin>
-
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2.2</version>
-
-				<executions>
-					<execution>
-						<id>make-package</id> <!-- this is used for inheritance merges -->
-						<phase>package</phase> <!-- bind to the packaging phase -->
-						<goals>
-							<goal>single</goal>
-						</goals>
-
-						<configuration>
-							<descriptors>
-								<descriptor>src/assemble/distribution.xml</descriptor>
-							</descriptors>
-						</configuration>
-					</execution>
-				
-					<execution>
-						<id>make-assembly</id> <!-- this is used for inheritance merges -->
-						<phase>package</phase> <!-- bind to the packaging phase -->
-						<goals>
-							<goal>single</goal>
-						</goals>
-
-						<configuration>
-							<archive>
-								<manifest>
-									<mainClass>waazdoh.swt.AppLauncher</mainClass>
-								</manifest>
-							</archive>
-							<descriptors>
-								<descriptor>src/assemble/jar.xml</descriptor>
-							</descriptors>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
 		</plugins>
 		<!-- Name of the generated WAR file -->
-		<finalName>waazdoh-app</finalName>
+		<finalName>waazdoh-app-${app.arch}</finalName>
 	</build>
 
 	<dependencies>
@@ -124,7 +126,7 @@
 		<dependency>
 			<groupId>waazdoh</groupId>
 			<artifactId>waazdoh.common</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
+			<version>1.0.3-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -136,25 +138,25 @@
 		<dependency>
 			<groupId>waazdoh</groupId>
 			<artifactId>waazdoh.client</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
+			<version>1.0.3-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>waazdoh</groupId>
 			<artifactId>waazdoh.editor</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
+			<version>1.0.3-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>waazdoh</groupId>
 			<artifactId>waazdoh.cutils</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
+			<version>1.0.3-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>waazdoh</groupId>
 			<artifactId>waazdoh.cp2p</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
+			<version>1.0.3-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -190,6 +192,7 @@
 			<properties>
 				<swt.groupId>org.eclipse.swt.carbon</swt.groupId>
 				<swt.artifactId>macosx</swt.artifactId>
+				<app.arch>osx</app.arch>
 			</properties>
 		</profile>
 		<profile>
@@ -203,6 +206,7 @@
 			<properties>
 				<swt.groupId>org.eclipse.swt</swt.groupId>
 				<swt.artifactId>org.eclipse.swt.win32.win32.x86_64</swt.artifactId>
+				<app.arch>windows_64</app.arch>
 			</properties>
 		</profile>
 		<profile>
@@ -216,6 +220,7 @@
 			<properties>
 				<swt.groupId>org.eclipse.swt</swt.groupId>
 				<swt.artifactId>org.eclipse.swt.win32.win32.x86</swt.artifactId>
+				<app.arch>windows_32</app.arch>
 			</properties>
 		</profile>
 		<profile>
@@ -229,6 +234,7 @@
 			<properties>
 				<swt.groupId>org.eclipse.swt</swt.groupId>
 				<swt.artifactId>org.eclipse.swt.gtk.linux.x86_64</swt.artifactId>
+				<app.arch>linux_64</app.arch>
 			</properties>
 		</profile>
 		<profile>
@@ -242,6 +248,7 @@
 			<properties>
 				<swt.groupId>org.eclipse.swt</swt.groupId>
 				<swt.artifactId>org.eclipse.swt.gtk.linux.x86</swt.artifactId>
+				<app.arch>linux_32</app.arch>
 			</properties>
 		</profile>
 	</profiles>

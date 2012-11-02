@@ -9,15 +9,15 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import org.cutils.MCRC;
-import org.cutils.MID;
-import org.cutils.MLogger;
 import org.kc7bfi.jflac.sound.spi.FlacAudioFileReader;
 import org.kc7bfi.jflac.sound.spi.FlacFormatConversionProvider;
-import org.utils.xml.JBean;
 
-import waazdoh.CMusic;
 import waazdoh.MJob;
+import waazdoh.WaazdohInfo;
+import waazdoh.cutils.MCRC;
+import waazdoh.cutils.MID;
+import waazdoh.cutils.MLogger;
+import waazdoh.cutils.xml.JBean;
 
 
 public class MWave {
@@ -34,7 +34,7 @@ public class MWave {
 
 	private boolean saved;
 
-	private String version = CMusic.version;
+	private String version = WaazdohInfo.version;
 
 	private long lastusedtime;
 	private MID id;
@@ -50,14 +50,14 @@ public class MWave {
 		//
 		this.env = env;
 		//
-		samplespersecond = CMusic.DEFAULT_SAMPLERATE;
+		samplespersecond = WaazdohInfo.DEFAULT_SAMPLERATE;
 
 		used();
 	}
 
 	MWave(JBean b, final MEnvironment env) {
 		this.env = env;
-		samplespersecond = CMusic.DEFAULT_SAMPLERATE;
+		samplespersecond = WaazdohInfo.DEFAULT_SAMPLERATE;
 		//
 		parseBean(b);
 		saved = true;
@@ -247,7 +247,7 @@ public class MWave {
 			if (ab < 0) {
 				ab = -ab;
 			}
-			if (ab > CMusic.MAX_RESOLUTION) {
+			if (ab > WaazdohInfo.MAX_RESOLUTION) {
 				log.info("ODBG comparing waves ab: " + ab);
 				return false;
 			}

@@ -1,6 +1,6 @@
 package waazdoh.common.model;
 
-import org.utils.xml.JBean;
+import waazdoh.cutils.xml.JBean;
 
 public interface MObjectFactory {
 

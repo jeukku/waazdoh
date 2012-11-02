@@ -2,20 +2,18 @@ package waazdoh.common.model;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.cutils.JBeanResponse;
-import org.cutils.MID;
-import org.cutils.MLogger;
-import org.cutils.UserID;
-import org.utils.xml.JBean;
-import org.utils.xml.XML;
-
-import waazdoh.CMusic;
+import waazdoh.WaazdohInfo;
+import waazdoh.cutils.JBeanResponse;
+import waazdoh.cutils.MID;
+import waazdoh.cutils.MLogger;
+import waazdoh.cutils.UserID;
+import waazdoh.cutils.xml.JBean;
+import waazdoh.cutils.xml.XML;
 import waazdoh.emodel.ETrack;
 
 public class Song {
@@ -36,7 +34,7 @@ public class Song {
 	public Song(MEnvironment env) {
 		this.creatorid = env.getUserID();
 		id = new MID();
-		version = CMusic.version;
+		version = WaazdohInfo.version;
 		this.env = env;
 	}
 

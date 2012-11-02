@@ -4,14 +4,13 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.cutils.JBeanResponse;
-import org.cutils.MCRC;
-import org.cutils.MID;
-import org.cutils.MLogger;
-import org.cutils.UserID;
-import org.utils.xml.JBean;
-
-import waazdoh.CMusic;
+import waazdoh.WaazdohInfo;
+import waazdoh.cutils.JBeanResponse;
+import waazdoh.cutils.MCRC;
+import waazdoh.cutils.MID;
+import waazdoh.cutils.MLogger;
+import waazdoh.cutils.UserID;
+import waazdoh.cutils.xml.JBean;
 import waazdoh.emodel.ETrack;
 
 
@@ -34,7 +33,7 @@ public class Track {
 	private MEnvironment env;
 
 	private JBean storedbean = new JBean("temp");
-	private float framerate = CMusic.DEFAULT_SAMPLERATE;
+	private float framerate = WaazdohInfo.DEFAULT_SAMPLERATE;
 
 	private List<TrackListener> listeners = new LinkedList<TrackListener>();
 	private MID copyof;
@@ -44,7 +43,7 @@ public class Track {
 		waves = new WaveList(env);
 		this.creatorid = creatorid;
 
-		this.version = CMusic.version;
+		this.version = WaazdohInfo.version;
 		this.created = System.currentTimeMillis();
 		this.comment = "Created at " + new Date();
 	}
@@ -284,7 +283,7 @@ public class Track {
 			if (ab < 0) {
 				ab = -ab;
 			}
-			if (ab > CMusic.MAX_RESOLUTION) {
+			if (ab > WaazdohInfo.MAX_RESOLUTION) {
 				log.info("ODBG comparing waves ab: " + ab);
 				return false;
 			}
@@ -293,7 +292,7 @@ public class Track {
 	}
 
 	public int getSamplesPerSecond() {
-		return CMusic.DEFAULT_SAMPLERATE;
+		return WaazdohInfo.DEFAULT_SAMPLERATE;
 	}
 
 	public MCRC getCRC() {

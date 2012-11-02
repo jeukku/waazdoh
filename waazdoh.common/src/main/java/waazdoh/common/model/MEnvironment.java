@@ -1,8 +1,7 @@
 package waazdoh.common.model;
 
-import org.cutils.UserID;
-
 import waazdoh.CMJobs;
+import waazdoh.cutils.UserID;
 import waazdoh.service.CMService;
 
 

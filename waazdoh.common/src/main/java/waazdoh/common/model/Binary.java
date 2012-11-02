@@ -8,14 +8,13 @@ import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.cutils.JBeanResponse;
-import org.cutils.MCRC;
-import org.cutils.MID;
-import org.cutils.MLogger;
-import org.cutils.UserID;
-import org.utils.xml.JBean;
-
-import waazdoh.CMusic;
+import waazdoh.WaazdohInfo;
+import waazdoh.cutils.JBeanResponse;
+import waazdoh.cutils.MCRC;
+import waazdoh.cutils.MID;
+import waazdoh.cutils.MLogger;
+import waazdoh.cutils.UserID;
+import waazdoh.cutils.xml.JBean;
 import waazdoh.service.CMService;
 
 
@@ -49,7 +48,7 @@ public class Binary {
 		if (service != null) {
 			this.creatorid = service.getUserID();
 		}
-		version = CMusic.version;
+		version = WaazdohInfo.version;
 		this.comment = comment;
 
 		used();

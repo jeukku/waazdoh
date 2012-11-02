@@ -1,6 +1,6 @@
 package waazdoh.common.model;
 
-import org.cutils.MLogger;
+import waazdoh.cutils.MLogger;
 
 public class FloatArray {
 	private float fs[] = new float[10000];

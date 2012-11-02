@@ -1,13 +1,12 @@
 package waazdoh.service;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.cutils.JBeanResponse;
-import org.cutils.MID;
-import org.cutils.MURL;
-import org.cutils.UserID;
-import org.utils.xml.JBean;
+import waazdoh.cutils.JBeanResponse;
+import waazdoh.cutils.MID;
+import waazdoh.cutils.MURL;
+import waazdoh.cutils.UserID;
+import waazdoh.cutils.xml.JBean;
 
 public interface CMService {
 	boolean setSession(String username, String session);

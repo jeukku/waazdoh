@@ -4,7 +4,7 @@
 
 	<target name="swtt.check.uptodate">
 		<uptodate property="swtt.notrequired" targetfile="target/build.trig">
-			<srcfiles dir="src/" />
+			<srcfiles dir="src/" excludes="**/*.exe" />
 			<srcfiles dir="./" includes="*.xml" excludes="target" />
 			<srcfiles dir="./" includes="*.trig" excludes="target" />
 		</uptodate>
@@ -15,7 +15,7 @@
 		<!-- 		<exec -->
 		<!-- 			command="${mvn} package" -->
 		<!-- 			failonerror="true" /> -->
-		<exec command="${mvn} package" failonerror="true" />
+		<exec command="${mvn} install" failonerror="true" />
 	</target>
 
 	<target name="build" depends="swtt.check.uptodate, waazdohswtt_dobuild">

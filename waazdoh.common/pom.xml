@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>waazdoh.common</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.3-SNAPSHOT</version>
 	<name>waazdoh.common</name>
 	<url>http://maven.apache.org</url>
 	<groupId>waazdoh</groupId>
@@ -78,13 +78,13 @@
 		<dependency>
 			<groupId>waazdoh</groupId>
 			<artifactId>waazdoh.cutils</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
+			<version>1.0.3-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>waazdoh</groupId>
 			<artifactId>waazdoh.audio</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
+			<version>1.0.3-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>

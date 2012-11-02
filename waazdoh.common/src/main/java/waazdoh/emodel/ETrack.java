@@ -13,12 +13,11 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import org.cutils.MLogger;
-
-import waazdoh.CMusic;
+import waazdoh.WaazdohInfo;
 import waazdoh.common.model.MEnvironment;
 import waazdoh.common.model.MWave;
 import waazdoh.common.model.WaveList;
+import waazdoh.cutils.MLogger;
 
 
 public class ETrack {
@@ -43,7 +42,7 @@ public class ETrack {
 	@Override
 	public String toString() {
 		return "ETrack[l:" + getLength() + "["
-				+ (getLength() / CMusic.DEFAULT_SAMPLERATE) + "]][" + waves
+				+ (getLength() / WaazdohInfo.DEFAULT_SAMPLERATE) + "]][" + waves
 				+ "]";
 
 	}
@@ -70,7 +69,7 @@ public class ETrack {
 
 	public void importFile(String sfile) throws UnsupportedAudioFileException,
 			IOException {
-		AudioFormat targetformat = new AudioFormat(CMusic.DEFAULT_SAMPLERATE,
+		AudioFormat targetformat = new AudioFormat(WaazdohInfo.DEFAULT_SAMPLERATE,
 				16, 1, true, false);
 		AudioInputStream is = AudioSystem.getAudioInputStream(new File(sfile));
 		is = AudioSystem.getAudioInputStream(targetformat, is);

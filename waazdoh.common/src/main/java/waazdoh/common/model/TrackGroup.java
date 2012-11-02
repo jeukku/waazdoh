@@ -3,13 +3,12 @@ package waazdoh.common.model;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.cutils.JBeanResponse;
-import org.cutils.MID;
-import org.cutils.MLogger;
-import org.cutils.UserID;
-import org.utils.xml.JBean;
-
-import waazdoh.CMusic;
+import waazdoh.WaazdohInfo;
+import waazdoh.cutils.JBeanResponse;
+import waazdoh.cutils.MID;
+import waazdoh.cutils.MLogger;
+import waazdoh.cutils.UserID;
+import waazdoh.cutils.xml.JBean;
 
 public class TrackGroup {
 	private static final String BEANNAME = "trackgroup";
@@ -35,7 +34,7 @@ public class TrackGroup {
 	public TrackGroup(UserID user, MEnvironment env) {
 		this.env = env;
 		this.creatorid = user;
-		this.version = CMusic.version;
+		this.version = WaazdohInfo.version;
 		id = new MID();
 		created = System.currentTimeMillis();
 	}
@@ -271,7 +270,7 @@ public class TrackGroup {
 
 			@Override
 			public float getSamplesPerSecond() {
-				return CMusic.DEFAULT_SAMPLERATE;
+				return WaazdohInfo.DEFAULT_SAMPLERATE;
 			}
 
 			@Override

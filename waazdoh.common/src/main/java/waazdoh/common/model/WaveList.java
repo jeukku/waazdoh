@@ -4,17 +4,16 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.cutils.MCRC;
-import org.cutils.MLogger;
-import org.utils.xml.JBean;
-
-import waazdoh.CMusic;
 import waazdoh.MJob;
+import waazdoh.WaazdohInfo;
+import waazdoh.cutils.MCRC;
+import waazdoh.cutils.MLogger;
+import waazdoh.cutils.xml.JBean;
 import waazdoh.emodel.ETrack;
 
 
 public class WaveList {
-	private static final int MAX_WAVE_LENGTH = CMusic.DEFAULT_SAMPLERATE * 10;
+	private static final int MAX_WAVE_LENGTH = WaazdohInfo.DEFAULT_SAMPLERATE * 10;
 
 	private List<MWave> waves = new LinkedList<MWave>();
 	private MLogger log = MLogger.getLogger(this);
@@ -82,7 +81,7 @@ public class WaveList {
 			if (waves.size() > 2) {// TODO
 				log.info("waves " + waves);
 				log.info("returning null at time:" + time + " sec:"
-						+ (time / CMusic.DEFAULT_SAMPLERATE));
+						+ (time / WaazdohInfo.DEFAULT_SAMPLERATE));
 			}
 			return null;
 		}

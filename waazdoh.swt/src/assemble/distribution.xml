@@ -10,7 +10,7 @@
 	</formats>
 	<files>
 		<file>
-			<source>target/waazdoh-app-jar-with-dependencies.jar</source>
+			<source>target/waazdoh-app-windows_32-distribution/bin/waazdoh-app-${app.arch}-with-dep.jar</source>
 			<outputDirectory>/bin/</outputDirectory>
 		</file>
 	</files>	

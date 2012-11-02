@@ -3,9 +3,8 @@ package waazdoh.common.model;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.utils.xml.JBean;
-
-import waazdoh.CMusic;
+import waazdoh.WaazdohInfo;
+import waazdoh.cutils.xml.JBean;
 
 
 public class Curve {
@@ -13,7 +12,7 @@ public class Curve {
 	private String type = TYPE_STATIC;
 	private List<Float> points = new LinkedList<Float>();
 	private float baselevel = 1.0f;
-	private String version = CMusic.version;
+	private String version = WaazdohInfo.version;
 	
 	public Curve() {
 		type = TYPE_STATIC;
