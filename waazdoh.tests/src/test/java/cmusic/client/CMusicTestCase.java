@@ -11,6 +11,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 import waazdoh.client.MClient;
+import waazdoh.client.rest.RestClient;
 import waazdoh.client.test.ServiceMock;
 import waazdoh.client.test.TestPWaveSource;
 import waazdoh.common.model.MBinarySource;
@@ -74,7 +75,7 @@ public class CMusicTestCase extends TestCase {
 		//
 		TestPreferences p = new TestPreferences(email);
 		MBinarySource waveSource = getWaveSource(p, bind);
-		MClient c = new MClient(p, waveSource, getTestService());
+		MClient c = new MClient(p, waveSource, getTestService(p, waveSource));
 		waveSource.setReportingService(c);
 
 		boolean setsession = c.setUsernameAndSession(email, getSession(p));
@@ -99,8 +100,19 @@ public class CMusicTestCase extends TestCase {
 		}
 	}
 
-	private CMService getTestService() {
-		return new ServiceMock();
+	private CMService getTestService(TestPreferences p, MBinarySource source) {
+		String osname = System.getProperty("os.name").toLowerCase();
+		if (osname.indexOf("linux") >= 0) {
+			String url = "http://localhost:8080/cmusic";
+			try {
+				return new RestClient(url, source);
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+				return null;
+			}
+		} else {
+			return new ServiceMock();
+		}
 	}
 
 	private String getSession(TestPreferences p) {
