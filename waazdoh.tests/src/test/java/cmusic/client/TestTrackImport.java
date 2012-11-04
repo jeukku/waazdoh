@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 
 import org.junit.Test;
 
+import waazdoh.client.MClient;
 import waazdoh.common.model.Song;
 import waazdoh.emodel.ETrack;
 

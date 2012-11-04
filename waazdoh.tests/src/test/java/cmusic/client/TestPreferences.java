@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import org.cutils.MPreferences;
+import waazdoh.cutils.MPreferences;
 
 public class TestPreferences implements MPreferences {
 	private String username;

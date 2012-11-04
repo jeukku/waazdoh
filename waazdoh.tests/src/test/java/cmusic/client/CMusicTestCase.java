@@ -10,17 +10,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 import junit.framework.TestCase;
-
-import org.cp2p.impl.P2PBinarySource;
-import org.cutils.MID;
-import org.cutils.MLogger;
-import org.cutils.MPreferences;
-
+import waazdoh.client.MClient;
+import waazdoh.client.test.ServiceMock;
+import waazdoh.client.test.TestPWaveSource;
 import waazdoh.common.model.MBinarySource;
+import waazdoh.cp2p.impl.P2PBinarySource;
+import waazdoh.cutils.MID;
+import waazdoh.cutils.MLogger;
+import waazdoh.cutils.MPreferences;
 import waazdoh.service.CMService;
-
-import cmusic.client.test.ServiceMock;
-import cmusic.client.test.TestPWaveSource;
 
 public class CMusicTestCase extends TestCase {
 	private static final String LOCALURL = "http://localhost:8080/cmusic";

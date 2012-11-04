@@ -1,21 +1,19 @@
 package cmusic.client;
 
 import junit.framework.TestCase;
-
-import org.cutils.MCRC;
-import org.cutils.MLogger;
-import org.cutils.UserID;
-
 import waazdoh.CMJobs;
+import waazdoh.client.test.TestPWaveSource;
 import waazdoh.common.model.MBinarySource;
 import waazdoh.common.model.MEnvironment;
 import waazdoh.common.model.MObjectFactory;
 import waazdoh.common.model.MWave;
 import waazdoh.common.model.StaticObjectFactory;
 import waazdoh.common.model.StaticService;
+import waazdoh.cutils.MCRC;
+import waazdoh.cutils.MLogger;
+import waazdoh.cutils.UserID;
 import waazdoh.service.CMService;
 
-import cmusic.client.test.TestPWaveSource;
 
 public class TestWave extends TestCase {
 	private MLogger log = MLogger.getLogger(this);

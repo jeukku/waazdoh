@@ -5,9 +5,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.cutils.MTimedFlag;
-
-import waazdoh.CMusic;
+import waazdoh.WaazdohInfo;
+import waazdoh.client.MClient;
 import waazdoh.common.model.AudioSample;
 import waazdoh.common.model.MOutput;
 import waazdoh.common.model.MProgress;
@@ -16,11 +15,12 @@ import waazdoh.common.model.Track;
 import waazdoh.common.model.TrackGroup;
 import waazdoh.common.waves.WaveGenerator;
 import waazdoh.common.waves.WaveGeneratorSample;
+import waazdoh.cutils.MTimedFlag;
 import waazdoh.emodel.ETrack;
 
 
 public class TestSong extends CMusicTestCase {
-	private static final int TRACK_LENGTH = CMusic.DEFAULT_SAMPLERATE * 12; // two
+	private static final int TRACK_LENGTH = WaazdohInfo.DEFAULT_SAMPLERATE * 12; // two
 																			// minutes
 																			// of
 																			// audio
@@ -77,7 +77,7 @@ public class TestSong extends CMusicTestCase {
 			if (ab < 0) {
 				ab = -ab;
 			}
-			if (ab > CMusic.MAX_RESOLUTION) {
+			if (ab > WaazdohInfo.MAX_RESOLUTION) {
 				String mes = "i:" + index + " a!=b " + a + " b:" + b;
 				log.info(mes);
 				assertEquals("e", mes);
@@ -186,7 +186,7 @@ public class TestSong extends CMusicTestCase {
 		gen.generate(et, 0, length, new WaveGeneratorSample() {
 			@Override
 			public float getSample(float sample) {
-				sample *= CMusic.DEFAULT_SAMPLERATE * 100;
+				sample *= WaazdohInfo.DEFAULT_SAMPLERATE * 100;
 				sample /= length;
 				return (float) Math.sin(sample * sample);
 				// return sample/length;
