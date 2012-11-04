@@ -5,26 +5,14 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class MLogger {
 	private Logger log;
 	private Object o;
 	final private static Map<Class, LogObjectHandler> objeccthandlers = new HashMap<Class, LogObjectHandler>();
-	private static boolean configured;
 	
 	public MLogger(Object o) {
-		if(!configured) {
-			try {
-				LogManager.getLogManager().readConfiguration();
-				configured = true;
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 		this.o = o;
 	}
 
