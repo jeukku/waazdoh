@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 import waazdoh.app.App;
 import waazdoh.app.ESong;
 import waazdoh.swt.AppListenerAdapter;
+import org.eclipse.swt.widgets.Label;
 
 
 public class MainView extends Composite {
@@ -36,7 +37,7 @@ public class MainView extends Composite {
 		//
 		songtools = new SongToolsComposite(app, this, SWT.NONE);
 		GridData gd_songtools = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-		gd_songtools.heightHint = 25;
+		gd_songtools.heightHint = 46;
 		songtools.setLayoutData(gd_songtools);
 		
 		songTabs = new CTabFolder(this, SWT.BORDER);

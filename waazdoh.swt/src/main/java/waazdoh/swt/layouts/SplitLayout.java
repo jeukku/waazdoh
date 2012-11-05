@@ -9,10 +9,17 @@ import org.eclipse.swt.widgets.Layout;
 public class SplitLayout extends Layout {
 	private Composite heightcomposite;
 	
-	public SplitLayout(Composite heightcomposite) {
-		this.heightcomposite = heightcomposite;
+	public SplitLayout() {
 	}
 	
+	public Composite getHeightcomposite() {
+		return heightcomposite;
+	}
+
+	public void setHeightcomposite(Composite heightcomposite) {
+		this.heightcomposite = heightcomposite;
+	}
+
 	@Override
 	protected Point computeSize(Composite composite, int wHint, int hHint,
 			boolean flushCache) {

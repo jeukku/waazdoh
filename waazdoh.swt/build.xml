@@ -2,23 +2,34 @@
 	<property name="projectname" value="waazdoh.swt" />
 	<property name="staging.dir" value="target/staging" />
 
+	<condition property="isWindows">
+		<os family="windows" />
+	</condition>
+
+	<condition property="isLinux">
+		<os family="unix" />
+	</condition>
+
 	<target name="swtt.check.uptodate">
 		<uptodate property="swtt.notrequired" targetfile="target/build.trig">
 			<srcfiles dir="src/" excludes="**/*.exe" />
 			<srcfiles dir="./" includes="*.xml" excludes="target" />
 			<srcfiles dir="./" includes="*.trig" excludes="target" />
 		</uptodate>
+
 	</target>
 
-	<target name="waazdohswtt_dobuild" unless="swtt.notrequired">
+	<target name="if_windows" unless="swtt.notrequired" if="isWindows">
 		<echo file="target/build.trig">Done</echo>
-		<!-- 		<exec -->
-		<!-- 			command="${mvn} package" -->
-		<!-- 			failonerror="true" /> -->
+		<exec command="${mvn} -P launch4j install" failonerror="true" />
+	</target>
+
+	<target name="if_unix" unless="swtt.notrequired" if="isLinux">
+		<echo file="target/build.trig">Done</echo>
 		<exec command="${mvn} install" failonerror="true" />
 	</target>
 
-	<target name="build" depends="swtt.check.uptodate, waazdohswtt_dobuild">
+	<target name="build" depends="swtt.check.uptodate, if_windows, if_unix">
 		<echo>Done</echo>
 	</target>
 </project>

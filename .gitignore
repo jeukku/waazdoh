@@ -14,7 +14,6 @@ target
 .dobuild
 *.ht.*
 .classpath
-*.zip
 *.trig
 tmp
 .cache

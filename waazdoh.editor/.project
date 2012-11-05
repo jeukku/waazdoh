@@ -6,6 +6,7 @@
     <project>waazdoh.common</project>
     <project>waazdoh.cutils</project>
     <project>waazdoh.audio</project>
+    <project>waazdoh.cp2p</project>
     <project>waazdoh.client</project>
   </projects>
   <buildSpec>

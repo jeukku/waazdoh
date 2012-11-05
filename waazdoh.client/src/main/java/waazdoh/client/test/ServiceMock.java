@@ -2,9 +2,7 @@ package waazdoh.client.test;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
-
 
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MID;
@@ -17,7 +15,7 @@ import waazdoh.service.CMService;
 public class ServiceMock implements CMService {
 	private String username;
 	private String session;
-	private MID userid = new MID();
+	private UserID userid;
 	private Map<String, JBean> groups = new HashMap<String, JBean>();
 
 	private static Map<MID, JBeanResponse> objects = new HashMap<MID, JBeanResponse>();
@@ -84,7 +82,7 @@ public class ServiceMock implements CMService {
 
 	@Override
 	public UserID getUserID() {
-		return new UserID(this.userid.toString());
+		return userid;
 	}
 
 	@Override
@@ -110,17 +108,19 @@ public class ServiceMock implements CMService {
 
 	@Override
 	public boolean isLoggedIn() {
-		return username != null;
+		return username != null && session!=null;
 	}
 
 	@Override
 	public String requestAppLogin(String username, String appname, MID appid) {
-		return new MID().toString();
+		session = new MID().toString();
+		userid = new UserID(new MID().toString());
+		return session;
 	}
 
 	@Override
 	public String getSessionID() {
-		return userid.toString();
+		return session;
 	}
 
 	@Override

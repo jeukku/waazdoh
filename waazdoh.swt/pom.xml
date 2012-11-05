@@ -212,56 +212,60 @@
 				<app.arch>linux_32</app.arch>
 			</properties>
 		</profile>
+
 		<profile>
 			<id>launch4j</id>
 			<activation>
-			          <property><name>doexe</name></property>
+				<property>
+					<name>doexe</name>
+				</property>
 			</activation>
-			
 
-			<build><plugins>
-			<plugin>
-				<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
-				<artifactId>launch4j-plugin</artifactId>
-				<version>1.5.0.0</version>
-				<executions>
-					<execution>
-						<id>l4j-clui</id>
-						<phase>package</phase>
-						<goals>
-							<goal>launch4j</goal>
-						</goals>
-						<configuration>	
-							<headerType>gui</headerType>
-							<outfile>src/main/app/bin/waazdoh.exe</outfile>
-							<jar>target/waazdoh-app-${app.arch}-distribution/bin/waazdoh-app-${app.arch}-with-dep.jar</jar>
-							<errTitle>Waazdoh</errTitle>
-							<classPath>
-								<mainClass>waazdoh.swt.AppLauncher</mainClass>
-								<addDependencies>false</addDependencies>
-								<preCp>anything</preCp>
-							</classPath>
-							<jre>
-								<path>../jre
-								</path>
-								<minVersion>1.5.0</minVersion>
-							</jre>
-							<versionInfo>
-								<fileVersion>${exe.version}</fileVersion>
-								<txtFileVersion>${exe.version}</txtFileVersion>
-								<fileDescription>Waazdog client</fileDescription>
-								<copyright>Copyright</copyright>
-								<productVersion>${exe.version}</productVersion>
-								<txtProductVersion>${exe.version}</txtProductVersion>
-								<productName>Waazdoh client</productName>
-								<internalName>waazdohclient</internalName>
-								<originalFilename>waazdoh.exe</originalFilename>
-							</versionInfo>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			</plugins></build>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
+						<artifactId>launch4j-plugin</artifactId>
+						<version>1.5.0.0</version>
+						<executions>
+							<execution>
+								<id>l4j-clui</id>
+								<phase>package</phase>
+								<goals>
+									<goal>launch4j</goal>
+								</goals>
+								<configuration>
+									<headerType>gui</headerType>
+									<outfile>src/main/app/bin/waazdoh.exe</outfile>
+									<jar>target/waazdoh-app-${app.arch}-distribution/bin/waazdoh-app-${app.arch}-with-dep.jar</jar>
+									<errTitle>Waazdoh</errTitle>
+									<classPath>
+										<mainClass>waazdoh.swt.AppLauncher</mainClass>
+										<addDependencies>false</addDependencies>
+										<preCp>anything</preCp>
+									</classPath>
+									<jre>
+										<path>../jre
+										</path>
+										<minVersion>1.5.0</minVersion>
+									</jre>
+									<versionInfo>
+										<fileVersion>${exe.version}</fileVersion>
+										<txtFileVersion>${exe.version}</txtFileVersion>
+										<fileDescription>Waazdog client</fileDescription>
+										<copyright>Copyright</copyright>
+										<productVersion>${exe.version}</productVersion>
+										<txtProductVersion>${exe.version}</txtProductVersion>
+										<productName>Waazdoh client</productName>
+										<internalName>waazdohclient</internalName>
+										<originalFilename>waazdoh.exe</originalFilename>
+									</versionInfo>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 
