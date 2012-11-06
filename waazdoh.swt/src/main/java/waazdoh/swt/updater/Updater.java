@@ -85,6 +85,8 @@ public class Updater {
 						filecount++;
 						//
 						String name = e.getName();
+						name = ".." + File.separator + name;
+						
 						if (e.isDirectory()) {
 							File d = new File(name);
 							d.mkdirs();
