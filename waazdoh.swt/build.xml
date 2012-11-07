@@ -29,7 +29,7 @@
 		<exec command="${mvn} install" failonerror="true" />
 	</target>
 
-	<target name="build" depends="swtt.check.uptodate, if_windows, if_unix">
+	<target name="deploy" depends="swtt.check.uptodate, if_windows, if_unix">
 		<echo>Done</echo>
 	</target>
 </project>
