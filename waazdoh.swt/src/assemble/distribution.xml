@@ -8,12 +8,13 @@
 		<format>dir</format>
 		<format>zip</format>
 	</formats>
+	<!-- 
 	<files>
 		<file>
 			<source>target/waazdoh-app-${app.arch}-distribution/bin/waazdoh-app-${app.arch}-with-dep.jar</source>
 			<outputDirectory>/bin/</outputDirectory>
 		</file>
-	</files>	
+	</files> -->	
 	<fileSets>
 		<fileSet>
 			<directory>src/main/app</directory>
