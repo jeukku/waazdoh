@@ -330,6 +330,8 @@ public class SWTApp {
 						Menu m = getCachedSongMenu(name);
 						if (searchMenuItem(m, "" + songid) == null) {
 							MenuItem songitem = new MenuItem(m, SWT.None);
+							songitem.setData(songid.toString());
+							
 							String screated = song.getAttribute("created");
 							String smodified = song.getAttribute("modified");
 							if (screated == null) {
@@ -368,7 +370,8 @@ public class SWTApp {
 	private MenuItem searchMenuItem(Menu m, String string) {
 		MenuItem[] items = m.getItems();
 		for (MenuItem menuItem : items) {
-			if (menuItem.getText().indexOf(string) >= 0) {
+			String menudata = (String) menuItem.getData();
+			if (menudata.indexOf(string) >= 0) {
 				return menuItem;
 			}
 		}
