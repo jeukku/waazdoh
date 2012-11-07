@@ -51,7 +51,7 @@ public class MClient implements ReportingService, MEnvironment {
 		this.preferences = p;
 		this.source = wavesource;
 		if ("true".equals(p.get(MPreferences.SERVICE_MOCK))) {
-			service = new ServiceMock();
+			service = new ServiceMock(source);
 		} else {
 			service = new RestClient(getServiceURL(), source);
 		}

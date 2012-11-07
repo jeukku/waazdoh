@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import waazdoh.common.model.MBinarySource;
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MURL;
@@ -17,11 +18,14 @@ public class ServiceMock implements CMService {
 	private String session;
 	private UserID userid;
 	private Map<String, JBean> groups = new HashMap<String, JBean>();
+	private MBinarySource source;
 
-	private static Map<MID, JBeanResponse> objects = new HashMap<MID, JBeanResponse>();
+	//private static Map<MID, JBeanResponse> objects = new HashMap<MID, JBeanResponse>();
 
-	public ServiceMock() {
+	public ServiceMock(MBinarySource source) {
 		MID gusersid = new MID();
+		this.source = source;
+		//
 		String gname = "users";
 		addBGroup(gusersid.toString(), gname);
 		addBGroup(new MID().toString(), "test");
@@ -56,21 +60,22 @@ public class ServiceMock implements CMService {
 
 	@Override
 	public boolean setSession(String username, String session) {
-		this.username = username;
-		this.session = session;
+		createSession(username);
 		return true;
 	}
 
 	@Override
 	public JBeanResponse read(MID id) {
-		return ServiceMock.objects.get(id);
+		return source.getBean(id.toString());
+		//return ServiceMock.objects.get(id);
 	}
 
 	@Override
 	public JBeanResponse write(MID id, JBean b) {
 		JBeanResponse res = JBeanResponse.getTrue();
 		res.setBean(b);
-		ServiceMock.objects.put(id, res);
+		source.addBean(id.toString(), res);
+		//ServiceMock.objects.put(id, res);
 		return JBeanResponse.getTrue();
 	}
 
@@ -108,14 +113,19 @@ public class ServiceMock implements CMService {
 
 	@Override
 	public boolean isLoggedIn() {
-		return username != null && session!=null;
+		return username != null && session!=null && userid!=null;
 	}
 
 	@Override
 	public String requestAppLogin(String username, String appname, MID appid) {
+		createSession(username);
+		return session;
+	}
+
+	private void createSession(String username) {
 		session = new MID().toString();
 		userid = new UserID(new MID().toString());
-		return session;
+		this.username = username;
 	}
 
 	@Override

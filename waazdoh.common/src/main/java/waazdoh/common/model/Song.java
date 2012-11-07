@@ -29,12 +29,14 @@ public class Song {
 	private MEnvironment env;
 	private MOutput output;
 	private MID copyof;
+	private long modified, created;
 
 	// new song
 	public Song(MEnvironment env) {
 		this.creatorid = env.getUserID();
 		id = new MID();
 		version = WaazdohInfo.version;
+		created = System.currentTimeMillis();
 		this.env = env;
 	}
 
@@ -113,6 +115,8 @@ public class Song {
 			b.addAttribute("name", getName());
 			b.addAttribute("version", version);
 			b.addAttribute("copyof", "" + copyof);
+			b.addAttribute("modified", modified);
+			b.addAttribute("created", created);
 			//
 			b.addAttribute("creator", creatorid.toString());
 			//
@@ -150,6 +154,9 @@ public class Song {
 			copyof = storedbean.getIDAttribute("copyof");
 			creatorid = new UserID(storedbean.getAttribute("creator"));
 			version = storedbean.getAttribute("version");
+			modified = storedbean.getAttributeLong("modified");
+			created = storedbean.getAttributeLong("created");
+			
 			this.name = bean.getAttribute("name");
 			//
 			return parseGroupsTracks(bean);
@@ -195,6 +202,7 @@ public class Song {
 
 	private void updateVersion() {
 		output = null;
+		modified = System.currentTimeMillis();
 		id.updateVersion();
 	}
 
@@ -281,6 +289,7 @@ public class Song {
 			copyof = getID().copy();
 			id = new MID();
 			creatorid = env.getUserID();
+			created = System.currentTimeMillis();
 		}
 
 		List<TrackGroup> ts = trackgroups;

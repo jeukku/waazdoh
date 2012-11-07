@@ -2,8 +2,9 @@ package waazdoh.client.test;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-
+import java.util.Set;
 
 import waazdoh.common.model.Binary;
 import waazdoh.common.model.MBinarySource;
@@ -14,7 +15,6 @@ import waazdoh.cutils.MPreferences;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
 
-
 public class TestPWaveSource implements MBinarySource {
 	private MPreferences preferences;
 	private MBinaryStorage storage;
@@ -23,6 +23,16 @@ public class TestPWaveSource implements MBinarySource {
 
 	public TestPWaveSource(MPreferences p) {
 		this.preferences = p;
+	}
+
+	@Override
+	public Set<MID> getLocalObjectIDs() {
+		Set<MID> ret = new HashSet<MID>();
+		Set<String> keys = beans.keySet();
+		for (String string : keys) {
+			ret.add(new MID(string));
+		}
+		return ret;
 	}
 
 	@Override

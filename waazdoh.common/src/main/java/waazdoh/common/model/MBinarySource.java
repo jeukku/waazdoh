@@ -1,6 +1,7 @@
 package waazdoh.common.model;
 
 import java.io.File;
+import java.util.Set;
 
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MID;
@@ -44,5 +45,7 @@ public interface MBinarySource {
 	File getBinaryFile(MID id);
 
 	boolean reload(Binary binary);
+
+	Set<MID> getLocalObjectIDs();
 
 }

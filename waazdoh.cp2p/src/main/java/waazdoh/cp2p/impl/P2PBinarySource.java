@@ -1,6 +1,7 @@
 package waazdoh.cp2p.impl;
 
 import java.io.File;
+import java.util.Set;
 
 
 import waazdoh.common.model.Binary;
@@ -130,6 +131,11 @@ public class P2PBinarySource implements MBinarySource {
 			server.clearMemory(suggestedmemorytreshold);
 	}
 
+	@Override
+	public Set<MID> getLocalObjectIDs() {
+		return beanstorage.getLocalSetIDs();
+	}
+	
 	public synchronized Binary getOrDownload(MID fsid) {
 		Binary fs = get(fsid);
 		if (fs == null) {

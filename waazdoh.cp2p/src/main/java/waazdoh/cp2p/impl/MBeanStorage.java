@@ -6,7 +6,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-
+import java.util.HashSet;
+import java.util.Set;
 
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MID;
@@ -71,6 +72,16 @@ public class MBeanStorage {
 		} catch (IOException e) {
 			log.error(e);
 		}
+	}
+
+	public Set<MID> getLocalSetIDs() {
+		File f = new File(path);
+		String[] list = f.list();
+		Set<MID> ret = new HashSet<MID>();
+		for (String string : list) {
+			ret.add(new MID(string));
+		}
+		return ret;
 	}
 
 }

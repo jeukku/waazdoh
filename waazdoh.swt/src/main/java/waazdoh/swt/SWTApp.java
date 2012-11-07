@@ -1,6 +1,9 @@
 package waazdoh.swt;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
@@ -14,7 +17,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -29,6 +34,7 @@ import waazdoh.client.WBookmark;
 import waazdoh.client.WBookmarkGroup;
 import waazdoh.client.WBookmarkGroupListener;
 import waazdoh.client.WUser;
+import waazdoh.common.model.MBinarySource;
 import waazdoh.common.model.Song;
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MID;
@@ -53,6 +59,7 @@ public class SWTApp {
 	private Menu menubookmarks;
 
 	private MLogger log = MLogger.getLogger(this);
+	private Menu menucached;
 
 	public SWTApp(App app) {
 		this.app = app;
@@ -154,7 +161,8 @@ public class SWTApp {
 	 */
 	protected void createContents() {
 		shell = new Shell();
-		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+		shell.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		shell.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
 				System.exit(0); // TODO didn't close on bluetile otherwise :(
@@ -279,6 +287,17 @@ public class SWTApp {
 
 		initBookmarkGroups();
 
+		MenuItem menucacheditem = new MenuItem(menu, SWT.CASCADE);
+		menucacheditem.setText("local");
+		menucached = new Menu(menucacheditem);
+		menucacheditem.setMenu(menucached);
+		menucached.addListener(SWT.Show, new Listener() {
+			@Override
+			public void handleEvent(Event arg0) {
+				resetCachedMenu();
+			}
+		});
+
 		app.getClient().getBookmarks().addListener(new BookmarksListener() {
 			@Override
 			public void groupAdded(WBookmarkGroup group) {
@@ -290,6 +309,85 @@ public class SWTApp {
 		layout.topControl = mainview;
 		cstack.layout();
 		shell.layout();
+	}
+
+	protected void resetCachedMenu() {
+		MBinarySource source = app.getClient().getBinarySource();
+		Set<MID> ids = source.getLocalObjectIDs();
+		for (MID mid : ids) {
+			JBeanResponse o = app.getClient().getService().read(mid);
+			if (o != null) {
+				JBean b = o.getBean();
+				JBean song = b.find("song");
+				if (song != null) {
+					JBean bname = b.find("name");
+					if (bname != null) {
+
+						String name = bname.getValue();
+						log.info("cachedmenu item name " + name + " with bean "
+								+ b);
+						final MID songid = b.getIDAttribute("id");
+						Menu m = getCachedSongMenu(name);
+						if (searchMenuItem(m, "" + songid) == null) {
+							MenuItem songitem = new MenuItem(m, SWT.None);
+							String screated = song.getAttribute("created");
+							String smodified = song.getAttribute("modified");
+							if (screated == null) {
+								screated = "0";
+							}
+							if (smodified == null) {
+								smodified = "0";
+							}
+
+							Date created = new Date(Long.parseLong(screated));
+							Date modified = new Date(Long.parseLong(smodified));
+							songitem.setText("" + created + " (modified "
+									+ modified + ")");
+
+							songitem.addSelectionListener(new SelectionListener() {
+
+								@Override
+								public void widgetSelected(SelectionEvent arg0) {
+									app.getClient().loadSong(songid);
+								}
+
+								@Override
+								public void widgetDefaultSelected(
+										SelectionEvent arg0) {
+									// TODO Auto-generated method stub
+
+								}
+							});
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private MenuItem searchMenuItem(Menu m, String string) {
+		MenuItem[] items = m.getItems();
+		for (MenuItem menuItem : items) {
+			if (menuItem.getText().indexOf(string) >= 0) {
+				return menuItem;
+			}
+		}
+		return null;
+	}
+
+	private Menu getCachedSongMenu(String name) {
+		MenuItem[] items = menucached.getItems();
+		for (MenuItem menuItem : items) {
+			if (menuItem.getText().equals(name)) {
+				return menuItem.getMenu();
+			}
+		}
+		// creating a new menu
+		MenuItem i = new MenuItem(menucached, SWT.CASCADE);
+		i.setText(name);
+		Menu m = new Menu(i);
+		i.setMenu(m);
+		return m;
 	}
 
 	private void initBookmarkGroups() {
