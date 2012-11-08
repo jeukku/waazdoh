@@ -64,8 +64,8 @@ public class TrackGroupComposite extends Composite {
 		bnewtrack.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				createTestTrack();
-				// trackgroup.newTrack();
+				//createTestTrack();
+				trackgroup.newTrack();
 			}
 		});
 		bnewtrack.setText("New Tack");
@@ -106,6 +106,7 @@ public class TrackGroupComposite extends Composite {
 		return this.trackgroup;
 	}
 
+	/*
 	private void createTestTrack() {
 		ETrack et = song.getSong().newTrack();
 
@@ -127,5 +128,5 @@ public class TrackGroupComposite extends Composite {
 		Track t = trackgroup.newTrack();
 		t.setName("testname" + new Date());
 		t.replaceWave(et);
-	}
+	}*/
 }

@@ -13,7 +13,6 @@ import waazdoh.WaazdohInfo;
 import waazdoh.common.model.MOutput;
 import waazdoh.common.model.Track;
 
-
 public class AudioCanvas extends Canvas {
 	private float zoom = 1;
 	private float start = 0;
@@ -57,7 +56,7 @@ public class AudioCanvas extends Canvas {
 				 */
 
 				for (int x = 0; x < w; x++) {
-					Float fy = input.getSample(getChannel(), (int) sample);
+					Float fy = getSample(sample);
 					if (fy != null) {
 						float y = fy;
 						y *= h / 2;
@@ -76,6 +75,37 @@ public class AudioCanvas extends Canvas {
 		} else {
 			return null;
 		}
+	}
+
+	private Float getSample(float sample) {
+		int isample = (int) sample;
+		Float a = input.getSample(getChannel(), isample);
+
+		Float ret = a;
+		if (ret == null) {
+			ret = 0.0f;
+		}
+
+		if (ret < 0) {
+			ret = -ret;
+		}
+
+		for (int i = -5; i <= 5; i++) {
+			int nisample = isample + i;
+			if (nisample > 0) {
+				Float nsample = input.getSample(getChannel(), nisample);
+				if (nsample != null) {
+					if (nsample < 0) {
+						nsample = -nsample;
+					}
+
+					if (nsample > ret) {
+						ret = nsample;
+					}
+				}
+			}
+		}
+		return ret;
 	}
 
 	public float getZoom() {
