@@ -19,7 +19,6 @@ import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.xml.JBean;
 
-
 public class MWave {
 	private MLogger log = MLogger.getLogger(this);
 
@@ -144,7 +143,7 @@ public class MWave {
 		try {
 			File file = env.getBinarySource().getBinaryFile(binary.getID());
 			log.info("reading " + file + " exists:" + file.exists());
-			
+
 			AudioInputStream flacAIS = new FlacAudioFileReader()
 					.getAudioInputStream(file);
 
@@ -342,26 +341,19 @@ public class MWave {
 				if (addsamples) {
 					binaryid = binary.getID();
 
-					boolean reloadsuccess = env.getBinarySource()
-							.reload(binary);
-					log.info("reloading wave binary " + binary + " success:"
-							+ reloadsuccess);
-					if (reloadsuccess) {
-						binary.setReady();
-						binary.save();
-						//
-						log.info("creating binary done " + file + " id:"
-								+ binary.getID());
-						// log.info("TEST calling binaryReady " +
-						// binary.getID());
-						// binaryReady();
-
-						return binary;
-					} else {
-						log.info("failed to load packaged bytes in binary "
-								+ binaryid);
-						return null;
-					}
+					/*
+					 * boolean reloadsuccess = env.getBinarySource()
+					 * .reload(binary); log.info("reloading wave binary " +
+					 * binary + " success:" + reloadsuccess); if (reloadsuccess)
+					 * { binary.setReady(); binary.save(); //
+					 * log.info("creating binary done " + file + " id:" +
+					 * binary.getID()); // log.info("TEST calling binaryReady "
+					 * + // binary.getID()); // binaryReady();
+					 * 
+					 * return binary; } else {
+					 * log.info("failed to load packaged bytes in binary " +
+					 * binaryid); return null; }
+					 */
 				} else {
 					log.error("failed to add samples to flac");
 				}
@@ -378,7 +370,7 @@ public class MWave {
 	}
 
 	public Binary getBinary() {
-		if (env != null && binaryid!=null) {
+		if (env != null && binaryid != null) {
 			return this.env.getBinarySource().getOrDownload(binaryid);
 		} else {
 			return null;
@@ -406,12 +398,14 @@ public class MWave {
 			used();
 
 			saved = true;
-			
+
 			log.info("saved " + binary + " binaryid:" + binaryid);
-			
+
 			return saved;
 		} else {
-			log.info("Not saving because env:" + env + " saved:" + saved + " fs.length:" + getFS().length());
+			log.info("Not saving because env:" + env + " saved:" + saved
+					+ " fs.length:"
+					+ (getFS() != null ? getFS().length() : "NULL"));
 			return saved;
 		}
 	}
