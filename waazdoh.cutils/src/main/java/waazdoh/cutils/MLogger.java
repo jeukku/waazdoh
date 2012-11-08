@@ -74,6 +74,7 @@ public class MLogger {
 		getLog().severe(cause.toString());
 	}
 
+	/*
 	public void logObject(String title, Object message) {
 		if (message != null) {
 			LogObjectHandler h = getHandler(message);
@@ -84,7 +85,8 @@ public class MLogger {
 			getLog().info("logObject null with title " + title);
 		}
 	}
-
+	*/
+	
 	private LogObjectHandler getHandler(Object message) {
 		return MLogger.objeccthandlers.get(message.getClass());
 	}

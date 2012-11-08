@@ -77,7 +77,7 @@ public class Song {
 	private boolean load(MID id2) {
 		this.id = id2;
 		JBeanResponse response = env.getService().read(getID());
-		log.info("got response " + response);
+		log.info("got response " + response + " with id " + id);
 		if (response.isSuccess()) {
 			JBean songbean = response.getBean().find("song");
 			return load(songbean);
@@ -273,13 +273,13 @@ public class Song {
 	}
 
 	public boolean publish() {
-		save();
-		//
 		List<TrackGroup> ts = trackgroups;
 		for (TrackGroup track : ts) {
 			track.save();
 			track.publish();
 		}
+		//
+		save();
 		//
 		return env.getService().publish(getID());
 	}
@@ -305,6 +305,7 @@ public class Song {
 			//
 			MID sid = getID();
 			storedbean = getBean();
+			log.info("storing " + storedbean);
 			JBeanResponse response = env.getService().write(sid, storedbean);
 			log.info("save song got response " + response);
 			//

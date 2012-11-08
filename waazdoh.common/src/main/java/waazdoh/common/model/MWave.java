@@ -341,19 +341,25 @@ public class MWave {
 				if (addsamples) {
 					binaryid = binary.getID();
 
-					/*
-					 * boolean reloadsuccess = env.getBinarySource()
-					 * .reload(binary); log.info("reloading wave binary " +
-					 * binary + " success:" + reloadsuccess); if (reloadsuccess)
-					 * { binary.setReady(); binary.save(); //
-					 * log.info("creating binary done " + file + " id:" +
-					 * binary.getID()); // log.info("TEST calling binaryReady "
-					 * + // binary.getID()); // binaryReady();
-					 * 
-					 * return binary; } else {
-					 * log.info("failed to load packaged bytes in binary " +
-					 * binaryid); return null; }
-					 */
+					boolean reloadsuccess = env.getBinarySource()
+							.reload(binary);
+					log.info("reloading wave binary " + binary + " success:"
+							+ reloadsuccess);
+					if (reloadsuccess) {
+						binary.setReady();
+						binary.save(); //
+						log.info("creating binary done " + file + " id:"
+								+ binary.getID()); // log.info("TEST calling binaryReady "+
+													// // binary.getID()); //
+													// binaryReady();
+
+						return binary;
+					} else {
+						log.info("failed to load packaged bytes in binary "
+								+ binaryid);
+						return null;
+					}
+
 				} else {
 					log.error("failed to add samples to flac");
 				}

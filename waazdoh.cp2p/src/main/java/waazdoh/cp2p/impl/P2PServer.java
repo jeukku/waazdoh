@@ -396,7 +396,7 @@ public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
 	public void handle(MMessage message, Node node) {
 		try {
 			inputbytecount += message.getByteCount();
-			log.logObject(this.toString(), message);
+			log.info(this.toString() + " " + message);
 			MMessageHandler handler = getHandler(message.getName());
 			//
 			JBean nodeinfo = message.get("nodeinfo");

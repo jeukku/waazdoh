@@ -48,7 +48,7 @@ public class StreamHandler implements MMessageHandler {
 			}
 		} else {
 			log.error("StreamID null");
-			log.logObject("streamid null", childb);
+			log.info("streamid null " + childb);
 			return false;
 		}
 	}

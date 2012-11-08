@@ -111,7 +111,7 @@ public class CMusicTestCase extends TestCase {
 				return null;
 			}
 		} else {
-			return new ServiceMock();
+			return new ServiceMock(source);
 		}
 	}
 

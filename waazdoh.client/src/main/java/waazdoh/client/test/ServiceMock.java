@@ -20,7 +20,7 @@ public class ServiceMock implements CMService {
 	private Map<String, JBean> groups = new HashMap<String, JBean>();
 	private MBinarySource source;
 
-	//private static Map<MID, JBeanResponse> objects = new HashMap<MID, JBeanResponse>();
+	private static Map<MID, JBeanResponse> objects = new HashMap<MID, JBeanResponse>();
 
 	public ServiceMock(MBinarySource source) {
 		MID gusersid = new MID();
@@ -66,8 +66,11 @@ public class ServiceMock implements CMService {
 
 	@Override
 	public JBeanResponse read(MID id) {
-		return source.getBean(id.toString());
-		//return ServiceMock.objects.get(id);
+		JBeanResponse resp = source.getBean(id.toString());
+		if (resp == null) {
+			resp = ServiceMock.objects.get(id);
+		}
+		return resp;
 	}
 
 	@Override
@@ -75,7 +78,7 @@ public class ServiceMock implements CMService {
 		JBeanResponse res = JBeanResponse.getTrue();
 		res.setBean(b);
 		source.addBean(id.toString(), res);
-		//ServiceMock.objects.put(id, res);
+		ServiceMock.objects.put(id, res);
 		return JBeanResponse.getTrue();
 	}
 
@@ -113,7 +116,7 @@ public class ServiceMock implements CMService {
 
 	@Override
 	public boolean isLoggedIn() {
-		return username != null && session!=null && userid!=null;
+		return username != null && session != null && userid != null;
 	}
 
 	@Override

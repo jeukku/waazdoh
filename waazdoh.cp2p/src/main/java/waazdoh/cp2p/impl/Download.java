@@ -124,7 +124,7 @@ public class Download implements Runnable, MessageResponseListener,
 	private void sendWhoHasMessage() {
 		if (!isReady()) {
 			MMessage m = getWhoHasMessage();
-			log.logObject("broadcasting whohas", m);
+			log.info("broadcasting whohas " + m);
 			if (m != null) {
 				source.broadcastMessage(m, this);
 			} else if (!isReady() && sentstarts.size() == 0) {
