@@ -14,7 +14,6 @@ import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
-
 import waazdoh.WaazdohInfo;
 import waazdoh.app.IMessages;
 import waazdoh.common.model.AudioSample;
@@ -23,14 +22,15 @@ import waazdoh.common.model.Song;
 import waazdoh.cutils.MLogger;
 import waazdoh.emodel.ETrack;
 
-
 public class MAudio {
 	private MLogger log = MLogger.getLogger(this);
 	private SourceDataLine outputline;
 	private TargetDataLine inputline;
-	private Thread t;
+
 	private Song currentsong;
-	private boolean running;
+	private boolean outputrunning;
+	private boolean inputrunning;
+
 	private List<MAudioListener> listeners = new LinkedList<MAudioListener>();
 	private boolean recording;
 	private ETrack track;
@@ -45,6 +45,9 @@ public class MAudio {
 	float outputsampleindex = 0;
 	private float forwardbuffer = WaazdohInfo.DEFAULT_SAMPLERATE;
 	protected boolean readytogo;
+	private Thread outputthread;
+	private Thread inputthread;
+	private Object inputsync;
 
 	public MAudio(IMessages messages, IMessages errors) {
 		this.messages = messages;
@@ -80,13 +83,16 @@ public class MAudio {
 	public synchronized void stopAudio() {
 		log.info("stopping audio");
 		//
-		running = false;
-		while (inputline != null || outputline != null) {
+		inputrunning = false;
+		outputrunning = false;
+		while (inputthread != null || outputthread != null) {
 			doWait(100);
 		}
 	}
 
 	private void stopped() {
+		log.info("Stopped. Saving track " + track);
+
 		if (track != null) {
 			track.setReady();
 		}
@@ -99,23 +105,20 @@ public class MAudio {
 		final MOutput wave = currentsong.getOutputWave();
 
 		readytogo = false;
-		running = true;
 
-		t = new Thread(new Runnable() {
+		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				audioRun(wave);
-				t = null;
 			}
 		});
 		t.start();
 
 		Thread forwardrunner = new Thread(new Runnable() {
-
 			@Override
 			public void run() {
 				int index = 0;
-				while (running) {
+				while (outputrunning) {
 					if (index < outputsampleindex + forwardbuffer) {
 						wave.getSample(index++);
 					} else {
@@ -123,6 +126,7 @@ public class MAudio {
 						doWait(10);
 					}
 				}
+				readytogo = true;
 			}
 		}, "AudioForwardRunner");
 		forwardrunner.start();
@@ -133,224 +137,287 @@ public class MAudio {
 			if (doinput) {
 				track = currentsong.newTrack();
 			}
-			new Thread(new Runnable() {
+			outputthread = new Thread(new Runnable() {
+
+				@Override
 				public void run() {
-					try {
-						messages.add("Getting audio lines");
-
-						if (dooutput) {
-							outputline = getOutputLine();
-						}
-						if (doinput) {
-							inputline = getInputLine();
-						}
-
-						int inputsampleindex = 0;
-						outputsampleindex = 0;
-
-						java.nio.ByteBuffer outputbb = java.nio.ByteBuffer
-								.allocate(outputcapacity); // TODO
-
-						float inputlevel = 0;
-						float outputlevel = 0;
-						int levelindex = 0;
-						//
-						messages.add("Starting audio lines");
-						//
-						if (outputline != null) {
-							outputline.start();
-						}
-
-						if (inputline != null) {
-							inputline.start();
-						}
-
-						while (!readytogo) {
-							doWait(10);
-						}
-
-						outputline.flush();
-
-						byte[] outputarray = new byte[0];
-						int position = 0;
-						//
-						messages.add("Running");
-
-						float leftsample = 0;
-						float rightsample = 0;
-
-						if (inputline != null) {
-							messages.add("Recording");
-
-							byte inputbytes[] = new byte[outputcapacity];
-							inputline.read(inputbytes, 0, inputbytes.length);
-						}
-
-						log.info("playing " + wave.getLength()
-								/ WaazdohInfo.DEFAULT_SAMPLERATE + " sec");
-
-						long starttime = System.currentTimeMillis();
-
-						while (running) {
-							// OUTPUT
-							// if (inputline == null
-							// || inputline.available() < outputline
-							// .available()) {
-							outputbb.clear();
-							while (running
-									&& outputbb.position() < outputbb
-											.capacity()
-									&& outputbb.position() < outputline
-											.available()) {
-								AudioSample sample = wave
-										.getSample((int) outputsampleindex);
-								// AudioSample sample = new AudioSample();
-								if (sample != null) {
-									Float fleftsample = sample.fs[0];
-									if (fleftsample != null) {
-										if (Math.abs(leftsample - fleftsample) > 0.5) {
-											log.info("SNAP samples "
-													+ fleftsample + " old:"
-													+ leftsample);
-										}
-										leftsample = fleftsample;
-									} else {
-										leftsample = 0;
-									}
-
-									Float frightsample = sample.fs[1];
-									if (frightsample != null) {
-										rightsample = frightsample;
-									} else {
-										rightsample = 0;
-									}
-								} else if (inputline == null) {
-									running = false;
-								}
-
-								outputlevel += leftsample > 0 ? leftsample
-										: -leftsample;
-								outputlevel += rightsample > 0 ? rightsample
-										: -rightsample;
-
-								// in stereo
-								outputbb.putShort((short) (Short.MAX_VALUE * leftsample));
-								outputbb.putShort((short) (Short.MAX_VALUE * rightsample));
-
-								outputsampleindex += (1.0f * WaazdohInfo.DEFAULT_SAMPLERATE)
-										/ outputSampleRate;
-							}
-							//
-							outputarray = outputbb.array();
-							position = outputbb.position();
-							outputline.write(outputarray, 0, position);
-							// } else {
-							// log.info("skip outputavail "
-							// + outputline.available());
-							// }
-							// INPUT
-							if (inputline != null) {
-								byte inputbytes[] = new byte[inputline
-										.available()];
-								int bytesread = inputline.read(inputbytes, 0,
-										inputbytes.length);
-								if (bytesread > 0) {
-									ByteBuffer wrap = ByteBuffer.wrap(
-											inputbytes, 0, bytesread);
-									ShortBuffer shorts = wrap.asShortBuffer();
-									int index = 0;
-									float fs[] = new float[shorts.capacity()];
-									//
-									int dstindex = 0;
-									while (index < shorts.capacity() && running) {
-										float f = (1.0f * shorts.get(index) / Short.MAX_VALUE);
-										if (skipinput-- < 0) {
-											fs[dstindex++] = f;
-											inputsampleindex++;
-										}
-
-										index += 2; // FIX? Inputline is stereo
-													// and reading only mono
-													// track
-										inputlevel += f > 0 ? f : -f;
-									}
-
-									track.addSamples(fs, dstindex);
-
-									log.info("output " + outputarray.length
-											+ " pos:" + position + " input:"
-											+ bytesread + " level:"
-											+ (inputlevel / levelindex)
-											+ " inputavail:"
-											+ inputline.available()
-											+ " outputavail:"
-											+ outputline.available()
-											+ " outputindex:"
-											+ outputsampleindex
-											+ " inputindex:" + inputsampleindex
-											+ " read fs:" + fs.length);
-
-									levelindex += index;
-									if (levelindex > 100000) {
-										inputlevel /= levelindex;
-										outputlevel /= levelindex;
-										levelindex = 0;
-										fireLevels(inputlevel, outputlevel);
-									}
-								} else {
-									// log.info("zero bytes read");
-								}
-							}
-							//
-							float outputtime = outputsampleindex * 1000.0f
-									/ WaazdohInfo.DEFAULT_SAMPLERATE;
-							if (inputsampleindex + skipinput > outputsampleindex) {
-								outputtime = (inputsampleindex + skipinput)
-										* 1000.0f / WaazdohInfo.DEFAULT_SAMPLERATE;
-							}
-							/*
-							 * float runtime = System.currentTimeMillis() -
-							 * starttime; if (Math.abs(outputtime - runtime) >
-							 * 1500) { log.info("stopping outputtime " +
-							 * outputtime + " runtime:" + runtime + " dt:" +
-							 * (outputtime - runtime)); running = false;
-							 * errors.add("stopped audio because runtime is " +
-							 * runtime + " and output/input time " +
-							 * outputtime); errors.add("samples written " +
-							 * outputsampleindex + " s/sec:" +
-							 * (outputsampleindex * 1000 / runtime)); }
-							 */
-
-							fireTimeChange(outputtime);
-						}
-						messages.add("Stopping audio");
-
-						if (outputline != null) {
-							outputline.flush();
-							outputline.drain();
-							outputline.stop();
-							outputline = null;
-						}
-						if (inputline != null) {
-							inputline.stop();
-							inputline = null;
-						}
-
-						if (track != null) {
-							log.info("recorded " + track);
-						}
-
-						stopped();
-
-						messages.add("");
-					} catch (Exception e) {
-						log.error(e);
-						stopAudio();
-					}
+					doOutputLoop(wave);
+					outputthread = null;
 				}
-			}).start();
-			//
+			});
+			outputthread.start();
+
+			if (doinput) {
+				inputthread = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						doInputLoop();
+						inputthread = null;
+					}
+				});
+				inputthread.start();
+			}
 		}
+	}
+
+	protected void doInputLoop() {
+		try {
+			messages.add("Getting audio lines");
+
+			inputrunning = true;
+
+			inputline = getInputLine();
+
+			int inputsampleindex = 0;
+
+			float inputlevel = 0;
+			int levelindex = 0;
+			//
+			messages.add("Starting audio lines");
+			//
+			inputline.start();
+
+			while (!readytogo) {
+				doWait(10);
+			}
+			//
+			messages.add("Recording");
+
+			byte inputbytes[] = new byte[outputcapacity];
+			inputline.read(inputbytes, 0, inputbytes.length);
+
+			inputsync = new Object();
+			synchronized (inputsync) {
+				inputsync.wait(20000);
+			}
+
+			log.info("input starting");
+
+			while (inputrunning) {
+				int inputlength = inputbytes.length;
+				if (inputline.available() < inputlength) {
+					inputlength = inputline.available();
+				}
+				int bytesread = inputline.read(inputbytes, 0, inputlength);
+				if (bytesread > 0) {
+					ByteBuffer wrap = ByteBuffer.wrap(inputbytes, 0, bytesread);
+					ShortBuffer shorts = wrap.asShortBuffer();
+					int index = 0;
+					float fs[] = new float[shorts.capacity()];
+					//
+					int dstindex = 0;
+					while (index < shorts.capacity() && inputrunning) {
+						float f = (1.0f * shorts.get(index) / Short.MAX_VALUE);
+						if (skipinput-- < 0) {
+							fs[dstindex++] = f;
+							inputsampleindex++;
+						}
+
+						index += 2; // FIX? Inputline is stereo
+									// and reading only mono
+									// track
+						inputlevel += f > 0 ? f : -f;
+					}
+
+					track.addSamples(fs, dstindex);
+
+					/*
+					 * log.info("input:" + bytesread + " level:" + (inputlevel /
+					 * levelindex) + " inputavail:" + inputline.available() +
+					 * " outputavail:" + outputline.available() +
+					 * " outputindex:" + outputsampleindex + " inputindex:" +
+					 * inputsampleindex + " read fs:" + fs.length);
+					 */
+
+					levelindex += index;
+					if (levelindex > 100000) {
+						inputlevel /= levelindex;
+						levelindex = 0;
+						// TODO fireLevels(inputlevel, outputlevel);
+					}
+				} else {
+					doWait(10);
+					// log.info("zero bytes read");
+				}
+				//
+				float outputtime = outputsampleindex * 1000.0f
+						/ WaazdohInfo.DEFAULT_SAMPLERATE;
+				if (inputsampleindex + skipinput > outputsampleindex) {
+					outputtime = (inputsampleindex + skipinput) * 1000.0f
+							/ WaazdohInfo.DEFAULT_SAMPLERATE;
+				}
+				/*
+				 * float runtime = System.currentTimeMillis() - starttime; if
+				 * (Math.abs(outputtime - runtime) > 1500) {
+				 * log.info("stopping outputtime " + outputtime + " runtime:" +
+				 * runtime + " dt:" + (outputtime - runtime)); running = false;
+				 * errors.add("stopped audio because runtime is " + runtime +
+				 * " and output/input time " + outputtime);
+				 * errors.add("samples written " + outputsampleindex + " s/sec:"
+				 * + (outputsampleindex * 1000 / runtime)); }
+				 */
+
+				fireTimeChange(outputtime);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			errors.add("" + e);
+		}
+
+		inputrunning = false;
+
+		messages.add("Stopping input");
+
+		try {
+			if (inputline != null) {
+				inputline.stop();
+				inputline = null;
+			}
+
+			if (track != null) {
+				log.info("recorded " + track);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			errors.add("" + e);
+		}
+
+		stopped();
+
+		messages.add("");
+	}
+
+	protected void doOutputLoop(MOutput wave) {
+		try {
+			messages.add("Getting audio lines");
+
+			outputline = getOutputLine();
+			outputsampleindex = 0;
+
+			java.nio.ByteBuffer outputbb = java.nio.ByteBuffer
+					.allocate(outputcapacity); // TODO
+
+			float outputlevel = 0;
+			int levelindex = 0;
+			//
+			messages.add("Starting audio lines");
+			//
+			outputline.start();
+
+			while (!readytogo) {
+				doWait(10);
+			}
+
+			outputline.flush();
+
+			byte[] outputarray = new byte[0];
+			int position = 0;
+			//
+			messages.add("Running");
+
+			float leftsample = 0;
+			float rightsample = 0;
+
+			if (doinput) {
+				while (inputsync == null) {
+					doWait(10);
+				}
+
+				doWait(200);
+				
+				synchronized (inputsync) {
+					inputsync.notifyAll();
+				}
+			}
+
+			log.info("output starting");
+
+			log.info("playing " + wave.getLength()
+					/ WaazdohInfo.DEFAULT_SAMPLERATE + " sec");
+
+			outputrunning = true;
+
+			while (outputrunning) {
+				// OUTPUT
+				// if (inputline == null
+				// || inputline.available() < outputline
+				// .available()) {
+				outputbb.clear();
+				while (outputrunning
+						&& outputbb.position() < outputbb.capacity()
+						&& outputbb.position() < outputline.available()) {
+					AudioSample sample = wave
+							.getSample((int) outputsampleindex);
+					// AudioSample sample = new AudioSample();
+					if (sample != null) {
+						Float fleftsample = sample.fs[0];
+						if (fleftsample != null) {
+							if (Math.abs(leftsample - fleftsample) > 0.5) {
+								log.info("SNAP samples " + fleftsample
+										+ " old:" + leftsample);
+							}
+							leftsample = fleftsample;
+						} else {
+							leftsample = 0;
+						}
+
+						Float frightsample = sample.fs[1];
+						if (frightsample != null) {
+							rightsample = frightsample;
+						} else {
+							rightsample = 0;
+						}
+					} else if (inputline == null) {
+						log.info("Output sample is null. Setting running false");
+						outputrunning = false;
+					}
+
+					outputlevel += leftsample > 0 ? leftsample : -leftsample;
+					outputlevel += rightsample > 0 ? rightsample : -rightsample;
+
+					// in stereo
+					outputbb.putShort((short) (Short.MAX_VALUE * leftsample));
+					outputbb.putShort((short) (Short.MAX_VALUE * rightsample));
+
+					outputsampleindex += (1.0f * WaazdohInfo.DEFAULT_SAMPLERATE)
+							/ outputSampleRate;
+				}
+				//
+				outputarray = outputbb.array();
+				position = outputbb.position();
+				outputline.write(outputarray, 0, position);
+				//
+				float outputtime = outputsampleindex * 1000.0f
+						/ WaazdohInfo.DEFAULT_SAMPLERATE;
+
+				fireTimeChange(outputtime);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			errors.add("" + e);
+		}
+
+		outputrunning = false;
+
+		messages.add("Stopping output");
+
+		try {
+			if (outputline != null) {
+				outputline.flush();
+				outputline.drain();
+				outputline.stop();
+				outputline = null;
+			}
+		} catch (Exception e) {
+			log.error(e);
+			errors.add("" + e);
+		}
+
+		if (!doinput) {
+			stopped();
+		}
+
+		messages.add("");
 	}
 
 	protected void doWait(int i) {
@@ -409,7 +476,9 @@ public class MAudio {
 			return dataline;
 		} catch (Exception e) {
 			audioError(info, e);
-			running = false;
+			inputrunning = false;
+			outputrunning = false;
+
 			return null;
 		}
 	}
