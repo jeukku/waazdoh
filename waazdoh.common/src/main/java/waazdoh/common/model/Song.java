@@ -156,7 +156,7 @@ public class Song {
 			version = storedbean.getAttribute("version");
 			modified = storedbean.getAttributeLong("modified");
 			created = storedbean.getAttributeLong("created");
-			
+
 			this.name = bean.getAttribute("name");
 			//
 			return parseGroupsTracks(bean);

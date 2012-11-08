@@ -221,7 +221,7 @@ public class MWave {
 	public String toString() {
 		return "NewWave[" + start + "->" + (start + getLength()) + "]["
 				+ getLength() + "]][" + (1.0f * getLength() / samplespersecond)
-				+ "]";
+				+ "][" + super.toString() + "]";
 	}
 
 	@Override
@@ -378,7 +378,7 @@ public class MWave {
 	}
 
 	public Binary getBinary() {
-		if (env != null) {
+		if (env != null && binaryid!=null) {
 			return this.env.getBinarySource().getOrDownload(binaryid);
 		} else {
 			return null;
@@ -406,8 +406,12 @@ public class MWave {
 			used();
 
 			saved = true;
+			
+			log.info("saved " + binary + " binaryid:" + binaryid);
+			
 			return saved;
 		} else {
+			log.info("Not saving because env:" + env + " saved:" + saved + " fs.length:" + getFS().length());
 			return saved;
 		}
 	}

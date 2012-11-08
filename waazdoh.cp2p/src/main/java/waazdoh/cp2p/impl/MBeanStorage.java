@@ -79,7 +79,11 @@ public class MBeanStorage {
 		String[] list = f.list();
 		Set<MID> ret = new HashSet<MID>();
 		for (String string : list) {
-			ret.add(new MID(string));
+			try {
+				ret.add(new MID(string));
+			} catch (Exception e) {
+				log.error(e);	
+			}
 		}
 		return ret;
 	}

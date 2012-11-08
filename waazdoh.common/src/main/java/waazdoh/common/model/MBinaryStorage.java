@@ -20,7 +20,6 @@ import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
 import waazdoh.service.CMService;
 
-
 public class MBinaryStorage {
 	private List<Binary> streams = new LinkedList<Binary>();
 	private Map<MID, MCRC> crcs = new HashMap<MID, MCRC>();
@@ -140,7 +139,7 @@ public class MBinaryStorage {
 
 	public void saveWaves() {
 		synchronized (streams) {
-			//log.info("save waves " + streams);
+			// log.info("save waves " + streams);
 			Collection<Binary> lwaves = streams;
 			for (Binary mWave : lwaves) {
 				try {
@@ -164,8 +163,8 @@ public class MBinaryStorage {
 				fs.save(new BufferedOutputStream(new FileOutputStream(datapath)));
 				crcs.put(fs.getID(), fs.getCRC());
 			} else {
-				log.info("not saving " + fs + " current persistent: "
-						+ persistentWaveCRC + " isReady:" + fs.isReady());
+				// log.info("not saving " + fs + " current persistent: "+
+				// persistentWaveCRC + " isReady:" + fs.isReady());
 			}
 		}
 	}
