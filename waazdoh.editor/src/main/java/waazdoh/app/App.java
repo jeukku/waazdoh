@@ -1,5 +1,8 @@
 package waazdoh.app;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.LinkedList;
@@ -17,6 +20,7 @@ import waazdoh.common.model.MBinarySource;
 import waazdoh.common.model.Song;
 import waazdoh.common.model.Track;
 import waazdoh.cp2p.impl.P2PBinarySource;
+import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
 import waazdoh.emodel.ETrack;
 
@@ -34,6 +38,8 @@ public class App {
 	private ESong _currentsong;
 	private Track recordingtrack;
 	private MPreferences preferences;
+	
+	private MLogger log = MLogger.getLogger(this);
 
 	public App(final AppPreferences p) {
 		final App me = this;
@@ -291,6 +297,19 @@ public class App {
 	public void zoom(int zoom) {
 		if (getCurrentsong() != null) {
 			getCurrentsong().zoomChanged(zoom);
+		}
+	}
+
+	public void exportSongTo(String path)  {
+		log.info("export song to " + path);
+		try {
+			getCurrentsong().getSong().getOutputWave().writeWAV(new FileOutputStream(path + File.separator + "output.wav"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			error("export", "failed to export output to " + path, e);
+		} catch (IOException e) {
+			e.printStackTrace();
+			error("export", "failed to export output to " + path, e);
 		}
 	}
 

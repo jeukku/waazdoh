@@ -23,6 +23,7 @@ import waazdoh.cutils.MLogger;
 import waazdoh.emodel.ETrack;
 
 public class MAudio {
+	private static final long MAX_INPUTLOOP_TIME = 500;
 	private MLogger log = MLogger.getLogger(this);
 	private SourceDataLine outputline;
 	private TargetDataLine inputline;
@@ -43,7 +44,7 @@ public class MAudio {
 	private IMessages messages;
 	private IMessages errors;
 	float outputsampleindex = 0;
-	private float forwardbuffer = WaazdohInfo.DEFAULT_SAMPLERATE;
+	private float forwardbuffer = WaazdohInfo.DEFAULT_SAMPLERATE * 4;
 	protected boolean readytogo;
 	private Thread outputthread;
 	private Thread inputthread;
@@ -145,6 +146,7 @@ public class MAudio {
 					outputthread = null;
 				}
 			});
+			outputthread.setPriority(Thread.MAX_PRIORITY);
 			outputthread.start();
 
 			if (doinput) {
@@ -155,6 +157,7 @@ public class MAudio {
 						inputthread = null;
 					}
 				});
+				inputthread.setPriority(Thread.MAX_PRIORITY);
 				inputthread.start();
 			}
 		}
@@ -194,6 +197,8 @@ public class MAudio {
 			log.info("input starting");
 
 			while (inputrunning) {
+				long loopstarttime = System.currentTimeMillis();
+
 				int inputlength = inputbytes.length;
 				if (inputline.available() < inputlength) {
 					inputlength = inputline.available();
@@ -258,6 +263,13 @@ public class MAudio {
 				 */
 
 				fireTimeChange(outputtime);
+				
+				long looptime = System.currentTimeMillis() - loopstarttime;
+				if (looptime > MAX_INPUTLOOP_TIME) {
+					log.error("stopping recording because loop took " + looptime + " msec");
+					triggerStop();
+				}
+				
 			}
 		} catch (Exception e) {
 			log.error(e);
@@ -285,6 +297,11 @@ public class MAudio {
 		stopped();
 
 		messages.add("");
+	}
+
+	private void triggerStop() {
+		inputrunning = false;
+		outputrunning = false;
 	}
 
 	protected void doOutputLoop(MOutput wave) {
@@ -324,7 +341,7 @@ public class MAudio {
 				}
 
 				doWait(200);
-				
+
 				synchronized (inputsync) {
 					inputsync.notifyAll();
 				}

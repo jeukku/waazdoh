@@ -1,6 +1,6 @@
 package waazdoh.swt;
 
-import java.util.Calendar;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -16,8 +16,10 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -41,7 +43,6 @@ import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.UserID;
 import waazdoh.cutils.xml.JBean;
-import waazdoh.swt.AppListenerAdapter;
 import waazdoh.swt.layouts.RowFillLayout;
 import waazdoh.swt.updater.Updater;
 
@@ -274,6 +275,16 @@ public class SWTApp {
 			}
 		});
 		settingsmenuitem.setText("Settings");
+
+		MenuItem menuitemExport = new MenuItem(contentmenu, SWT.NONE);
+		menuitemExport.setText("export");
+		menuitemExport.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				exportCurrentSong();
+			}
+		});
+
 		//
 		MenuItem menuUsersItem = new MenuItem(menu, SWT.CASCADE);
 		menuUsersItem.setText("Users");
@@ -311,6 +322,14 @@ public class SWTApp {
 		shell.layout();
 	}
 
+	protected void exportCurrentSong()  {
+		DirectoryDialog dialog = new DirectoryDialog(shell);
+		dialog.open();
+		//
+		String path = dialog.getFilterPath();
+		app.exportSongTo(path);
+	}
+
 	protected void resetCachedMenu() {
 		MBinarySource source = app.getClient().getBinarySource();
 		Set<MID> ids = source.getLocalObjectIDs();
@@ -331,7 +350,7 @@ public class SWTApp {
 						if (searchMenuItem(m, "" + songid) == null) {
 							MenuItem songitem = new MenuItem(m, SWT.None);
 							songitem.setData(songid.toString());
-							
+
 							String screated = song.getAttribute("created");
 							String smodified = song.getAttribute("modified");
 							if (screated == null) {
