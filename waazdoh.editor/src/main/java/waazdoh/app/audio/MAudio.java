@@ -114,49 +114,52 @@ public class MAudio {
 	private void start() {
 		messages.add("Getting output audio");
 		final MOutput wave = currentsong.getOutputWave();
+		if (wave != null) {
+			readytogo = false;
+			outputrunning = true;
 
-		readytogo = false;
-		outputrunning = true;
+			Thread t = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					audioRun(wave);
+				}
+			});
+			t.start();
 
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				audioRun(wave);
-			}
-		});
-		t.start();
-
-		outputbuffer.clear();
-		//
-		forwardrunner = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					int index = 0;
-					while (outputrunning) {
-						if (index < outputsampleindex + forwardbuffer) {
-							AudioSample s = wave.getSample(index++);
-							if (s != null) {
-								synchronized (outputbuffer) {
-									outputbuffer.add(s);
+			outputbuffer.clear();
+			//
+			forwardrunner = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						int index = 0;
+						while (outputrunning) {
+							if (index < outputsampleindex + forwardbuffer) {
+								AudioSample s = wave.getSample(index++);
+								if (s != null) {
+									synchronized (outputbuffer) {
+										outputbuffer.add(s);
+									}
+								} else {
+									break;
 								}
 							} else {
-								break;
+								readytogo = true;
+								doWait(10);
 							}
-						} else {
-							readytogo = true;
-							doWait(10);
 						}
+					} finally {
+						log.info("Forward runner loop done");
+						readytogo = true;
+						// telling outputloop that this thread is done
+						forwardrunner = null;
 					}
-				} finally {
-					log.info("Forward runner loop done");
-					readytogo = true;
-					// telling outputloop that this thread is done
-					forwardrunner = null;
 				}
-			}
-		}, "AudioForwardRunner");
-		forwardrunner.start();
+			}, "AudioForwardRunner");
+			forwardrunner.start();
+		} else {
+			errors.add("Song output not available");
+		}
 	}
 
 	private void audioRun(final MOutput wave) {
@@ -339,7 +342,7 @@ public class MAudio {
 			outputsampleindex = 0;
 
 			java.nio.ByteBuffer outputbb = java.nio.ByteBuffer
-					.allocate(outputcapacity); 
+					.allocate(outputcapacity);
 
 			outputrunning = true;
 			float outputlevel = 0.0f;
@@ -406,8 +409,8 @@ public class MAudio {
 					times.put("going to loop", System.currentTimeMillis());
 
 					while (outputrunning
-							&& outputbb.position() < outputbb.capacity()/4
-							//&& outputbb.position() < outputline.available()
+							&& outputbb.position() < outputbb.capacity() / 4
+							// && outputbb.position() < outputline.available()
 							&& outputbuffer.size() > 0) {
 
 						// AudioSample sample = wave.getSample((int)
@@ -456,20 +459,20 @@ public class MAudio {
 						outputsampleindex += (1.0f * WaazdohInfo.DEFAULT_SAMPLERATE)
 								/ outputSampleRate;
 					}
-					times.put("after loop", System.currentTimeMillis());					
+					times.put("after loop", System.currentTimeMillis());
 					//
 					outputarray = outputbb.array();
 					times.put("got array", System.currentTimeMillis());
 					position = outputbb.position();
 					times.put("output position", System.currentTimeMillis());
-					
+
 					while (outputline.available() < position) {
 						doWait(10);
 					}
-					
+
 					times.put("output avail " + outputline.available(),
-							System.currentTimeMillis());					
-					
+							System.currentTimeMillis());
+
 					int written = outputline.write(outputarray, 0, position);
 					times.put("line write done", System.currentTimeMillis());
 					if (written != position) {
@@ -487,14 +490,13 @@ public class MAudio {
 					//
 					long dtime = System.currentTimeMillis() - loopstart;
 					if (dtime > MAX_OUTPUTLOOP_TIME) {
-						//triggerStop();
+						// triggerStop();
 						log.info("Output -loop took " + dtime
 								+ " msec ... buffer:" + outputbuffer.size()
 
 						);
 						for (Object title : times.keySet()) {
-							log.info("Output loop time:"
-									+ title + " "
+							log.info("Output loop time:" + title + " "
 									+ (loopstart - times.get(title)));
 						}
 					}

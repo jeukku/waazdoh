@@ -17,6 +17,7 @@ import waazdoh.cutils.xml.XML;
 import waazdoh.emodel.ETrack;
 
 public class Song {
+	private static final int MAX_WAITCOUNT = 10;
 	private MID id;
 	private List<TrackGroup> trackgroups = new LinkedList<TrackGroup>();
 	private MLogger log = MLogger.getLogger(this);
@@ -238,10 +239,23 @@ public class Song {
 
 	public MOutput getOutputWave() {
 		if (output == null || hasChanged()) {
+			int waitcount = 0;
 			while (env.getService().isLoggedIn()) {
 				MProgress p = checkTracks();
 				if (p.ready()) {
 					break;
+				} else {
+					synchronized (this) {
+						try {
+							waitcount++;
+							if(waitcount>MAX_WAITCOUNT) {
+								return null;
+							}
+							this.wait(300);
+						} catch (InterruptedException e) {
+							log.error(e);
+						}
+					}
 				}
 			}
 			//
