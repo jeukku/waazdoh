@@ -1,9 +1,14 @@
 package waazdoh.app.audio;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -24,7 +29,7 @@ import waazdoh.emodel.ETrack;
 
 public class MAudio {
 	private static final long MAX_INPUTLOOP_TIME = 500;
-	private static final long MAX_OUTPUTLOOP_TIME = 10000;
+	private static final long MAX_OUTPUTLOOP_TIME = 300;
 
 	private MLogger log = MLogger.getLogger(this);
 	private SourceDataLine outputline;
@@ -334,7 +339,7 @@ public class MAudio {
 			outputsampleindex = 0;
 
 			java.nio.ByteBuffer outputbb = java.nio.ByteBuffer
-					.allocate(outputcapacity); // TODO
+					.allocate(outputcapacity); 
 
 			outputrunning = true;
 			float outputlevel = 0.0f;
@@ -376,13 +381,19 @@ public class MAudio {
 
 			long outputstarttime = System.currentTimeMillis();
 
+			Map<String, Long> times = new HashMap<String, Long>();
+
 			while (outputrunning) {
-				long loopstart = System.currentTimeMillis();
-				// OUTPUT
-				// if (inputline == null
-				// || inputline.available() < outputline
-				// .available()) {
+				times.clear();
+
+				times.put("start", System.currentTimeMillis());
 				outputbb.clear();
+
+				long loopstart = System.currentTimeMillis();
+
+				times.put("output avail time", System.currentTimeMillis());
+				times.put("output avail " + outputline.available(),
+						System.currentTimeMillis());
 
 				if (outputbuffer.size() == 0) {
 					log.info("outputbuffer empty (runner:" + forwardrunner
@@ -392,10 +403,11 @@ public class MAudio {
 						outputrunning = false;
 					}
 				} else {
+					times.put("going to loop", System.currentTimeMillis());
 
 					while (outputrunning
-							&& outputbb.position() < outputbb.capacity()
-							&& outputbb.position() < outputline.available()
+							&& outputbb.position() < outputbb.capacity()/4
+							//&& outputbb.position() < outputline.available()
 							&& outputbuffer.size() > 0) {
 
 						// AudioSample sample = wave.getSample((int)
@@ -409,10 +421,6 @@ public class MAudio {
 						if (sample != null) {
 							Float fleftsample = sample.fs[0];
 							if (fleftsample != null) {
-								if (Math.abs(leftsample - fleftsample) > 0.5) {
-									log.info("SNAP samples " + fleftsample
-											+ " old:" + leftsample);
-								}
 								leftsample = fleftsample;
 							} else {
 								leftsample = 0;
@@ -424,7 +432,7 @@ public class MAudio {
 							} else {
 								rightsample = 0;
 							}
-						} else if (inputline == null) {
+						} else {
 							log.info("Output sample is null. Setting running false");
 							outputrunning = false;
 						}
@@ -434,35 +442,72 @@ public class MAudio {
 						outputlevel += rightsample > 0 ? rightsample
 								: -rightsample;
 
+						if (leftsample >= 1 && leftsample <= -1) {
+							triggerStop();
+						}
+
 						// in stereo
-						outputbb.putShort((short) (Short.MAX_VALUE * leftsample));
-						outputbb.putShort((short) (Short.MAX_VALUE * rightsample));
+						short leftshort = (short) (Short.MAX_VALUE * leftsample);
+						short rightshort = (short) (Short.MAX_VALUE * rightsample);
+
+						outputbb.putShort(leftshort);
+						outputbb.putShort(rightshort);
 
 						outputsampleindex += (1.0f * WaazdohInfo.DEFAULT_SAMPLERATE)
 								/ outputSampleRate;
 					}
+					times.put("after loop", System.currentTimeMillis());					
 					//
 					outputarray = outputbb.array();
+					times.put("got array", System.currentTimeMillis());
 					position = outputbb.position();
-					outputline.write(outputarray, 0, position);
+					times.put("output position", System.currentTimeMillis());
+					
+					while (outputline.available() < position) {
+						doWait(10);
+					}
+					
+					times.put("output avail " + outputline.available(),
+							System.currentTimeMillis());					
+					
+					int written = outputline.write(outputarray, 0, position);
+					times.put("line write done", System.currentTimeMillis());
+					if (written != position) {
+						triggerStop();
+						log.error("wrote less that in buffer " + written
+								+ " != " + position);
+					}
 					//
 					float outputtime = outputsampleindex * 1000.0f
 							/ WaazdohInfo.DEFAULT_SAMPLERATE;
+					times.put("before fire time", System.currentTimeMillis());
 
 					fireTimeChange(outputtime);
+					times.put("after fire time", System.currentTimeMillis());
 					//
 					long dtime = System.currentTimeMillis() - loopstart;
 					if (dtime > MAX_OUTPUTLOOP_TIME) {
-						triggerStop();
-						log.info("stopping output because loop took " + dtime
-								+ " msec");
+						//triggerStop();
+						log.info("Output -loop took " + dtime
+								+ " msec ... buffer:" + outputbuffer.size()
+
+						);
+						for (Object title : times.keySet()) {
+							log.info("Output loop time:"
+									+ title + " "
+									+ (loopstart - times.get(title)));
+						}
 					}
 				} // forward buffer
 			}
 
-			long longoutputruntime = System.currentTimeMillis() - outputstarttime;
-			log.info("Output wrote " + outputsampleindex + "samples in " + longoutputruntime + "msec (" + (outputsampleindex*1000/longoutputruntime) + " s/sec)");
-			
+			long longoutputruntime = System.currentTimeMillis()
+					- outputstarttime;
+			log.info("Output wrote " + outputsampleindex + "samples in "
+					+ longoutputruntime + "msec ("
+					+ (outputsampleindex * 1000 / longoutputruntime)
+					+ " s/sec)");
+
 		} catch (Exception e) {
 			log.error(e);
 			errors.add("" + e);
