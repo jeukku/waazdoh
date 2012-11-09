@@ -304,6 +304,7 @@ public class App {
 		log.info("export song to " + path);
 		try {
 			getCurrentsong().getSong().getOutputWave().writeWAV(new FileOutputStream(path + File.separator + "output.wav"));
+			log.info("export done");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			error("export", "failed to export output to " + path, e);

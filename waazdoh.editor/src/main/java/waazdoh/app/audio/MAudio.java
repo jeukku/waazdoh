@@ -121,6 +121,8 @@ public class MAudio {
 		});
 		t.start();
 
+		outputbuffer.clear();
+		//
 		forwardrunner = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -372,6 +374,8 @@ public class MAudio {
 			log.info("playing " + wave.getLength()
 					/ WaazdohInfo.DEFAULT_SAMPLERATE + " sec");
 
+			long outputstarttime = System.currentTimeMillis();
+
 			while (outputrunning) {
 				long loopstart = System.currentTimeMillis();
 				// OUTPUT
@@ -455,6 +459,10 @@ public class MAudio {
 					}
 				} // forward buffer
 			}
+
+			long longoutputruntime = System.currentTimeMillis() - outputstarttime;
+			log.info("Output wrote " + outputsampleindex + "samples in " + longoutputruntime + "msec (" + (outputsampleindex*1000/longoutputruntime) + " s/sec)");
+			
 		} catch (Exception e) {
 			log.error(e);
 			errors.add("" + e);
