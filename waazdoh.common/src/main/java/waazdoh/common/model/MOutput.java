@@ -156,25 +156,30 @@ public class MOutput {
 	}
 
 	public synchronized void writeWAV(OutputStream fos) throws IOException {
-		log.info("writing wave " + getLength() + " " + this);
+		log.info("writing wav " + getLength() + " " + this);
 		AudioFormat format = new AudioFormat(samplespersecond, 16, 2, true,
 				true);
+		
+		log.info("writing wav " + format );
+		
 		byte[] data = new byte[2 * 2 * getLength()];
 		for (int i = 0; i < getLength(); i++) {
 			AudioSample sample = getSample(i);
 			int left = (short) (sample.fs[0] * Short.MAX_VALUE);
 			int right = (short) (sample.fs[1] * Short.MAX_VALUE);
 			// left
-			data[2 * i + 0] = (byte) (left >> 8);
-			data[2 * i + 1] = (byte) left;
+			data[4 * i + 0] = (byte) (left >> 8);
+			data[4 * i + 1] = (byte) left;
 			// right
-			data[2 * i + 2] = (byte) (right >> 8);
-			data[2 * i + 3] = (byte) right;
+			data[4 * i + 2] = (byte) (right >> 8);
+			data[4 * i + 3] = (byte) right;
 		}
 		//
 		ByteArrayInputStream bais = new ByteArrayInputStream(data);
 		AudioInputStream ais = new AudioInputStream(bais, format, getLength());
 		AudioSystem.write(ais, AudioFileFormat.Type.WAVE, fos);
+		//
+		fos.close();
 	}
 
 	public int getLength() {
