@@ -21,9 +21,9 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 import waazdoh.app.App;
 import waazdoh.app.ESong;
+import waazdoh.common.model.MProgress;
 import waazdoh.common.model.Track;
 import waazdoh.common.model.TrackListener;
-import waazdoh.swt.AppListenerAdapter;
 import waazdoh.swt.components.AudioCanvas;
 
 public class MixerTrackComposite extends Composite {
@@ -31,6 +31,7 @@ public class MixerTrackComposite extends Composite {
 	private Track track;
 	private ESong song;
 	private AudioCanvas canvas;
+	private Label lready;
 
 	public MixerTrackComposite(final App app, ESong s, Track eTrack,
 			final Composite parent) {
@@ -45,7 +46,8 @@ public class MixerTrackComposite extends Composite {
 		setLayout(gridLayout);
 
 		Composite composite = new Composite(this, SWT.NONE);
-		GridData gd_composite = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		GridData gd_composite = new GridData(SWT.LEFT, SWT.CENTER, false,
+				false, 1, 1);
 		gd_composite.heightHint = 59;
 		composite.setLayoutData(gd_composite);
 		composite.setLayout(new RowLayout(SWT.VERTICAL));
@@ -116,7 +118,7 @@ public class MixerTrackComposite extends Composite {
 		//
 		Composite bottom = new Composite(composite, SWT.NONE);
 		bottom.setLayoutData(new RowData(205, 25));
-		GridLayout gl_bottom = new GridLayout(2, false);
+		GridLayout gl_bottom = new GridLayout(6, false);
 		gl_bottom.verticalSpacing = 0;
 		gl_bottom.marginWidth = 0;
 		gl_bottom.marginHeight = 0;
@@ -125,14 +127,22 @@ public class MixerTrackComposite extends Composite {
 
 		final Spinner svolume = new Spinner(bottom, SWT.NONE);
 		svolume.setDigits(2);
-		GridData gd_svolume = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1,
-				1);
+		GridData gd_svolume = new GridData(SWT.LEFT, SWT.CENTER, false, false,
+				1, 1);
 		gd_svolume.heightHint = 22;
 		svolume.setLayoutData(gd_svolume);
 		svolume.setMaximum(VOLUMEMAX);
 		svolume.setMinimum(0);
 		svolume.setSelection((int) (track.getVolume().getLevel() * VOLUMEMAX));
 		new Label(bottom, SWT.NONE);
+		new Label(bottom, SWT.NONE);
+		new Label(bottom, SWT.NONE);
+		new Label(bottom, SWT.NONE);
+
+		lready = new Label(bottom, SWT.NONE);
+		lready.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false,
+				1, 1));
+		lready.setText("is ready?");
 		svolume.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event arg0) {
@@ -181,5 +191,12 @@ public class MixerTrackComposite extends Composite {
 				canvas.setZoom(zoom);
 			}
 		});
+	}
+
+	public void checkReady() {
+		MProgress p = new MProgress();
+		track.checkWave(p);
+		//
+		lready.setText("" + p.getPersentage() + "%");
 	}
 }

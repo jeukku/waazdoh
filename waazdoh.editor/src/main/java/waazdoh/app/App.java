@@ -10,7 +10,6 @@ import java.util.List;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-
 import waazdoh.app.audio.MAudio;
 import waazdoh.app.audio.MAudioListener;
 import waazdoh.app.swing.AppListener;
@@ -23,7 +22,6 @@ import waazdoh.cp2p.impl.P2PBinarySource;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
 import waazdoh.emodel.ETrack;
-
 
 public class App {
 	private static final String WAIT_STATE_PUBLISHING = "PUBLISHING";
@@ -38,7 +36,7 @@ public class App {
 	private ESong _currentsong;
 	private Track recordingtrack;
 	private MPreferences preferences;
-	
+
 	private MLogger log = MLogger.getLogger(this);
 
 	public App(final AppPreferences p) {
@@ -172,8 +170,12 @@ public class App {
 	}
 
 	public void play() {
-		getCurrentsong().getSong().save();
-		player.play(getAudioBuffer(), getCurrentsong().getSong());
+		try {
+			getCurrentsong().getSong().save();
+			player.play(getAudioBuffer(), getCurrentsong().getSong());
+		} catch (Exception e) {
+			error("App", "play", e);
+		}
 	}
 
 	public void record() {
@@ -300,10 +302,15 @@ public class App {
 		}
 	}
 
-	public void exportSongTo(String path)  {
+	public void exportSongTo(String path) {
 		log.info("export song to " + path);
 		try {
-			getCurrentsong().getSong().getOutputWave().writeWAV(new FileOutputStream(path + File.separator + "output.wav"));
+			getCurrentsong()
+					.getSong()
+					.getOutputWave()
+					.writeWAV(
+							new FileOutputStream(path + File.separator
+									+ "output.wav"));
 			log.info("export done");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

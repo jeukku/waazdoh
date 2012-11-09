@@ -183,7 +183,7 @@ public class Binary {
 
 	private synchronized boolean loadFromService() {
 		JBeanResponse b = service.read(getID());
-		if (b.isSuccess()) {
+		if (b!=null && b.isSuccess()) {
 			log.info("loading Binary " + b);
 			load(b.getBean().find("binary"));
 			return true;

@@ -1,6 +1,5 @@
 package waazdoh.swt;
 
-import java.util.Date;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -8,21 +7,23 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import waazdoh.WaazdohInfo;
 import waazdoh.app.App;
 import waazdoh.app.ESong;
+import waazdoh.common.model.MProgress;
 import waazdoh.common.model.Track;
 import waazdoh.common.model.TrackGroup;
 import waazdoh.common.model.TrackGroupListener;
-import waazdoh.common.waves.WaveGenerator;
-import waazdoh.common.waves.WaveGeneratorSample;
 import waazdoh.cutils.MLogger;
-import waazdoh.emodel.ETrack;
 import waazdoh.swt.layouts.RowFillLayout;
 
 public class TrackGroupComposite extends Composite {
@@ -31,6 +32,7 @@ public class TrackGroupComposite extends Composite {
 	private ESong song;
 	final private App app;
 	private MLogger log = MLogger.getLogger(this);
+	private Label lready;
 
 	/**
 	 * Create the composite.
@@ -48,14 +50,7 @@ public class TrackGroupComposite extends Composite {
 		//
 		setLayout(new TitleLayout());
 
-		final Text lgroupname = new Text(this, SWT.BORDER);
-		lgroupname.setText("trackgroup");
-		lgroupname.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent arg0) {
-				trackgroup.setName(lgroupname.getText());
-			}
-		});
+		Composite ctop = new Composite(this, SWT.NONE);
 
 		Composite cbuttons = new Composite(this, SWT.NONE);
 		cbuttons.setLayout(new RowLayout(SWT.HORIZONTAL));
@@ -64,11 +59,26 @@ public class TrackGroupComposite extends Composite {
 		bnewtrack.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				//createTestTrack();
+				// createTestTrack();
 				trackgroup.newTrack();
 			}
 		});
 		bnewtrack.setText("New Tack");
+		ctop.setLayout(new GridLayout(2, false));
+
+		final Text lgroupname = new Text(ctop, SWT.BORDER);
+		lgroupname.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true,
+				false, 1, 1));
+		lgroupname.setText("trackgroup");
+
+		lready = new Label(ctop, SWT.NONE);
+		lready.setText("is ready?");
+		lgroupname.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent arg0) {
+				trackgroup.setName(lgroupname.getText());
+			}
+		});
 
 		ctracks = new Composite(this, SWT.BORDER);
 		RowFillLayout ctrackslayout = new RowFillLayout();
@@ -106,27 +116,20 @@ public class TrackGroupComposite extends Composite {
 		return this.trackgroup;
 	}
 
-	/*
-	private void createTestTrack() {
-		ETrack et = song.getSong().newTrack();
+	public void checkReady() {
+		final MProgress p = new MProgress();
+		getTrackgroup().checkTracks(p);
 
-		final int length = WaazdohInfo.DEFAULT_SAMPLERATE * 10;
-		WaveGenerator gen = new WaveGenerator();
-		gen.generate(et, 0, length, new WaveGeneratorSample() {
-			@Override
-			public float getSample(float sample) {
-				float sec = sample / WaazdohInfo.DEFAULT_SAMPLERATE;
-				float sin = (float) Math.sin(sec * 2 * Math.PI * 110.0f);
-
-				if (sec < 0.1f) {
-					log.info("sec " + sample + " " + sin);
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				lready.setText("" + p.getPersentage() + "%");
+				//
+				Control[] cs = ctracks.getChildren();
+				for (Control control : cs) {
+					MixerTrackComposite ctrack = (MixerTrackComposite) control;
+					ctrack.checkReady();
 				}
-				return sin;
 			}
 		});
-		//
-		Track t = trackgroup.newTrack();
-		t.setName("testname" + new Date());
-		t.replaceWave(et);
-	}*/
+	}
 }

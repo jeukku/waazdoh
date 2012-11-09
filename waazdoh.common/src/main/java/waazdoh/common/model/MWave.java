@@ -87,10 +87,19 @@ public class MWave {
 	private void parseBean(JBean b) {
 		this.start = b.getAttributeInt("start");
 		this.length = b.getAttributeInt("length");
-		this.binaryid = new MID(b.getAttribute("binaryid"));
+		this.binaryid = b.getIDAttribute("binaryid");
+		if(binaryid==null) {
+			// Random binaryid. Wave will never be ready, but wont cause exception either
+			log.error("BinaryID null");
+			binaryid = new MID();
+		}
 		this.type = b.getAttribute("type");
 		this.version = b.getAttribute("version");
 		this.id = b.getIDAttribute("id");
+		if(id==null) {
+			log.error("Invalid bean, but will load anyway");
+			id = new MID();
+		}
 	}
 
 	//
@@ -418,16 +427,18 @@ public class MWave {
 
 	JBean getBean() {
 		JBean b = new JBean("wave");
-		if (binaryid != null) {
+		if (binaryid == null) {
+			b.addAttribute("error", "no binaryid");
+		} else if(id==null) {
+			b.addAttribute("error", "no id");
+		} else {
 			b.addAttribute("binaryid", binaryid);
 			b.addAttribute("length", fs != null ? fs.length() : length);
 			b.addAttribute("type", type);
 			b.addAttribute("version", version);
 			b.addAttribute("start", start);
 			b.addAttribute("id", id);
-		} else {
-			b.addAttribute("error", "no binaryid");
-		}
+		} 
 		return b;
 	}
 
