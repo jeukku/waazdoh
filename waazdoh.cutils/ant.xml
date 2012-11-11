@@ -1,0 +1,27 @@
+<project>
+
+	<condition property="isWindows">
+		<os family="windows" />
+	</condition>
+
+	<condition property="isLinux">
+		<os family="unix" />
+	</condition>
+
+	<target name="mvnwindows" if="isWindows">
+		<echo message="args ${args}" />
+		<exec  executable="cmd">
+			<arg value="/C mvn ${args}" />
+		</exec>
+	</target>
+
+	<target name="mvnlinux" if="isLinux">
+		<exec executable="mvn">
+			<arg value="${args}" />
+		</exec>
+	</target>
+
+
+	<target name="runmvn" depends="mvnwindows, mvnlinux">
+	</target>
+</project>

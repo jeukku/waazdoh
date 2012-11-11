@@ -248,7 +248,7 @@ public class Song {
 					synchronized (this) {
 						try {
 							waitcount++;
-							if(waitcount>MAX_WAITCOUNT) {
+							if (waitcount > MAX_WAITCOUNT) {
 								return null;
 							}
 							this.wait(300);
@@ -313,7 +313,8 @@ public class Song {
 		//
 		boolean changed = hasChanged();
 		if (!changed) {
-			log.info("song has changed. Saving.");
+			log.info("song has changed. Saving. " + storedbean + " current:"
+					+ getBean());
 
 			updateVersion();
 			//
@@ -322,7 +323,6 @@ public class Song {
 			log.info("storing " + storedbean);
 			JBeanResponse response = env.getService().write(sid, storedbean);
 			log.info("save song got response " + response);
-			//
 			//
 			return response.isSuccess();
 		} else {

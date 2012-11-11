@@ -1,14 +1,9 @@
 <project>
+	<import file="../waazdoh.cutils/ant.xml" />
+
 	<property name="projectname" value="waazdoh.swt" />
 	<property name="staging.dir" value="target/staging" />
 
-	<condition property="isWindows">
-		<os family="windows" />
-	</condition>
-
-	<condition property="isLinux">
-		<os family="unix" />
-	</condition>
 
 	<target name="swtt.check.uptodate">
 		<uptodate property="swtt.notrequired" targetfile="target/build.trig">
@@ -19,17 +14,12 @@
 
 	</target>
 
-	<target name="if_windows" unless="swtt.notrequired" if="isWindows">
+	<target name="deploy">
 		<echo file="target/build.trig">Done</echo>
-		<exec command="${mvn} -P launch4j install" failonerror="true" />
-	</target>
 
-	<target name="if_unix" unless="swtt.notrequired" if="isLinux">
-		<echo file="target/build.trig">Done</echo>
-		<exec command="${mvn} install" failonerror="true" />
-	</target>
-
-	<target name="deploy" depends="swtt.check.uptodate, if_windows, if_unix">
+		<ant target="runmvn">
+			<property name="args" value="-P launch4j install" />
+		</ant>
 		<echo>Done</echo>
 	</target>
 </project>

@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<packaging>jar</packaging>
-	<version>0.5.1</version>
+	<version>0.5.2</version>
 	<name>waazdoh.swt</name>
 	<url>http://maven.apache.org</url>
 	<groupId>waazdoh</groupId>
@@ -12,7 +12,7 @@
 		<cxf.version>2.4.2</cxf.version>
 		<izpack-standalone.version>4.3.5</izpack-standalone.version>
 		<app.dir>target/webapp</app.dir>
-		<exe.version>0.5.1.1</exe.version>
+		<exe.version>0.5.2.0</exe.version>
 	</properties>
 
 	<build>
