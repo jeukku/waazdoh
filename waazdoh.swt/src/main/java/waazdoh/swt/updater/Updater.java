@@ -1,6 +1,6 @@
 package waazdoh.swt.updater;
 
-import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,7 +19,7 @@ import waazdoh.cutils.MURL;
 public class Updater {
 	public static final String NOTIFICATIONSOURCE = "UPDATER";
 	public static final String STARTED_UPDATE = "started_update";
-	private static final String UPDATE_DONE = "update_done";
+	private static final String UPDATE_DONE = "Restart application to complete update.";
 
 	private MPreferences preferences;
 	private String url;
@@ -77,6 +77,7 @@ public class Updater {
 					byte[] zippackage = call(zipurl);
 					ZipInputStream dec = new ZipInputStream(
 							new ByteArrayInputStream(zippackage));
+
 					while (true) {
 						ZipEntry e = dec.getNextEntry();
 						if (e == null) {
@@ -85,25 +86,26 @@ public class Updater {
 						filecount++;
 						//
 						String name = e.getName();
+						log.info("zipfile entry " + name);
 						name = ".." + File.separator + name;
 						
 						if (e.isDirectory()) {
 							File d = new File(name);
 							d.mkdirs();
 						} else {
-							String output = name;
-							BufferedInputStream bis = new BufferedInputStream(
-									dec);
+							String output = name;//
+							//BufferedInputStream bis = new BufferedInputStream(dec);
 							FileOutputStream fos = new FileOutputStream(output);
+							BufferedOutputStream bos = new BufferedOutputStream(fos);
 							while (true) {
-								int b = bis.read();
+								int b = dec.read();
 								if (b < 0) {
 									break;
 								}
-								fos.write(b);
+								bos.write(b);
 							}
-							fos.close();
-							bis.close();
+							bos.close();
+							dec.closeEntry();
 						}
 					}
 
@@ -124,6 +126,7 @@ public class Updater {
 		//
 		URLCaller urlcaller = new URLCaller(murl, new ClientProxySettings());
 		byte[] sbody = urlcaller.getResponseBody();
+		log.info("got zip bytes " + sbody.length);
 		return sbody;
 	}
 }

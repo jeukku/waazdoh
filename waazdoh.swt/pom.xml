@@ -12,7 +12,7 @@
 		<cxf.version>2.4.2</cxf.version>
 		<izpack-standalone.version>4.3.5</izpack-standalone.version>
 		<app.dir>target/webapp</app.dir>
-		<exe.version>0.5.2.0</exe.version>
+		<exe.version>0.5.4.0</exe.version>
 	</properties>
 
 	<build>
@@ -237,8 +237,9 @@
 								<configuration>
 									<headerType>gui</headerType>
 									<outfile>src/main/app/bin/waazdoh.exe</outfile>
-									<jar>target/waazdoh-app-${app.arch}-distribution/bin/waazdoh-app-${app.arch}-with-dep.jar</jar>
+									<jar>waazdoh-app-${app.arch}-with-dep.jar</jar>
 									<errTitle>Waazdoh</errTitle>
+									<dontWrapJar>true</dontWrapJar>
 									<classPath>
 										<mainClass>waazdoh.swt.AppLauncher</mainClass>
 										<addDependencies>false</addDependencies>
@@ -248,6 +249,9 @@
 										<path>../jre
 										</path>
 										<minVersion>1.5.0</minVersion>
+										<opts>
+											<opt>-Djava.util.logging.config.file=logging.properties</opt>
+										</opts>
 									</jre>
 									<versionInfo>
 										<fileVersion>${exe.version}</fileVersion>

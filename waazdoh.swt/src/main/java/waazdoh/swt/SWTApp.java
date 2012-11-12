@@ -261,21 +261,6 @@ public class SWTApp {
 		});
 		mntmNewItem.setText("New Song");
 		//
-		MenuItem menuApplicationItem = new MenuItem(menu, SWT.CASCADE);
-		menuApplicationItem.setText("Application");
-		Menu menuApplication = new Menu(menuApplicationItem);
-		menuApplicationItem.setMenu(menuApplication);
-
-		MenuItem settingsmenuitem = new MenuItem(menuApplication, SWT.NONE);
-		settingsmenuitem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				PreferencesDialog dialog = new PreferencesDialog(shell, app);
-				dialog.open();
-			}
-		});
-		settingsmenuitem.setText("Settings");
-
 		MenuItem menuitemExport = new MenuItem(contentmenu, SWT.NONE);
 		menuitemExport.setText("export");
 		menuitemExport.addSelectionListener(new SelectionAdapter() {
@@ -316,6 +301,24 @@ public class SWTApp {
 			}
 		});
 
+		MenuItem menuApplicationItem = new MenuItem(menu, SWT.CASCADE);
+		menuApplicationItem.setText("Application");
+		Menu menuApplication = new Menu(menuApplicationItem);
+		menuApplicationItem.setMenu(menuApplication);
+
+		MenuItem settingsmenuitem = new MenuItem(menuApplication, SWT.NONE);
+		settingsmenuitem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				PreferencesDialog dialog = new PreferencesDialog(shell, app);
+				dialog.open();
+			}
+		});
+		settingsmenuitem.setText("Settings");
+		
+		MenuItem version = new MenuItem(menuApplication, SWT.NONE);
+		version.setText("Version " + App.VERSION);
+		
 		//
 		layout.topControl = mainview;
 		cstack.layout();

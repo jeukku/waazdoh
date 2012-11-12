@@ -2,6 +2,7 @@ package waazdoh.swt;
 
 import java.net.MalformedURLException;
 import java.util.StringTokenizer;
+import java.util.logging.LogManager;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -16,7 +17,7 @@ public class AppLauncher {
 	private App app;
 	private MLogger log = MLogger.getLogger(this);
 	
-	public AppLauncher(AppPreferences p) throws MalformedURLException {
+	public AppLauncher(AppPreferences p) throws MalformedURLException {		
 		log.info("running app wit preferences " + p);
 		app = new App(p);
 		SWTApp window = new SWTApp(app);
@@ -41,6 +42,7 @@ public class AppLauncher {
 				p.get(name, st.nextToken()); // default value used if value
 												// doesn't exist
 			}
+
 			new AppLauncher(p);
 		} catch (Exception e) {
 			e.printStackTrace();
