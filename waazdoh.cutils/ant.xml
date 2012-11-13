@@ -10,13 +10,13 @@
 
 	<target name="mvnwindows" if="isWindows">
 		<echo message="args ${args}" />
-		<exec  executable="cmd">
+		<exec  executable="cmd" dir="${mvndir}">
 			<arg value="/C mvn ${args}" />
 		</exec>
 	</target>
 
 	<target name="mvnlinux" if="isLinux">
-		<exec executable="mvn">
+		<exec executable="mvn" dir="${mvndir}">
 			<arg value="${args}" />
 		</exec>
 	</target>
