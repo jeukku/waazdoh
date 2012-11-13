@@ -1,5 +1,6 @@
 <project>
-
+	<property name="mvndir" value="." />
+	
 	<condition property="isWindows">
 		<os family="windows" />
 	</condition>

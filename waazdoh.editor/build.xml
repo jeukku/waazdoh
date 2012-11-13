@@ -1,5 +1,7 @@
 <project>
-	<property name="projectname" value="waazdoh.editor" />
+	<import file="../waazdoh.cutils/ant.xml" />
+
+		<property name="projectname" value="waazdoh.editor" />
 
 	<target name="appt.check.uptodate">
 		<uptodate property="appt.notrequired" targetfile="target/build.trig">
@@ -10,7 +12,10 @@
 	</target>
 
 	<target name="waazdohappt_dobuild" unless="appt.notrequired">
-		<exec command="${mvn} install" failonerror="true" />
+		<ant target="runmvn">
+			<property name="args" value="install" />
+		</ant>
+
 		<echo file="target/build.trig">Done</echo>
 		<delete file="../waazdoh.swt/target/build.trig" />
 	</target>

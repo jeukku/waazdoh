@@ -1,5 +1,7 @@
 <project>
-	<property name="projectname" value="waazdoh.common" />
+	<import file="../waazdoh.cutils/ant.xml" />
+
+		<property name="projectname" value="waazdoh.common" />
 
 	<target name="common.check.uptodate">
 		<uptodate property="common.notrequired" targetfile="target/build.trig">
@@ -13,7 +15,9 @@
 		<echo file="../waazdoh.client/target/common.build.trig">Done</echo>
 		<echo file="../waazdoh.service/target/common.build.trig">Done</echo>
 		
-		<exec command="${mvn} install" failonerror="true" />
+		<ant target="runmvn">
+			<property name="args" value="install" />
+		</ant>
 	</target>
 
 	<target name="build" depends="common.check.uptodate, waazdohcommon_dobuild">

@@ -1,4 +1,6 @@
 <project>
+	<import file="../waazdoh.cutils/ant.xml" />
+
 	<property name="projectname" value="waazdoh.audio" />
 
 	<target name="waazdoh.audio.check.uptodate">
@@ -13,7 +15,9 @@
 		<echo file="../waazdoh.client/target/waazdoh.audio.build.trig">Done</echo>
 		<echo file="../waazdoh.common/build.waazdoh.audio.trig">Done</echo>
 		
-		<exec command="${mvn} install" failonerror="true" />
+		<ant target="runmvn">
+			<property name="args" value="install" />
+		</ant>
 	</target>
 
 	<target name="build" depends="waazdoh.audio.check.uptodate, waazdoh.audio_dobuild">
