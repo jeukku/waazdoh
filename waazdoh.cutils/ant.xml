@@ -10,7 +10,7 @@
 
 	<target name="mvnwindows" if="isWindows">
 		<echo message="args ${args}" />
-		<exec executable="cmd">
+		<exec  executable="cmd">
 			<arg value="/C mvn ${args}" />
 		</exec>
 	</target>
@@ -23,12 +23,5 @@
 
 
 	<target name="runmvn" depends="mvnwindows, mvnlinux">
-	</target>
-
-	<target name="clean">
-		<deltree dir="bin" />
-		<ant target="runmvn">
-			<property name="args" value="clean" />
-		</ant>
 	</target>
 </project>
