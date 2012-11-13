@@ -4,10 +4,10 @@
     <ROW Property="ALLUSERS" Value="2"/>
     <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
     <ROW Property="Manufacturer" Value="Waazdoh" ValueLocId="*"/>
-    <ROW Property="ProductCode" Value="1033:{8D77BB75-0B2F-4184-AB02-E2C1929A58CA} " Type="16"/>
+    <ROW Property="ProductCode" Value="1033:{FA58589B-5EBE-4136-9AC7-D6621A5B4BB8} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Waazdoh Client 32bit" ValueLocId="*"/>
-    <ROW Property="ProductVersion" Value="0.5.4"/>
+    <ROW Property="ProductVersion" Value="0.5.5"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
     <ROW Property="UpgradeCode" Value="{7929183E-4D85-4E61-A125-3746EA41BD1B}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>

@@ -25,7 +25,7 @@ import waazdoh.emodel.ETrack;
 
 public class App {
 	private static final String WAIT_STATE_PUBLISHING = "PUBLISHING";
-	public static final String VERSION = "20121111_2329";
+	public static final String VERSION = "20121113_1718";
 	public static final String NOTIFICATION_AUDIO = "audio";
 	protected static final String NOTIFICATION_AUDIO_ERROR = "audioerror";
 
