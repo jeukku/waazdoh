@@ -6,6 +6,7 @@
 *.[oa]
 *~
 .metadata
+.project
 *.class
 build
 target
@@ -27,3 +28,4 @@ null
 lib
 cc.properties
 .msi
+bin
