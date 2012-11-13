@@ -1,4 +1,6 @@
 <project>
+	<import file="../waazdoh.cutils/ant.xml" />
+
 	<property name="projectname" value="cp2p" />
 
 	<target name="p2p.check.uptodate">
@@ -12,7 +14,9 @@
 		<echo file="target/build.trig">Done</echo>
 
 		<!-- <exec command="${mvn} package" failonerror="true" /> -->
-		<exec command="${mvn} install" failonerror="true" />
+		<ant target="runmvn">
+			<property name="args" value="install" />
+		</ant>
 	</target>
 
 	<target name="build" depends="p2p.check.uptodate, cp2p_dobuild">
@@ -21,7 +25,9 @@
 
 	<target name="clean">
 		<deltree dir="bin" />
-		<exec command="${mvn} clean" failonerror="false" />
+		<ant target="runmvn">
+			<property name="args" value="clean" />
+		</ant>
 	</target>
 
 </project>

@@ -1,4 +1,6 @@
 <project>
+	<import file="../waazdoh.cutils/ant.xml" />
+
 	<property name="projectname" value="cutils" />
 
 	<target name="cutils.check.uptodate">
@@ -14,7 +16,9 @@
 		<echo file="../waazdoh.service/target/cutils.build.trig">Done</echo>
 
 		<echo file="../waazdoh.common/build.cutils.trig">Done</echo>
-		<exec command="${mvn} install" failonerror="true" />
+		<ant target="runmvn">
+			<property name="args" value="install" />
+		</ant>
 	</target>
 
 	<target name="build" depends="cutils.check.uptodate, waazdohcutils_dobuild">
@@ -23,7 +27,9 @@
 
 	<target name="clean">
 		<deltree dir="bin" />
-		<exec command="${mvn} clean" failonerror="false" />
+		<ant target="runmvn">
+			<property name="args" value="clean" />
+		</ant>
 	</target>
 
 </project>
