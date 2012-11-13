@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-
 import waazdoh.common.model.Binary;
 import waazdoh.cp2p.impl.handlers.ByteArraySource;
 import waazdoh.cp2p.impl.handlers.PingHandler;
@@ -21,7 +20,6 @@ import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.service.ReportingService;
-
 
 public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
 	static final int MESSAGESENDLOOP_COUNT = 3;
@@ -66,7 +64,9 @@ public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
 
 	@Override
 	public void reportDownload(MID id, boolean success) {
-		reporting.reportDownload(id, success);
+		if (reporting != null) {
+			reporting.reportDownload(id, success);
+		}
 	}
 
 	public String getInfoText() {
@@ -515,7 +515,7 @@ public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
 	public void removeDownload(MID id) {
 		synchronized (downloads) {
 			log.info("removing download " + id);
-			if(getDownload(id)!=null) {
+			if (getDownload(id) != null) {
 				getDownload(id).stop();
 				downloads.remove(id);
 			}
