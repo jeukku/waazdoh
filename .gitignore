@@ -27,5 +27,5 @@ cmusic.web/webapp/js/cmusic.js
 null
 lib
 cc.properties
-.msi
+*.msi
 bin
