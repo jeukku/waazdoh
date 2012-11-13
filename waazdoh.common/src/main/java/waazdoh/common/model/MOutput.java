@@ -159,9 +159,9 @@ public class MOutput {
 		log.info("writing wav " + getLength() + " " + this);
 		AudioFormat format = new AudioFormat(samplespersecond, 16, 2, true,
 				true);
-		
-		log.info("writing wav " + format );
-		
+
+		log.info("writing wav " + format);
+
 		byte[] data = new byte[2 * 2 * getLength()];
 		for (int i = 0; i < getLength(); i++) {
 			AudioSample sample = getSample(i);

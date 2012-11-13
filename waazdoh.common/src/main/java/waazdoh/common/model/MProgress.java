@@ -17,7 +17,7 @@ public class MProgress {
 
 	public int getPersentage() {
 		if (total == 0) {
-			return 0;
+			return 100;
 		} else {
 			return (int) (100.0f * progress / total);
 		}
@@ -25,6 +25,6 @@ public class MProgress {
 
 	@Override
 	public String toString() {
-		return "Progress[" + getPersentage() + "]";
+		return "Progress[" + getPersentage() + "][/" + total + "]";
 	}
 }

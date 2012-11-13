@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Display;
 
 import waazdoh.WaazdohInfo;
 import waazdoh.common.model.MOutput;
+import waazdoh.common.model.MProgress;
 import waazdoh.common.model.Track;
 
 public class AudioCanvas extends Canvas {
@@ -27,9 +28,14 @@ public class AudioCanvas extends Canvas {
 
 		addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
-				Image image = getImage();
-				if (image != null) {
-					e.gc.drawImage(image, 0, 0);
+				MProgress p = input.getProgress();
+				if (p.ready()) {
+					Image image = getImage();
+					if (image != null) {
+						e.gc.drawImage(image, 0, 0);
+					}
+				} else {
+					e.gc.drawText("" + p, 0, 20);
 				}
 			}
 		});
@@ -125,6 +131,11 @@ public class AudioCanvas extends Canvas {
 			public Float getSample(int channel, int sample) {
 				return output.getSample(sample).fs[channel];
 			}
+
+			@Override
+			public MProgress getProgress() {
+				return new MProgress();
+			}
 		};
 		reset();
 	}
@@ -158,6 +169,13 @@ public class AudioCanvas extends Canvas {
 					return null;
 				}
 			}
+
+			@Override
+			public MProgress getProgress() {
+				MProgress p = new MProgress();
+				track.checkWave(p);
+				return p;
+			}
 		};
 		reset();
 	}
@@ -174,6 +192,8 @@ public class AudioCanvas extends Canvas {
 	private interface CanvasInput {
 
 		Float getSample(int channel, int sample);
+
+		MProgress getProgress();
 
 	}
 }

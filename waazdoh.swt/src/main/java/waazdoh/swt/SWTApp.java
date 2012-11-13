@@ -348,9 +348,9 @@ public class SWTApp {
 						String name = bname.getValue();
 						log.info("cachedmenu item name " + name + " with bean "
 								+ b);
-						final MID songid = b.getIDAttribute("id");
+						final MID songid = song.getIDAttribute("id");
 						Menu m = getCachedSongMenu(name);
-						if (searchMenuItem(m, "" + songid) == null) {
+						if (songid!=null && searchMenuItem(m, "" + songid) == null) {
 							MenuItem songitem = new MenuItem(m, SWT.None);
 							songitem.setData(songid.toString());
 
@@ -508,7 +508,7 @@ public class SWTApp {
 	private void initObjectMenu(final MID mid, Menu m) {
 		JBeanResponse resp = app.getClient().getService().read(mid);
 		if (resp != null) {
-			JBean obean = resp.getBean().get("song");
+			JBean obean = resp.getBean().find("song");
 			if (obean != null) {
 				MenuItem mi = new MenuItem(m, SWT.None);
 				mi.setText("" + mid);

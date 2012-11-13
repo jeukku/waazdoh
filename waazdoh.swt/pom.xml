@@ -28,8 +28,6 @@
 
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2.2</version>
-
 				<executions>
 					<execution>
 						<id>make-assembly</id> <!-- this is used for inheritance merges -->
@@ -128,12 +126,6 @@
 			<groupId>org.eclipse.jface</groupId>
 			<artifactId>org.eclipse.jface</artifactId>
 			<version>3.8.0.v20120521-2329</version>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging-api</artifactId>
-			<version>1.1</version>
 		</dependency>
 
 		<!-- <dependency> <groupId>org.codehaus.plexus</groupId> <artifactId>plexus-utils</artifactId> 

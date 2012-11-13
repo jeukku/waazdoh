@@ -537,7 +537,7 @@ public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
 
 	public boolean canDownload() {
 		return downloads.size() < p.getInteger(
-				MPreferences.NETWORK_MAX_DOWNLOADS, 1);
+				MPreferences.NETWORK_MAX_DOWNLOADS, 8);
 	}
 
 	public void clearMemory(int suggestedmemorytreshold) {
