@@ -1,5 +1,6 @@
 package waazdoh.swt;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.util.StringTokenizer;
 import java.util.logging.LogManager;
@@ -34,7 +35,10 @@ public class AppLauncher {
 			AppPreferences p = new AppPreferences();
 			//
 			p.get("cmusic.app.autologin", "false");
-			p.get("local.path", "waazdohmusic");
+			String localpath = p.get("local.path", "waazdohmusic");
+			String logspath = localpath + File.separator + "logs";
+			File logsdir = new File(logspath);
+			logsdir.mkdirs();
 			//
 			for (String string : args) {
 				StringTokenizer st = new StringTokenizer(string, "=");
