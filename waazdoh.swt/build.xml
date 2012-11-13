@@ -20,6 +20,9 @@
 		<ant target="runmvn">
 			<property name="args" value="-P launch4j install" />
 		</ant>
+		<ant target="runmvn">
+			<property name="args" value="install" />
+		</ant>
 		<echo>Done</echo>
 	</target>
 </project>
