@@ -4,7 +4,7 @@
     <ROW Property="ALLUSERS" Value="2"/>
     <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
     <ROW Property="Manufacturer" Value="Waazdoh" ValueLocId="*"/>
-    <ROW Property="ProductCode" Value="1033:{692F0BE7-96B7-47D2-BAB8-2F098F7B6364} " Type="16"/>
+    <ROW Property="ProductCode" Value="1033:{8D77BB75-0B2F-4184-AB02-E2C1929A58CA} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Waazdoh Client 32bit" ValueLocId="*"/>
     <ROW Property="ProductVersion" Value="0.5.4"/>
@@ -851,7 +851,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.CacheComponent">
     <ATTRIBUTE name="CacheIndex" value="waazdohclient32.txt"/>
-    <ATTRIBUTE name="Folder" value="..\..\..\target\client32-cache"/>
+    <ATTRIBUTE name="Folder" value="..\..\..\target\msi32-cache"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
     <ROW Path="&lt;AI_DICTS&gt;ui.ail"/>
