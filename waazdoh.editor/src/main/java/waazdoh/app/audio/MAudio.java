@@ -96,9 +96,6 @@ public class MAudio {
 		//
 		inputrunning = false;
 		outputrunning = false;
-		while (inputthread != null || outputthread != null) {
-			doWait(100);
-		}
 	}
 
 	private void stopped() {
@@ -171,8 +168,11 @@ public class MAudio {
 
 				@Override
 				public void run() {
-					doOutputLoop(wave);
-					outputthread = null;
+					try {
+						doOutputLoop(wave);
+					} finally {
+						outputthread = null;
+					}
 				}
 			}, "AudioOutputThread");
 			outputthread.setPriority(Thread.MAX_PRIORITY);
@@ -182,8 +182,11 @@ public class MAudio {
 				inputthread = new Thread(new Runnable() {
 					@Override
 					public void run() {
-						doInputLoop();
-						inputthread = null;
+						try {
+							doInputLoop();
+						} finally {
+							inputthread = null;
+						}
 					}
 				}, "AudioInputThread");
 				inputthread.setPriority(Thread.MAX_PRIORITY);
@@ -209,7 +212,7 @@ public class MAudio {
 			//
 			inputline.start();
 
-			while (!readytogo) {
+			while (!readytogo && inputrunning) {
 				doWait(10);
 			}
 			//
@@ -220,7 +223,7 @@ public class MAudio {
 
 			inputsync = new Object();
 			synchronized (inputsync) {
-				inputsync.wait(20000);
+				inputsync.wait(4000);
 			}
 
 			log.info("input starting");
@@ -276,20 +279,10 @@ public class MAudio {
 				//
 				float outputtime = outputsampleindex * 1000.0f
 						/ WaazdohInfo.DEFAULT_SAMPLERATE;
-				if (inputsampleindex + skipinput > outputsampleindex) {
-					outputtime = (inputsampleindex + skipinput) * 1000.0f
+				if (inputsampleindex > outputsampleindex) {
+					outputtime = (inputsampleindex) * 1000.0f
 							/ WaazdohInfo.DEFAULT_SAMPLERATE;
 				}
-				/*
-				 * float runtime = System.currentTimeMillis() - starttime; if
-				 * (Math.abs(outputtime - runtime) > 1500) {
-				 * log.info("stopping outputtime " + outputtime + " runtime:" +
-				 * runtime + " dt:" + (outputtime - runtime)); running = false;
-				 * errors.add("stopped audio because runtime is " + runtime +
-				 * " and output/input time " + outputtime);
-				 * errors.add("samples written " + outputsampleindex + " s/sec:"
-				 * + (outputsampleindex * 1000 / runtime)); }
-				 */
 
 				fireTimeChange(outputtime);
 
@@ -366,7 +359,7 @@ public class MAudio {
 			float rightsample = 0;
 
 			if (doinput) {
-				while (inputsync == null) {
+				while (inputsync == null && outputrunning && inputrunning) {
 					doWait(10);
 				}
 

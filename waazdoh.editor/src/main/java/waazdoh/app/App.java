@@ -169,10 +169,14 @@ public class App {
 		}
 	}
 
-	public void play() {
+	public synchronized void play() {
 		try {
-			getCurrentsong().getSong().save();
-			player.play(getAudioBuffer(), getCurrentsong().getSong());
+			if (getCurrentsong().getSong().checkTracks().ready()) {
+				getCurrentsong().getSong().save();
+				player.play(getAudioBuffer(), getCurrentsong().getSong());
+			} else {
+				notification("THIS", "play pressed. sowut?");
+			}
 		} catch (Exception e) {
 			error("App", "play", e);
 		}
@@ -181,8 +185,7 @@ public class App {
 	public void record() {
 		try {
 			if (recordingtrack != null) {
-				recordingtrack.replaceWave(getCurrentsong().getSong()
-						.newTrack());
+				recordingtrack.clear();
 			}
 
 			getCurrentsong().getSong().save();
@@ -198,11 +201,11 @@ public class App {
 		return player;
 	}
 
-	public void stop() {
+	public synchronized void stop() {
 		player.stopAudio();
 	}
 
-	protected void audioStopped() {
+	protected synchronized void audioStopped() {
 		if (recordingtrack != null) {
 			recordingtrack.replaceWave(getAudio().getRecordedTrack());
 			client.save(getCurrentsong().getSong());
