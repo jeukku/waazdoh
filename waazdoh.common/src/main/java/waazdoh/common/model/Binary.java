@@ -188,6 +188,7 @@ public class Binary {
 			load(b.getBean().find("binary"));
 			return true;
 		} else {
+			log.info("Service read " + getID() + " failed");
 			return false;
 		}
 	}
