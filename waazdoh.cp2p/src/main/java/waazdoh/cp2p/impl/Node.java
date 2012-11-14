@@ -197,6 +197,8 @@ public class Node {
 
 	public List<MMessage> incomingMessages(List<MMessage> messages) {
 		if (messages.size() > 0) {
+			updatePing();
+			
 			if (id == null) {
 				this.id = new MID(messages.get(0).getAttribute("sentby"));
 			}
@@ -208,5 +210,9 @@ public class Node {
 			}
 		}
 		return getMessages();
+	}
+
+	private void updatePing() {
+		lastping = System.currentTimeMillis();
 	}
 }
