@@ -109,7 +109,7 @@ public class Song {
 		return beanxml;
 	}
 
-	public JBean getBean() {
+	public synchronized JBean getBean() {
 		JBean b = new JBean("song");
 		if (id != null) {
 			b.add("id").setValue(id.toString());
@@ -130,7 +130,7 @@ public class Song {
 		return b;
 	}
 
-	public boolean load(Reader stringReader) {
+	public synchronized boolean load(Reader stringReader) {
 		XML xml;
 		try {
 			xml = new XML(stringReader);
@@ -237,7 +237,7 @@ public class Song {
 		return tg;
 	}
 
-	public MOutput getOutputWave() {
+	public synchronized MOutput getOutputWave() {
 		if (output == null || hasChanged()) {
 			int waitcount = 0;
 			while (env.getService().isLoggedIn()) {
@@ -249,6 +249,8 @@ public class Song {
 						try {
 							waitcount++;
 							if (waitcount > MAX_WAITCOUNT) {
+								log.info("Not waiting for output more than "
+										+ (waitcount * 300));
 								return null;
 							}
 							this.wait(300);
@@ -286,7 +288,7 @@ public class Song {
 		listeners.add(songListener);
 	}
 
-	public boolean publish() {
+	public synchronized boolean publish() {
 		List<TrackGroup> ts = trackgroups;
 		for (TrackGroup track : ts) {
 			track.save();
@@ -330,17 +332,17 @@ public class Song {
 		}
 	}
 
-	private boolean hasChanged() {
+	private synchronized boolean hasChanged() {
 		JBean bean = getBean();
 		boolean changed = bean.equals(storedbean);
 		return changed;
 	}
 
-	public List<TrackGroup> getTrackGroups() {
+	public synchronized List<TrackGroup> getTrackGroups() {
 		return new LinkedList<TrackGroup>(trackgroups);
 	}
 
-	public void clearMemory(int time) {
+	public synchronized void clearMemory(int time) {
 		for (TrackGroup t : this.trackgroups) {
 			t.clearMemory(time);
 		}
@@ -354,7 +356,7 @@ public class Song {
 		return new ETrack(env);
 	}
 
-	public void setName(String string) {
+	public synchronized void setName(String string) {
 		this.name = string;
 		this.updateVersion();
 	}
