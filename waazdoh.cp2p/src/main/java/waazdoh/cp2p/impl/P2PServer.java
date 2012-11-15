@@ -239,6 +239,7 @@ public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
 				if (node.getID() != null && node.getID().equals(networkid)) {
 					log.info("Having myself as remote node. Removing.");
 					synchronized (nodes) {
+						node.close();
 						nodes.remove(node);
 					}
 				} else if (node.shouldDie()) {
