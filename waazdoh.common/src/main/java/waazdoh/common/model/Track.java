@@ -302,4 +302,8 @@ public class Track {
 	public void addListener(TrackListener trackListener) {
 		listeners.add(trackListener);
 	}
+
+	public void clear() {
+		waves.clear();
+	}
 }

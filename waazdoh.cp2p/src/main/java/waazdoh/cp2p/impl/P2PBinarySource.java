@@ -3,7 +3,6 @@ package waazdoh.cp2p.impl;
 import java.io.File;
 import java.util.Set;
 
-
 import waazdoh.common.model.Binary;
 import waazdoh.common.model.BinaryListener;
 import waazdoh.common.model.MBinarySource;
@@ -85,7 +84,8 @@ public class P2PBinarySource implements MBinarySource {
 
 	@Override
 	public boolean isRunning() {
-		return server.isRunning();
+		return storage != null && this.beanstorage != null
+				&& server.isRunning();
 	}
 
 	@Override
@@ -135,7 +135,7 @@ public class P2PBinarySource implements MBinarySource {
 	public Set<MID> getLocalObjectIDs() {
 		return beanstorage.getLocalSetIDs();
 	}
-	
+
 	public synchronized Binary getOrDownload(MID fsid) {
 		Binary fs = get(fsid);
 		if (fs == null) {
