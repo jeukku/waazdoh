@@ -2,7 +2,6 @@ package waazdoh;
 
 import java.util.LinkedList;
 import java.util.List;
-
 import waazdoh.cutils.MLogger;
 
 public class CMJobs {
