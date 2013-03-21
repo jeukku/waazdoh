@@ -96,12 +96,14 @@
 			<version>3.5.7.Final</version>
 		</dependency>
 
-		<!-- -->
+		<!--
 		<dependency>
 			<groupId>com.kenai.jxse</groupId>
 			<artifactId>jxse</artifactId>
-			<version>2.6</version>
+			<version>2.5</version>
 		</dependency>
+		-->
+		
 	</dependencies>
 
 	<repositories>

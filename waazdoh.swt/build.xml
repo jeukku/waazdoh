@@ -7,14 +7,15 @@
 
 	<target name="swtt.check.uptodate">
 		<uptodate property="swtt.notrequired" targetfile="target/build.trig">
-			<srcfiles dir="src/" excludes="**/*.exe" />
+		    <!-- 
+			 -->
+   			<srcfiles dir="src/" excludes="**/*.exe" />
 			<srcfiles dir="./" includes="*.xml" excludes="target" />
-			<srcfiles dir="./" includes="*.trig" excludes="target" />
 		</uptodate>
 
 	</target>
 
-	<target name="deploy">
+	<target name="deploy" unless="swtt.notrequired">
 		<echo file="target/build.trig">Done</echo>
 
 		<ant target="runmvn">
@@ -25,4 +26,8 @@
 		</ant>
 		<echo>Done</echo>
 	</target>
+	
+	<target name="build" depends="swtt.check.uptodate, deploy">
+		<echo>Done</echo>
+	</target>	
 </project>
