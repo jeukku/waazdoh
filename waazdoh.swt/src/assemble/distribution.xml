@@ -7,35 +7,16 @@
 	<formats>
 		<format>dir</format>
 	</formats>
-	<!-- 
-	<files>
-		<file>
-			<source>target/waazdoh-app-${app.arch}-distribution/bin/waazdoh-app-${app.arch}-with-dep.jar</source>
-			<outputDirectory>/bin/</outputDirectory>
-		</file>
-	</files> -->	
+	<!-- <files> <file> <source>target/waazdoh-app-${app.arch}-distribution/bin/waazdoh-app-${app.arch}-with-dep.jar</source> 
+		<outputDirectory>/bin/</outputDirectory> </file> </files> -->
 	<fileSets>
 		<fileSet>
 			<directory>src/main/app</directory>
 			<outputDirectory>/</outputDirectory>
 			<includes>
-				<include>*/**</include>
+				<include>*.lst</include>
+				<include>*.txt</include>
 			</includes>
-			<excludes>
-				<exclude>*/*~</exclude>
-				<exclude>*/*.dat</exclude>
-			</excludes>
-		</fileSet>
-		<fileSet>
-			<directory>${java.home}</directory>
-			<outputDirectory>../jre</outputDirectory>
-			<includes>
-				<include>*/**</include>
-			</includes>
-			<excludes>
-				<exclude>*/*~</exclude>
-				<exclude>*/*.dat</exclude>
-			</excludes>
 		</fileSet>
 	</fileSets>
 </assembly>

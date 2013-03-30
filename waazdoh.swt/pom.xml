@@ -18,6 +18,27 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.0-beta-3</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<propertyName>timestamp</propertyName>
+					<format>{0,date,yyyyMM}</format>
+					<items>
+						<item>timestamp</item>
+					</items>
+				</configuration>
+			</plugin>
+
+			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<!-- <version>2.5.1</version> -->
 				<configuration>
@@ -43,7 +64,7 @@
 								</manifest>
 							</archive>
 							<outputDirectory>
-								target/waazdoh-app-${app.arch}-distribution/bin/
+								src/main/app/bin/
 							</outputDirectory>
 							<descriptors>
 								<descriptor>src/assemble/jar.xml</descriptor>
@@ -62,6 +83,31 @@
 							<descriptors>
 								<descriptor>src/assemble/distribution.xml</descriptor>
 							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version> 
+				<executions>
+					<execution>
+						<id>default-cli</id>
+						<phase>install</phase>
+						<goals>
+						<goal>run</goal></goals>
+						<configuration>
+							<tasks>
+								<!-- -->
+								 <zip destfile="${project.build.directory}/waazdoh-app-${app.arch}-distribution/bin${buildNumber}.zip">
+								 	<fileset dir="src/main/app/bin" />
+								</zip> 
+								 <zip destfile="${project.build.directory}/waazdoh-app-${app.arch}-distribution/jre${buildNumber}.zip">
+								 	<fileset dir="${java.home}" />
+								</zip> 
+							</tasks>
 						</configuration>
 					</execution>
 				</executions>

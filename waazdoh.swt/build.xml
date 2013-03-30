@@ -7,9 +7,11 @@
 
 	<target name="swtt.check.uptodate">
 		<uptodate property="swtt.notrequired" targetfile="target/build.trig">
-		    <!-- 
-			 -->
-   			<srcfiles dir="src/" excludes="**/*.exe" />
+   			<srcfiles dir="src/" >
+   			    <include name="*.sh"/>
+   			    <include name="*.txt"/>
+   				<include name="*.properties"/>   			    
+   			</srcfiles>
 			<srcfiles dir="./" includes="*.xml" excludes="target" />
 		</uptodate>
 
@@ -18,9 +20,6 @@
 	<target name="deploy" unless="swtt.notrequired">
 		<echo file="target/build.trig">Done</echo>
 
-		<ant target="runmvn">
-			<property name="args" value="-P launch4j install" />
-		</ant>
 		<ant target="runmvn">
 			<property name="args" value="install" />
 		</ant>
