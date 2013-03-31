@@ -104,8 +104,8 @@
 								 <zip destfile="${project.build.directory}/waazdoh-app-${app.arch}-distribution/bin${buildNumber}.zip">
 								 	<fileset dir="src/main/app/bin" />
 								</zip> 
-								 <zip destfile="${project.build.directory}/waazdoh-app-${app.arch}-distribution/jre${buildNumber}.zip">
-								 	<fileset dir="${java.home}" />
+								 <zip destfile="${project.build.directory}/waazdoh-app-${app.arch}-distribution/jdk${java.version}.zip">
+								 	<fileset dir="${jdk}" />
 								</zip> 
 							</tasks>
 						</configuration>
@@ -205,6 +205,7 @@
 				<swt.artifactId>org.eclipse.swt.win32.win32.x86_64</swt.artifactId>
 				<app.arch>windows_64</app.arch>
 				<doexe>true</doexe>
+    		    <jdk>${env.JAVA_HOME}</jdk>  
 			</properties>
 		</profile>
 		<profile>
