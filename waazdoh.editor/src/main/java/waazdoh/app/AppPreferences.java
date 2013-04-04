@@ -15,11 +15,13 @@ import waazdoh.cutils.MPreferences;
 public class AppPreferences implements MPreferences {
 	private Preferences p;
 	private MLogger log = MLogger.getLogger(this);
-
-	public AppPreferences() {
+	private String path;
+	
+	public AppPreferences(String path) {
+		this.path = path;
 		Properties props = new Properties();
 		try {
-			props.load(new FileReader("default.properties"));
+			props.load(new FileReader(path + File.separator + "default.properties"));
 		} catch (IOException e) {
 			e.printStackTrace();
 			log.error(e);

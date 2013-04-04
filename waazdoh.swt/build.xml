@@ -9,6 +9,7 @@
 		<uptodate property="swtt.notrequired" targetfile="target/build.trig">
    			<srcfiles dir="src/" >
    			    <include name="*.sh"/>
+   			    <include name="**/*.lst"/>
    			    <include name="*.txt"/>
    				<include name="*.properties"/>   			    
    			</srcfiles>
