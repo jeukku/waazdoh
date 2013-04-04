@@ -10,7 +10,7 @@
    			<srcfiles dir="src/" >
    			    <include name="*.sh"/>
    			    <include name="**/*.lst"/>
-   			    <include name="*.txt"/>
+   			    <include name="**/*.java"/>
    				<include name="*.properties"/>   			    
    			</srcfiles>
 			<srcfiles dir="./" includes="*.xml" excludes="target" />

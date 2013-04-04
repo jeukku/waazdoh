@@ -98,5 +98,4 @@ public class MLogger {
 	public void error(String string) {
 		info("ERROR " + string);
 	}
-
 }

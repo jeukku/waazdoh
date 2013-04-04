@@ -20,6 +20,7 @@ public class AppPreferences implements MPreferences {
 	public AppPreferences(String path) {
 		this.path = path;
 		Properties props = new Properties();
+		
 		try {
 			props.load(new FileReader(path + File.separator + "default.properties"));
 		} catch (IOException e) {
