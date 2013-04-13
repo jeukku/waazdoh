@@ -1,6 +1,5 @@
 package waazdoh.swt;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -19,7 +18,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -44,7 +42,6 @@ import waazdoh.cutils.MLogger;
 import waazdoh.cutils.UserID;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.swt.layouts.RowFillLayout;
-import waazdoh.swt.updater.Updater;
 
 public class SWTApp {
 	protected Shell shell;
@@ -86,8 +83,6 @@ public class SWTApp {
 				});
 			}
 		});
-		//
-		new Updater(app, app.getPreferences());
 		//
 		open();
 	}
