@@ -25,4 +25,9 @@
 
 	<target name="runmvn" depends="mvnwindows, mvnlinux">
 	</target>
+	
+	<target name="clean">
+		<deltree dir="bin" />
+	    <deltree dir="target" />
+	</target>
 </project>

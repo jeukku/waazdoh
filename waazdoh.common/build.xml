@@ -23,9 +23,4 @@
 	<target name="build" depends="common.check.uptodate, waazdohcommon_dobuild">
 		<echo>Done</echo>
 	</target>
-	
-	<target name="clean" >
-		<deltree dir="bin"/>
-		<exec command="${mvn} clean" failonerror="false" />
-	</target>
 </project>
