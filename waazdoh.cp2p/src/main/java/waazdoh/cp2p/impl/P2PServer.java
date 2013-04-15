@@ -26,6 +26,8 @@ public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
 	private static final int MAX_SENTCOUNT = 2;
 	private static final long REBOOT_DELAY = 120000;
 	//
+	public static final String PREFERENCES_PORT = "p2pserver.port";
+	//
 	private MLogger log = MLogger.getLogger(this);
 	private final Map<MID, Download> downloads = new HashMap<MID, Download>();
 	MID networkid;
@@ -172,7 +174,7 @@ public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
 		}
 		//
 		if (dobind) {
-			tcplistener = new TCPListener(tg, this);
+			tcplistener = new TCPListener(tg, this, p);
 			tcplistener.start();
 		}
 

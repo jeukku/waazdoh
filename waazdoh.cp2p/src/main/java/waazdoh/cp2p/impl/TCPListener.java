@@ -18,6 +18,7 @@ import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
 import waazdoh.cutils.MLogger;
+import waazdoh.cutils.MPreferences;
 
 public class TCPListener {
 	public static final int DEFAULT_PORT = 7900;
@@ -34,9 +35,12 @@ public class TCPListener {
 
 	private boolean closed;
 
-	public TCPListener(ThreadGroup tg, MMessager mMessager) {
+	private MPreferences preferences;
+
+	public TCPListener(ThreadGroup tg, MMessager mMessager, MPreferences p) {
 		this.messager = mMessager;
 		this.tg = tg;
+		this.preferences = p;
 	}
 
 	public void start() {
@@ -56,6 +60,8 @@ public class TCPListener {
 			});
 			bootstrap.setOption("child.tcpNoDelay", false);
 			bootstrap.setOption("child.keepAlive", false);
+			//
+			port = preferences.getInteger(P2PServer.PREFERENCES_PORT, DEFAULT_PORT);
 			//
 			while (bind == null && port < 65000) {
 				try {
