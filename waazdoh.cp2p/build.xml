@@ -21,10 +21,4 @@
 	<target name="build" depends="p2p.check.uptodate, cp2p_dobuild">
 		<echo>Done</echo>
 	</target>
-
-	<target name="clean">
-		<deltree dir="bin" />
-		<exec command="${mvn} clean" failonerror="false" />
-	</target>
-
 </project>
