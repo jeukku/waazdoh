@@ -7,9 +7,9 @@ import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 
 public class Node {
-	private static final long MAX_DIE_TIME = 10000;
+	private static final long MAX_DIE_TIME = 30100;
 	private static final int WARNING_TRESHOLD = 5;
-	private static final long MAX_PINGDELAY = 1000;
+	private static final long MAX_PINGDELAY = 10000;
 	private static final int MAX_MESSAGES_COUNT = 20;
 	private MID id;
 	//
