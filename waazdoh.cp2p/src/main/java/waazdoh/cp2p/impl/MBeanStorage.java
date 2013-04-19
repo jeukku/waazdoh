@@ -21,7 +21,7 @@ public class MBeanStorage {
 	private String path;
 
 	public MBeanStorage(MPreferences preferences) {
-		this.path = preferences.get(MPreferences.LOCAL_PATH) + File.separator
+		this.path = preferences.get(MPreferences.LOCAL_PATH, MPreferences.LOCAL_PATH_DEFAULT) + File.separator
 				+ "beans";
 		File file = new File(path);
 		file.mkdirs();

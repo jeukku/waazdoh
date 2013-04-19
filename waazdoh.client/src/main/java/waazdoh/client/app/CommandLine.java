@@ -53,7 +53,7 @@ public class CommandLine {
 		this.oggenc = p.get("oggenc", "oggenc");
 
 		String email = p.get("email", "downloader@waazdoh.com");
-		String savedsession = p.get("saved_session");
+		String savedsession = p.get("saved_session", null);
 		String appname = "downloaderapp";
 		MID appid = new MID();
 		//
@@ -63,7 +63,7 @@ public class CommandLine {
 		p.get(CommandLine.OUTPUT_PATH, "waazdohoutput");
 		p.get(MPreferences.NETWORK_MAX_DOWNLOADS, "" + 2);
 		
-		this.outputpath = p.get(CommandLine.OUTPUT_PATH);
+		this.outputpath = p.get(CommandLine.OUTPUT_PATH, "waazdohoutput");
 		File foutputpath = new File(outputpath);
 		foutputpath.mkdirs();
 

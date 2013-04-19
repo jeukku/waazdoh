@@ -1,5 +1,5 @@
 <project>
-	<property name="mvndir" value="." />
+    <property name="mvndir" value="." />
 	
 	<condition property="isWindows">
 		<os family="windows" />
@@ -11,7 +11,14 @@
 
 	<target name="mvnwindows" if="isWindows">
 		<echo message="args ${args}" />
-		<exec  executable="cmd" dir="${mvndir}">
+		
+		<script language="javascript">
+    		var before = project.getProperty("args");
+    		project.setProperty("logname", before.replaceAll("\:", "_").replaceAll(" ", "_"));
+		</script>
+				
+		<echo message="args ${workspace_loc}/logs/${projectname}_${logname}.log" />
+				<exec  executable="cmd" dir="${mvndir}" output="${workspace_loc}/logs/${projectname}_${logname}.log" >
 			<arg value="/C mvn ${args}" />
 		</exec>
 	</target>

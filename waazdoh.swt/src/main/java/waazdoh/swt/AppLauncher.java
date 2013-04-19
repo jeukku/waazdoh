@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 
 import waazdoh.app.App;
-import waazdoh.app.AppPreferences;
+import waazdoh.cutils.AppPreferences;
 import waazdoh.cutils.MLogger;
 
 public class AppLauncher {
@@ -31,14 +31,7 @@ public class AppLauncher {
 	 */
 	public static void main(String[] args) {
 		try {
-			String path = "";
-			for (String string : args) {
-				if (string.indexOf("=") < 0) {
-					path = string;
-				}
-			}
-
-			AppPreferences p = new AppPreferences(path);
+			AppPreferences p = new AppPreferences();
 			//
 			p.get("cmusic.app.autologin", "false");
 			String localpath = p.get("local.path", "waazdohmusic");

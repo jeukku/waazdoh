@@ -8,18 +8,13 @@ public class PreferencesImpl implements MPreferences {
 	private Map<String, String> values = new HashMap<String, String>();
 
 	@Override
-	public String get(String string) {
-		return values.get(string);
-	}
-
-	@Override
 	public Set<String> getNames() {
 		return values.keySet();
 	}
 	
 	@Override
 	public String get(String name, String defaultvalue) {
-		String v = get(name);
+		String v = values.get(name);
 		if (v == null) {
 			set(name, defaultvalue);
 		}
@@ -33,8 +28,8 @@ public class PreferencesImpl implements MPreferences {
 	}
 
 	@Override
-	public boolean getBoolean(String name) {
-		return Boolean.parseBoolean(get(name));
+	public boolean getBoolean(String name, boolean def) {
+		return Boolean.parseBoolean(get(name, "" + def));
 	}
 
 	@Override

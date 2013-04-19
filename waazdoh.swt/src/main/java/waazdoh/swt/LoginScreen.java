@@ -19,7 +19,6 @@ import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 import waazdoh.swt.AppListenerAdapter;
 
-
 public class LoginScreen extends Composite {
 	private static final String PREF_AUTOLOGIN = "cmusic.app.autologin";
 	private static final String PREF_SAVEDEMAIL = "cmusic.app.saved_email";
@@ -86,7 +85,7 @@ public class LoginScreen extends Composite {
 	}
 
 	private void init() {
-		if (app != null && app.getPreferences().getBoolean(PREF_AUTOLOGIN)) {
+		if (app != null && app.getPreferences().getBoolean(PREF_AUTOLOGIN, false)) {
 			setSavedLoginScreen();
 			//
 			Display.getDefault().asyncExec(new Runnable() {
@@ -203,9 +202,10 @@ public class LoginScreen extends Composite {
 	}
 
 	private boolean doSavedLogin() {
-		String username = app.getClient().getPreferences().get(PREF_SAVEDEMAIL);
+		String username = app.getClient().getPreferences()
+				.get(PREF_SAVEDEMAIL, null);
 		String session = app.getClient().getPreferences()
-				.get(PREF_SAVEDSESSION);
+				.get(PREF_SAVEDSESSION, null);
 		if (username != null && session != null) {
 			return app.getClient().setUsernameAndSession(username, session);
 		} else {

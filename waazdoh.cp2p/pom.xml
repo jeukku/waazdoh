@@ -122,12 +122,5 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-		<repository>
-			<id>repository.devmas-set.utbm.fr</id>
-			<url>http://devmas-set.utbm.fr/janus/maven/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
 	</repositories>
 </project>

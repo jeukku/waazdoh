@@ -50,7 +50,7 @@ public class MClient implements ReportingService, MEnvironment {
 		//
 		this.preferences = p;
 		this.source = wavesource;
-		if ("true".equals(p.get(MPreferences.SERVICE_MOCK))) {
+		if ("true".equals(p.getBoolean(MPreferences.SERVICE_MOCK, false))) {
 			service = new ServiceMock(source);
 		} else {
 			service = new RestClient(getServiceURL(), source);
@@ -110,7 +110,7 @@ public class MClient implements ReportingService, MEnvironment {
 
 	private String getServiceURL() {
 		MPreferences p = getPreferences();
-		return p.get(MPreferences.SERVICE_URL);
+		return p.get(MPreferences.SERVICE_URL, "THIS_SHOULD_BE_SERVICE_URL");
 	}
 
 	public MPreferences getPreferences() {

@@ -24,7 +24,6 @@ import org.eclipse.swt.widgets.Text;
 
 import waazdoh.app.App;
 
-
 public class PreferencesDialog extends Dialog {
 	private Table table;
 	private App app;
@@ -72,7 +71,7 @@ public class PreferencesDialog extends Dialog {
 		for (String string : names) {
 			TableItem tableItem = new TableItem(table, SWT.NONE);
 			String[] array = new String[] { string,
-					app.getPreferences().get(string) };
+					app.getPreferences().get(string, null) };
 			tableItem.setText(array);
 		}
 

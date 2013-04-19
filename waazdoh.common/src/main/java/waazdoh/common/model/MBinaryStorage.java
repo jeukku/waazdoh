@@ -31,7 +31,7 @@ public class MBinaryStorage {
 	private boolean directorytree;
 
 	public MBinaryStorage(MPreferences p, CMService service) {
-		this.localpath = p.get(MPreferences.LOCAL_PATH);
+		this.localpath = p.get(MPreferences.LOCAL_PATH, ".waazdoh");
 		this.service = service;
 		//
 		Thread t = new Thread(new Runnable() {
@@ -57,7 +57,7 @@ public class MBinaryStorage {
 
 	public MBinaryStorage(MPreferences preferences, CMService service2,
 			boolean usedirectorytree) {
-		this.localpath = preferences.get(MPreferences.LOCAL_PATH);
+		this.localpath = preferences.get(MPreferences.LOCAL_PATH, ".waazdoh");
 		this.directorytree = usedirectorytree;
 		this.service = service2;
 	}

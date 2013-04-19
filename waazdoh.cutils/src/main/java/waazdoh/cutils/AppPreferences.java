@@ -1,41 +1,23 @@
-package waazdoh.app;
+package waazdoh.cutils;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import waazdoh.cutils.MLogger;
-import waazdoh.cutils.MPreferences;
 
 public class AppPreferences implements MPreferences {
 	private Preferences p;
 	private MLogger log = MLogger.getLogger(this);
-	private String path;
 	
-	public AppPreferences(String path) {
-		this.path = path;
-		Properties props = new Properties();
+	public AppPreferences() {
+		String prefix = System.getProperty("waazdoh.prefix");
+		if(prefix==null) {
+			prefix = "default";
+		}
 		
-		try {
-			props.load(new FileReader(path + File.separator + "default.properties"));
-		} catch (IOException e) {
-			e.printStackTrace();
-			log.error(e);
-		}
-		p = Preferences.userNodeForPackage(getClass()).node(
-				"" + props.getProperty("preferences.node"));
-		for (Object okey : props.keySet()) {
-			String key = "" + okey;
-			String value = "" + props.getProperty(key);
-			log.info("default preference setting " + key + "->" + value);
-			get(key, value);
-		}
-
+		p = Preferences.userRoot().node("waazdoh/" + prefix);
 	}
 
 	@Override
@@ -57,9 +39,14 @@ public class AppPreferences implements MPreferences {
 	@Override
 	public String get(String name, String defaultvalue) {
 		if (p.get(name, null) == null && defaultvalue != null) {
+			if(System.getProperty("waazdoh." + name)!=null) {
+				defaultvalue = System.getProperty("waazdoh." + name);
+			}
+			//
 			set(name, defaultvalue);
 		}
 		String parsed = parse(name, p.get(name, defaultvalue));
+
 		log.info("get " + name + " = " + parsed);
 		return parsed;
 	}
@@ -68,19 +55,6 @@ public class AppPreferences implements MPreferences {
 	public int getInteger(String string, int i) {
 		String sint = get(string, "" + i);
 		return Integer.parseInt(sint);
-	}
-
-	@Override
-	public String get(String string) {
-		String value = p.get(string, null);
-		if (value != null) {
-			String parsed = parse(string, value);
-			log.info("get " + string + " = " + parsed);
-			return parsed;
-		} else {
-			log.info("no setting called \"" + string + "\"");
-			return null;
-		}
 	}
 
 	private String parse(String name, String value) {
@@ -104,7 +78,7 @@ public class AppPreferences implements MPreferences {
 	}
 
 	@Override
-	public boolean getBoolean(String valuename) {
-		return "true".equals("" + get(valuename));
+	public boolean getBoolean(String valuename, boolean defaultvalue) {
+		return "true".equals("" + get(valuename, "" + defaultvalue));
 	}
 }
