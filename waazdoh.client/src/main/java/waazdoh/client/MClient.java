@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 import waazdoh.CMJobs;
 import waazdoh.client.rest.RestClient;
 import waazdoh.client.test.ServiceMock;
@@ -255,12 +254,12 @@ public class MClient implements ReportingService, MEnvironment {
 				song = null;
 			}
 		}
-		
+
 		Set<ClientListener> ls = listeners;
 		for (ClientListener clientListener : ls) {
 			clientListener.songLoaded(song);
 		}
-		
+
 		return song;
 	}
 
@@ -291,7 +290,11 @@ public class MClient implements ReportingService, MEnvironment {
 	public String requestAppLogin(String email, String appname, MID appid) {
 		if (service.getSessionID() == null) {
 			String sessionid = service.requestAppLogin(email, appname, appid);
-			startMemoryHandlingThread();
+			if (sessionid != null) {
+				startMemoryHandlingThread();
+				loggedIn();
+			}
+			//
 			return sessionid;
 		} else {
 			return service.getSessionID();

@@ -64,6 +64,7 @@ public class LoginScreen extends Composite {
 						log.error(e);
 					}
 				}
+				log.info("Login GUI wait loop out");
 			}
 		});
 		t.start();
