@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import waazdoh.app.App;
 import waazdoh.app.ESong;
+import waazdoh.cutils.MLogger;
 import waazdoh.swt.AppListenerAdapter;
 import org.eclipse.swt.widgets.Label;
 
@@ -24,7 +25,8 @@ public class MainView extends Composite {
 	private CTabFolder songTabs;
 	private SongToolsComposite songtools;
 	private int songcounter;
-
+	private MLogger log = MLogger.getLogger(this);
+	
 	public MainView(App app, Composite parent, int style) {
 		super(parent, style);
 		this.app = app;
@@ -53,11 +55,12 @@ public class MainView extends Composite {
 
 				@Override
 				public void error(String title, String message, Exception e) {
+					log.error(e);
 					appError(title, message, e);
 				}
 
 			});
-
+ 
 		}
 	}
 

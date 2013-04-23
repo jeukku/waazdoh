@@ -6,17 +6,16 @@ import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-
 public class AppPreferences implements MPreferences {
 	private Preferences p;
 	private MLogger log = MLogger.getLogger(this);
-	
+
 	public AppPreferences() {
 		String prefix = System.getProperty("waazdoh.prefix");
-		if(prefix==null) {
+		if (prefix == null) {
 			prefix = "default";
 		}
-		
+
 		p = Preferences.userRoot().node("waazdoh/" + prefix);
 	}
 
@@ -39,7 +38,7 @@ public class AppPreferences implements MPreferences {
 	@Override
 	public String get(String name, String defaultvalue) {
 		if (p.get(name, null) == null && defaultvalue != null) {
-			if(System.getProperty("waazdoh." + name)!=null) {
+			if (System.getProperty("waazdoh." + name) != null) {
 				defaultvalue = System.getProperty("waazdoh." + name);
 			}
 			//
@@ -69,7 +68,9 @@ public class AppPreferences implements MPreferences {
 
 	@Override
 	public void set(String name, String value) {
-		p.put(name, value);
+		if (name != null && value != null) {
+			p.put(name, value);
+		}
 	}
 
 	@Override
