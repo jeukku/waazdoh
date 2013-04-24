@@ -119,17 +119,19 @@
 			<version>1.0.3-SNAPSHOT</version>
 		</dependency>
 
+		<!-- 
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty</artifactId>
 			<version>4.0.0.Alpha5</version>
 		</dependency>
-
+ 
 		<dependency>
 			<groupId>jxta</groupId>
 			<artifactId>jxta</artifactId>
 			<version>2.0</version>
-		</dependency>
+		</dependency> 		-->
+		
 	</dependencies>
 
 	<repositories>
