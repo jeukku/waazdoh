@@ -10,7 +10,7 @@
  ******************************************************************************/
 package waazdoh.common.model;
 
-public interface TrackListener {
+public interface ServiceObjectListener {
 
 	void modified();
 

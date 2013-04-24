@@ -11,11 +11,9 @@
 package waazdoh.common.model;
 
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 import waazdoh.WaazdohInfo;
-import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MCRC;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
@@ -23,62 +21,41 @@ import waazdoh.cutils.UserID;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.emodel.ETrack;
 
-
-public class Track {
+public class Track implements ServiceObjectData {
 	private Curve volume = new Curve();
 	private WaveList waves;
+
+	private ServiceObject so;
 
 	private String name = "Track";
 	//
 	private MLogger log = MLogger.getLogger(this);
 	//
-	private UserID creatorid;
 
 	private String comment;
-	private MID id = new MID();
-	private long created = System.currentTimeMillis();
-	private long modifytime;
 	private boolean muted;
 	private String version;
-	private MEnvironment env;
 
-	private JBean storedbean = new JBean("temp");
 	private float framerate = WaazdohInfo.DEFAULT_SAMPLERATE;
 
-	private List<TrackListener> listeners = new LinkedList<TrackListener>();
-	private MID copyof;
-
 	public Track(UserID creatorid, MEnvironment env) {
-		this.env = env;
+		so = new ServiceObject("track", env, creatorid, this);
+
 		waves = new WaveList(env);
-		this.creatorid = creatorid;
 
 		this.version = WaazdohInfo.version;
-		this.created = System.currentTimeMillis();
 		this.comment = "Created at " + new Date();
 	}
 
-	public boolean load(MID trackid) {
-		JBeanResponse response = env.getService().read(trackid);
-		if (response.isSuccess()) {
-			return parseBean(response.getBean());
-		} else {
-			log.info("loading track bean failed " + trackid);
-			return false;
-		}
-	}
-
-	private synchronized boolean parseBean(JBean btrack) {
+	public synchronized boolean parseBean(JBean btrack) {
 		if (btrack.get("object") != null) {
-			btrack = btrack.get("object").get("track");	
+			btrack = btrack.get("object").get("track");
 		}
 
 		comment = btrack.getAttribute("comment");
 		version = btrack.getAttribute("version");
 		volume = new Curve(btrack.get("volume"));
 		name = btrack.getAttribute("name");
-		created = btrack.getAttributeLong("created");
-		creatorid = btrack.getUserAttribute("creator");
 		muted = btrack.getAttributeBoolean("muted");
 
 		JBean bwaves = btrack.get("wavelist").get("list");
@@ -93,7 +70,8 @@ public class Track {
 	}
 
 	private boolean loadWave(JBean b) {
-		MWave wave = env.getObjectFactory().newWave(b, env);
+		MWave wave = getServiceObject().getEnvironment().getObjectFactory()
+				.newWave(b, getServiceObject().getEnvironment());
 
 		log.info("adding wave " + wave);
 		waves.add(wave);
@@ -126,7 +104,7 @@ public class Track {
 	}
 
 	public MID getID() {
-		return id;
+		return getServiceObject().getID();
 	}
 
 	public Float getSample(int time) {
@@ -192,16 +170,12 @@ public class Track {
 		}
 	}
 
-	public JBean getTrackBean() {
-		JBean bt = new JBean("track");
-		bt.add("id").setValue(id.toString());
+	public JBean getBean() {
+		JBean bt = getServiceObject().getBean();
 		bt.addAttribute("comment", "" + comment);
-		bt.addAttribute("created", created);
-		bt.addAttribute("modified", modifytime);
 		bt.addAttribute("muted", muted);
 		bt.addAttribute("name", name);
 		bt.addAttribute("version", version);
-		bt.addAttribute("creator", creatorid.toString());
 
 		JBean bvol = bt.add("volume");
 		volume.addTo(bvol);
@@ -210,37 +184,17 @@ public class Track {
 		return bt;
 	}
 
-	public void updateVersion() {
-		getID().updateVersion();
-	}
-
-	public long getModifytime() {
-		return modifytime;
-	}
-
 	public void clearMemory(int time) {
 		waves.clearMemory(time);
 	}
 
-	public synchronized void publish() {
-		save();
-		env.getService().publish(id);
-		waves.publish();
+	public ServiceObject getServiceObject() {
+		return so;
 	}
 
-	public void save() {
-		if(!env.getUserID().equals(creatorid)) {
-			copyof = getID().copy();
-			id = new MID();
-			creatorid = env.getUserID();		
-		}
-		
-		if (!storedbean.equals(getTrackBean())) {
-			modified();
-			JBean trackBean = getTrackBean();
-			storedbean = trackBean;
-			env.getService().write(getID(), trackBean);
-		}
+	public synchronized void publish() {
+		getServiceObject().publish();
+		waves.publish();
 	}
 
 	public boolean isMuted() {
@@ -253,23 +207,13 @@ public class Track {
 
 	public void replaceWave(ETrack recordedTrack) {
 		waves.replace(recordedTrack);
-		modified();
-	}
-
-	private void modified() {
-		updateVersion();
-		modifytime = System.currentTimeMillis();
-		//
-		LinkedList<TrackListener> ls = new LinkedList<TrackListener>(listeners);
-		for (TrackListener trackListener : ls) {
-			trackListener.modified();
-		}
+		getServiceObject().modified();
 	}
 
 	private void resetWaves() {
-		updateVersion();
+		getServiceObject().updateVersion();
 		waves.clear();
-		modified();
+		getServiceObject().modified();
 	}
 
 	public Curve getVolume() {
@@ -278,7 +222,7 @@ public class Track {
 
 	public String getDetailInfo() {
 		String s = "";
-		s += getTrackBean();
+		s += getBean();
 		s += waves.getDetailInfo();
 		return s;
 	}
@@ -309,11 +253,19 @@ public class Track {
 		return waves.getCRC();
 	}
 
-	public void addListener(TrackListener trackListener) {
-		listeners.add(trackListener);
-	}
-
 	public void clear() {
 		waves.clear();
+	}
+
+	public long getModifytime() {
+		return getServiceObject().getModifytime();
+	}
+
+	public void save() {
+		getServiceObject().save();
+	}
+
+	public boolean load(MID mid) {
+		return getServiceObject().load(mid);
 	}
 }

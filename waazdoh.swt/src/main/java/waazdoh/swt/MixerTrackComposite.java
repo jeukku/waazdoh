@@ -33,7 +33,7 @@ import waazdoh.app.App;
 import waazdoh.app.ESong;
 import waazdoh.common.model.MProgress;
 import waazdoh.common.model.Track;
-import waazdoh.common.model.TrackListener;
+import waazdoh.common.model.ServiceObjectListener;
 import waazdoh.swt.components.AudioCanvas;
 
 public class MixerTrackComposite extends Composite {
@@ -188,7 +188,7 @@ public class MixerTrackComposite extends Composite {
 			}
 		});
 
-		track.addListener(new TrackListener() {
+		track.getServiceObject().addListener(new ServiceObjectListener() {
 			@Override
 			public void modified() {
 				canvas.reset();

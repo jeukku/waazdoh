@@ -44,7 +44,7 @@ public class TestPreferences implements MPreferences {
 
 	public Preferences getPrefs() {
 		Preferences prefs = Preferences.userNodeForPackage(getClass()).node(
-				username);
+				"test/" + username);
 		return prefs;
 	}
 
@@ -70,7 +70,7 @@ public class TestPreferences implements MPreferences {
 	}
 
 	@Override
-	public boolean getBoolean(String name) {
+	public boolean getBoolean(String name, boolean defbool) {
 		return "true".equals(get(name));
 	}
 
@@ -85,7 +85,6 @@ public class TestPreferences implements MPreferences {
 		}
 	}
 
-	@Override
 	public String get(String string) {
 		return getPrefs().get(string, "");
 	}
