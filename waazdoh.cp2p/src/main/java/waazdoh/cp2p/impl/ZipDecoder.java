@@ -49,8 +49,7 @@ public class ZipDecoder extends FrameDecoder {
 					baos.toByteArray()));
 			baos = null;
 			zis.getNextEntry();
-			// log.info("zipdecoder entry " + entry + " context:" + arg0 +
-			// " channel:" + arg1 + " cb:" + cb);
+			 log.info("has read " + baos.size() + " bytes and encoding them");
 			//
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			while (true) {
@@ -70,6 +69,8 @@ public class ZipDecoder extends FrameDecoder {
 	}
 	
 	private List<MMessage> parse(byte[] bytes) throws IOException {
+		log.info("parsing " + bytes.length + " bytes");
+		//
 		List<MMessage> ret = new LinkedList<MMessage>();
 		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(
 				bytes));

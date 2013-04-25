@@ -245,7 +245,30 @@ public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
 			while (iterator.hasNext()) {
 				node = iterator.next();
 				if (node.checkPing()) {
-					node.addMessage(getMessage("ping"));
+					node.addMessage(getMessage("ping"),
+							new MessageResponseListener() {
+								private long sent = System.currentTimeMillis();
+								private boolean done = false;
+
+								@Override
+								public void messageReceived(Node n,
+										MMessage message) {
+									log.info("PING response in "
+											+ (System.currentTimeMillis() - sent)
+											+ " ms");
+									done = true;
+								}
+
+								@Override
+								public boolean isDone() {
+									if ((System.currentTimeMillis() - sent) > 10000) {
+										log.info("PING giving up");
+										return true;
+									} else {
+										return done;
+									}
+								}
+							});
 				}
 				//
 				if (node.getID() != null && node.getID().equals(networkid)) {
