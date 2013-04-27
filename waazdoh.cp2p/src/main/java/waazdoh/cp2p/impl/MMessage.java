@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 import waazdoh.cutils.MID;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.cutils.xml.XML;
@@ -34,6 +33,13 @@ public class MMessage {
 		this.bean = bean;
 		//
 		bytecount = bean.toXML().toString().length();
+		addCreatedTimestamp();
+	}
+
+	private void addCreatedTimestamp() {
+		if (bean.getAttribute("timestamp") == null) {
+			bean.addAttribute("timestamp", System.currentTimeMillis());
+		}
 	}
 
 	public MMessage(String string, MID sentby) {
@@ -42,6 +48,7 @@ public class MMessage {
 		setID(new MID());
 		//
 		bytecount = bean.toXML().toString().length();
+		addCreatedTimestamp();
 	}
 
 	public MMessage(byte[] messagebytes) throws IOException {
@@ -55,6 +62,9 @@ public class MMessage {
 		String sxml = new String(bs);
 		XML xml = new XML(sxml);
 		bean = new JBean(xml);
+
+		addCreatedTimestamp();
+
 		int attachmentcount = dis.readInt();
 		for (int i = 0; i < attachmentcount; i++) {
 			int namelength = dis.readInt();

@@ -45,27 +45,32 @@ public class ZipDecoder extends FrameDecoder {
 		//
 		cb.readBytes(baos, toread);
 		if (baos.size() >= expectedlength) {
-			ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(
-					baos.toByteArray()));
-			baos = null;
-			zis.getNextEntry();
-			 log.info("has read " + baos.size() + " bytes and encoding them");
-			//
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			while (true) {
-				int b = zis.read();
-				if (b < 0) {
-					break;
-				}
-				baos.write(b);
-			}
-			byte[] bytes = baos.toByteArray();
+			byte[] bytes = Unzip();
+			log.info("got " + bytes.length + " bytes");
 			return parse(bytes);
 		} else {
 			log.info("expected " + expectedlength + " baos has:" + baos.size()
 					+ " available:" + toread);
 			return null;
 		}
+	}
+
+	private byte[] Unzip() throws IOException {
+		ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(
+				baos.toByteArray()));
+		log.info("has read " + baos.size() + " bytes and encoding them");
+		baos = null;
+		zis.getNextEntry();
+		//
+		ByteArrayOutputStream unzippedbaos = new ByteArrayOutputStream();
+		while (true) {
+			int b = zis.read();
+			if (b < 0) {
+				break;
+			}
+			unzippedbaos.write(b);
+		}
+		return unzippedbaos.toByteArray();
 	}
 	
 	private List<MMessage> parse(byte[] bytes) throws IOException {
