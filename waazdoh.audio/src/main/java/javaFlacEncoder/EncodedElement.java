@@ -87,12 +87,14 @@ public class EncodedElement {
 	 *            this value.
 	 */
 	public EncodedElement(byte[] array, int off) {
+		assert (array.length % 4 == 0);
 		offset = off;
 		usableBits = off;
 		data = array;
 	}
 
 	public EncodedElement(byte[] array, int off, int usedBits) {
+		assert (array.length % 4 == 0);
 		offset = off;
 		usableBits = usedBits;
 		data = array;
@@ -108,6 +110,8 @@ public class EncodedElement {
 	 *            this value.
 	 */
 	public EncodedElement(int size, int off) {
+		if (size % 4 != 4)
+			size = (size / 4 + 1) * 4;
 		data = new byte[size];
 		usableBits = off;
 		offset = off;
@@ -124,6 +128,8 @@ public class EncodedElement {
 	 *            this value.
 	 */
 	public void clear(int size, int off) {
+		if (size % 4 != 4)
+			size = (size / 4 + 1) * 4;
 		next = null;
 		previous = null;
 		data = new byte[size];
@@ -146,6 +152,8 @@ public class EncodedElement {
 	 *            true to keep current backing array, false to create new one.
 	 */
 	public void clear(int size, int off, boolean keep) {
+		if (size % 4 != 4)
+			size = (size / 4 + 1) * 4;
 		next = null;
 		previous = null;
 		if (!keep)
@@ -164,7 +172,7 @@ public class EncodedElement {
 	 * @return <code>void</code>
 	 * 
 	 *         Precondition: none Post-condition: getPrevious() will now return
-	 *         the given object. Any existing â€œpreviousâ€� was lost.
+	 *         the given object. Any existing "previous" was lost.
 	 */
 	void setPrevious(EncodedElement ele) {
 		previous = ele;
@@ -176,7 +184,7 @@ public class EncodedElement {
 	 * @param ele
 	 *            the object to set as next.
 	 * @return void Pre-condition: none Post-condition: getNext() will now
-	 *         return the given object. Any existing â€œnextâ€� was lost.
+	 *         return the given object. Any existing "next" was lost.
 	 */
 	void setNext(EncodedElement ele) {
 		next = ele;
@@ -211,6 +219,7 @@ public class EncodedElement {
 	 *            this object. Any previous data stored was lost.
 	 */
 	void setData(byte[] data) {
+		assert (data.length % 4 == 0);
 		this.data = data;
 	}
 
@@ -373,7 +382,7 @@ public class EncodedElement {
 			// chain.
 			int startPos = this.usableBits;
 			byte[] dest = this.data;
-			EncodedElement.addInt(input, bitCount, startPos, dest);
+			EncodedElement.addInt_new(input, bitCount, startPos, dest);
 			// EncodedElement.addInt_buf2(input, bitCount, startPos, dest);
 			/*
 			 * if(startPos/8+8 > dest.length) EncodedElement.addInt(input,
@@ -478,6 +487,9 @@ public class EncodedElement {
 		if (writeCount > 0) {
 			EncodedElement.packIntByBits(inputA, inputBits, inputOffset,
 					writeCount, usableBits, data);
+			// EncodedElement.packIntByBits_newFast(inputA, inputBits,
+			// inputOffset,
+			// writeCount, usableBits, data);
 			usableBits += willWrite;
 		}
 		// if more remain, create child object and add there
@@ -524,61 +536,6 @@ public class EncodedElement {
 		return total;
 	}
 
-	private static void addInt_new(int value, int count, int startPos,
-			byte[] dest) {
-		/*
-		 * if(startPos/8+4 > buf.capacity()) { addInt(value, count, startPos,
-		 * dest); return; }
-		 */
-		int secondInt = 0;
-		int secondCount = 0;
-		start: {
-			value = value & (0xFFFFFFFF >>> 32 - count);// clean value
-			boolean onIndex = (startPos % 8 == 0);
-			int count2 = (startPos % 8 + count) - 32;
-			if (count2 > 0) {
-				value = value >>> count2;// shift high-order down
-				secondInt = value;
-				secondCount = count2;
-				count -= count2;
-			}
-			// int workingIntCache = buf.getInt(startPos/8);
-
-			int index = startPos / 8;
-			int workingIntCache = dest[index++] << 24 | dest[index++] << 16
-					| dest[index++] << 8 | dest[index];
-
-			if (!onIndex) {
-				value = value << 32 - (startPos % 8 + count);
-				// int workingInt = buf.getInt(startPos/8);
-				int workingInt = workingIntCache;
-				workingInt = workingInt & (0xFFFFFFFF << startPos % 8);// clear
-																		// lower
-																		// bits
-				workingInt = workingInt | value;
-				value = workingInt >>> 32 - (startPos % 8 + count);
-				count = count + startPos % 8;
-			}
-			value = value << (32 - count);// place into upper bits, we fill from
-											// top
-			// int workingInt = buf.getInt(startPos/8);
-			int workingInt = workingIntCache;
-			workingInt = workingInt & (0xFFFFFFFF >>> count);// clear upper bits
-			workingInt = workingInt | value;
-			// buf.putInt(startPos/8, workingInt);
-			index = startPos / 8;
-			dest[index++] = (byte) (workingInt >>> 24);
-			dest[index++] = (byte) (workingInt >>> 16);
-			dest[index++] = (byte) (workingInt >>> 8);
-			dest[index++] = (byte) (workingInt);
-			if (secondCount > 0) {
-				count = secondCount;
-				value = secondInt;
-				break start;
-			}
-		}
-	}
-
 	/**
 	 * This method adds a given number of bits of an int to a byte array.
 	 * 
@@ -592,67 +549,94 @@ public class EncodedElement {
 	 *            array to store bits in. dest MUST have enough space to store
 	 *            the given data, or this function will fail.
 	 */
-	public static void addInt(int value, int count, int startPos, byte[] dest) {
-		int currentByte = startPos / 8;
-		int currentOffset = startPos % 8;
-		// int upShift = 32-count;
-		// upShift += (8-currentOffset);
-		// int upShift = 39-count+currentOffset;
-		int upShift = 40 - count - currentOffset;
-		// get the value to a workable place and clear the extraneous bits
-		long upperMask = -1 >>> (63 - count);
-		long val = (long) value & upperMask;
-
-		val = val << upShift;
-		// get the bytes ready
-		int[] bs = new int[5];
-		bs[4] = (byte) val;
-		val = val >> 8;
-		bs[3] = (byte) val;
-		val = val >> 8;
-		bs[2] = (byte) val;
-		val = val >> 8;
-		bs[1] = (byte) val;
-		val = val >> 8;
-		bs[0] = (byte) val;
-
-		// byte One
-		int bIndex = 0;
-		if (currentOffset > 0) {
-			int b1Mask = 255 >> currentOffset;
-			int bitRoom = 8 - currentOffset;
-			int lowerRoom = bitRoom - count;
-			if (lowerRoom > 0) {
-				b1Mask = b1Mask >>> lowerRoom;
-				b1Mask = b1Mask << lowerRoom;
+	protected static void addInt_new(int value, int count, int startPos,
+			byte[] dest) {
+		if (count <= 0) {
+			return;
+		}
+		int secondInt = 0;
+		int secondCount = 0;
+		boolean doWrite = true;
+		while (doWrite) {
+			secondCount = (startPos % 8 + count) - 32;
+			int mask = (32 - count >= 32) ? 0 : 0xFFFFFFFF >>> (32 - count);
+			value = value & mask;// clean value
+			boolean onIndex = (startPos % 8 == 0);
+			if (secondCount > 0) {
+				value = (secondCount >= 32) ? 0 : value >>> secondCount;// shift
+																		// high-order
+																		// down
+																		// to
+																		// write
+																		// first
+				secondInt = value;
+				// secondCount = count2;
+				count -= secondCount;
 			}
-			bs[0] = bs[0] & b1Mask;
-			int b1d = dest[currentByte] & ~b1Mask;
-			dest[currentByte++] = (byte) (bs[0] | b1d);
-			count -= bitRoom;
-			bIndex++;
+			int index = startPos / 8;
+			int workingIntCache = 0;
+			int bytesToUse = dest.length - startPos / 8;
+			if (bytesToUse > 4)
+				bytesToUse = 4;
+			switch (bytesToUse) {
+			case 4:
+				workingIntCache = dest[index++] << 24 | dest[index++] << 16
+						| dest[index++] << 8 | dest[index];
+				break;
+			case 3:
+				workingIntCache = dest[index++] << 24 | dest[index++] << 16
+						| dest[index++] << 8;
+				break;
+			case 2:
+				workingIntCache = dest[index++] << 24 | dest[index++] << 16;
+				break;
+			case 1:
+				workingIntCache = dest[index++] << 24;
+				break;
+			}
+			if (!onIndex) {
+				int shiftCount = 32 - (startPos % 8 + count);
+				value = (shiftCount >= 32) ? 0 : value << shiftCount;
+				int workingInt = workingIntCache;
+				mask = (32 - startPos % 8 >= 32) ? 0
+						: 0xFFFFFFFF << (32 - startPos % 8);
+				workingInt = workingInt & mask;// clear lower bits
+				workingInt = workingInt | value;
+				shiftCount = (32 - count - startPos % 8);
+				value = (shiftCount >= 32) ? 0 : workingInt >>> shiftCount;
+			}
+			int shiftCount = (32 - count - startPos % 8);
+			value = (shiftCount >= 32) ? 0 : value << shiftCount;// place into
+																	// upper
+																	// bits, we
+																	// fill from
+																	// top
+			int workingInt = workingIntCache;
+			mask = (count + startPos % 8 >= 32) ? 0
+					: 0xFFFFFFFF >>> (count + startPos % 8);
+			workingInt = workingInt & mask;// clear upper bits
+			workingInt = workingInt | value;
+			index = startPos / 8;
+			int tempIndex = index + bytesToUse - 1;
+			index += bytesToUse;
+			switch (bytesToUse) {
+			case 4:
+				dest[tempIndex--] = (byte) (workingInt);
+			case 3:
+				dest[tempIndex--] = (byte) (workingInt >>> 8);
+			case 2:
+				dest[tempIndex--] = (byte) (workingInt >>> 16);
+			case 1:
+				dest[tempIndex--] = (byte) (workingInt >>> 24);
+			}
+			if (secondCount > 0) {
+				// System.err.println("\t\tsecondCount > 0");
+				startPos += count;
+				count = secondCount;
+				value = secondInt;
+			} else
+				doWrite = false;
 		}
-		// int bIndex = 1;
-		int midCount = count / 8;
-		switch (midCount) {
-		case 4:
-			dest[currentByte++] = (byte) bs[bIndex++];
-		case 3:
-			dest[currentByte++] = (byte) bs[bIndex++];
-		case 2:
-			dest[currentByte++] = (byte) bs[bIndex++];
-		case 1:
-			dest[currentByte++] = (byte) bs[bIndex++];
-			break;
-		}
-		count -= midCount * 8;
-		if (count > 0) {
-			// int lastMask = 255 >> 8-count;
-			int lastMask = 255 << 8 - count;
-			dest[currentByte] = (byte) (dest[currentByte] & ~lastMask);
-			dest[currentByte] = (byte) (bs[bIndex] | dest[currentByte]);
-		}
-
 	}
 
 	/**
@@ -695,8 +679,7 @@ public class EncodedElement {
 	 *            array to store bits in. dest MUST have enough space to store
 	 *            the given data, or this function will fail.
 	 */
-
-	public static void addLong(long input, int count, int startPos, byte[] dest) {
+	private static void addLong(long input, int count, int startPos, byte[] dest) {
 		if (DEBUG_LEV > 30)
 			System.err.println("EncodedElement::addLong : Begin");
 		int currentByte = startPos / 8;
@@ -774,7 +757,7 @@ public class EncodedElement {
 	 *            be large enough to store all values or this method will fail
 	 *            in an undefined manner.
 	 */
-	public static void packInt(int[] inputArray, int bitSize, int startPosIn,
+	private static void packInt(int[] inputArray, int bitSize, int startPosIn,
 			int start, int skip, int countA, byte[] dest) {
 		if (DEBUG_LEV > 30)
 			System.err.println("EncodedElement::packInt : Begin");
@@ -796,12 +779,15 @@ public class EncodedElement {
 				// i.e, take upper 'bitsNeeded' of input, put to lower part of
 				// byte.
 				downShift = count - bitRoom;
-				upMask = 255 >>> currentOffset;
+				// upMask = uRSHFT(255 ,currentOffset);
+				upMask = (currentOffset >= 32) ? 0 : 255 >>> currentOffset;
 				upShift = 0;
 				if (downShift < 0) {
 					// upMask = 255 >>> bitRoom-count;
 					upShift = bitRoom - count;
-					upMask = 255 >>> (currentOffset + upShift);
+					// upMask = uRSHFT(255,(currentOffset+upShift));
+					upMask = ((currentOffset + upShift) >= 32) ? 0
+							: 255 >>> (currentOffset + upShift);
 					downShift = 0;
 				}
 				if (DEBUG_LEV > 30) {
@@ -810,10 +796,15 @@ public class EncodedElement {
 									+ count + ":" + currentOffset + ":"
 									+ bitRoom + ":" + downShift + ":" + upShift);
 				}
-				int currentBits = (input >>> downShift) & (upMask);
+				// int currentBits = uRSHFT(input, downShift) & (upMask);
+				int currentBits = (downShift >= 32) ? 0 : (input >>> downShift)
+						& upMask;
 				// shift bits back up to match offset
-				currentBits = currentBits << upShift;
-				upMask = (byte) upMask << upShift;
+				// currentBits = lSHFT(currentBits, upShift);
+				currentBits = (upShift >= 32) ? 0 : currentBits << upShift;
+
+				// upMask = lSHFT((byte)upMask, upShift);
+				upMask = (upShift >= 32) ? 0 : ((byte) upMask) << upShift;
 
 				dest[currentByte] = (byte) (dest[currentByte] & (~upMask));
 				// merge bytes~
@@ -826,241 +817,6 @@ public class EncodedElement {
 		}
 		if (DEBUG_LEV > 30)
 			System.err.println("EncodedElement::packInt: End");
-
-	}
-
-	/**
-	 * Pack a number of bits from each int of an array(within given limits)to
-	 * the end of this list.
-	 * 
-	 * @param inputA
-	 *            Array containing input values.
-	 * @param inputBits
-	 *            Array containing number of bits to use for each index packed.
-	 *            This array should be equal in size to the inputA array.
-	 * @param inputOffset
-	 *            Index of first usable index.
-	 * @param countA
-	 *            Number of indices to pack.
-	 * @param startPosIn
-	 *            First usable bit-level index in destination array(byte index =
-	 *            startPosIn/8, bit within that byte = startPosIn%8)
-	 * @param dest
-	 *            Destination array to store input values in. This array *must*
-	 *            be large enough to store all values or this method will fail
-	 *            in an undefined manner.
-	 */
-	private static void packIntByBits_new(int[] inputA, int[] inputBits,
-			int inputOffset, int countA, int startPosIn, byte[] dest) {
-		if (DEBUG_LEV > 30)
-			System.err.println("EncodedElement::packIntByBits : Begin");
-		// int offsetCounter = 0;
-		int inputIter = 0;
-		int startPos = startPosIn;// the position to write to in output array
-		inputIter = inputOffset;
-		int inputStop = countA + inputOffset;
-		for (int valI = inputOffset; valI < inputStop; valI++) {
-			int input = inputA[valI];// value to encode
-			int inCount = inputBits[valI];// bits of value to encode
-			if (startPos / 8 + 8 > dest.length)
-				EncodedElement.addInt(input, inCount, startPos, dest);
-			else {
-				// EncodedElement.addInt_buf2(input, count, startPos, dest);
-				int value = input;
-				int count = inCount;
-				int secondInt = 0;
-				int secondCount = 0;
-				start: {
-					value = value & (0xFFFFFFFF >>> 32 - count);// clean value
-					boolean onIndex = (startPos % 8 == 0);
-					int count2 = (startPos % 8 + count) - 32;
-					if (count2 > 0) {
-						// addInt_buf2(value,count2,startPos+32, dest);//split
-						// low-order and recurse
-						value = value >>> count2;// shift high-order down
-						secondInt = value;
-						secondCount = count2;
-						count -= count2;
-					}
-					// int workingIntCache = buf.getInt(startPos/8);
-
-					int index = startPos / 8;
-					int workingIntCache = dest[index++] << 24
-							| dest[index++] << 16 | dest[index++] << 8
-							| dest[index];
-
-					if (!onIndex) {
-						value = value << 32 - (startPos % 8 + count);
-						// int workingInt = buf.getInt(startPos/8);
-						int workingInt = workingIntCache;
-						workingInt = workingInt & (0xFFFFFFFF << startPos % 8);// clear
-																				// lower
-																				// bits
-						workingInt = workingInt | value;
-						value = workingInt >>> 32 - (startPos % 8 + count);
-						count = count + startPos % 8;
-					}
-					value = value << (32 - count);// place into upper bits, we
-													// fill from top
-					// int workingInt = buf.getInt(startPos/8);
-					int workingInt = workingIntCache;
-					workingInt = workingInt & (0xFFFFFFFF >>> count);// clear
-																		// upper
-																		// bits
-					workingInt = workingInt | value;
-					// buf.putInt(startPos/8, workingInt);
-					index = startPos / 8;
-					dest[index++] = (byte) (workingInt >>> 24);
-					dest[index++] = (byte) (workingInt >>> 16);
-					dest[index++] = (byte) (workingInt >>> 8);
-					dest[index++] = (byte) (workingInt);
-					if (secondCount > 0) {
-						count = secondCount;
-						value = secondInt;
-						break start;
-					}
-				}
-			}
-			startPos += inCount;// startPos must not be referenced again below
-								// here!
-
-		}
-		if (DEBUG_LEV > 30)
-			System.err.println("EncodedElement::addInt : End");
-	}
-
-	/**
-	 * Pack a number of bits from each int of an array(within given limits)to
-	 * the end of this list.
-	 * 
-	 * @param inputA
-	 *            Array containing input values.
-	 * @param inputBits
-	 *            Array containing number of bits to use for each index packed.
-	 *            This array should be equal in size to the inputA array.
-	 * @param inputOffset
-	 *            Index of first usable index.
-	 * @param countA
-	 *            Number of indices to pack.
-	 * @param startPosIn
-	 *            First usable bit-level index in destination array(byte index =
-	 *            startPosIn/8, bit within that byte = startPosIn%8)
-	 * @param dest
-	 *            Destination array to store input values in. This array *must*
-	 *            be large enough to store all values or this method will fail
-	 *            in an undefined manner.
-	 */
-	public static void packIntByBits(int[] inputA, int[] inputBits,
-			int inputOffset, int countA, int startPosIn, byte[] dest) {
-		if (DEBUG_LEV > 30)
-			System.err.println("EncodedElement::packIntByBits : Begin");
-		// int offsetCounter = 0;
-		int inputIter = 0;
-		int startPos = startPosIn;// the position to write to in output array
-		inputIter = inputOffset;
-		int inputStop = countA + inputOffset;
-		for (int valI = inputOffset; valI < inputStop; valI++) {
-			// inputIter = valI+inputOffset;
-			// inputIter += valI;
-			int input = inputA[valI];// value to encode
-			int count = inputBits[valI];// bits of value to encode
-			// int startPos = startPosIn+offsetCounter;//the write bit position
-			// offsetCounter += count;
-			int currentByte = startPos / 8;
-			int currentOffset = startPos % 8;
-			startPos += count;// startPos must not be referenced again below
-								// here!
-			int bitRoom;// how many bits can be placed in current byte
-			int upMask;// to clear upper bits(lower bits auto-cleared by L-shift
-			int downShift;// bits to shift down, isolating top bits of input
-			int upShift;// bits to shift up, packing byte from top.
-			if (currentOffset != 0) {
-				bitRoom = 8 - currentOffset;
-				// get those bits
-				// i.e, take upper 'bitsNeeded' of input, put to lower part of
-				// byte.
-				downShift = count - bitRoom;
-				upMask = 255 >>> currentOffset;
-				upShift = 0;
-				if (downShift < 0) {
-					// upMask = 255 >>> bitRoom-count;
-					upShift = bitRoom - count;
-					upMask = 255 >>> (currentOffset + upShift);
-					downShift = 0;
-				}
-				if (DEBUG_LEV > 30) {
-					System.err
-							.println("count:offset:bitRoom:downShift:upShift:"
-									+ count + ":" + currentOffset + ":"
-									+ bitRoom + ":" + downShift + ":" + upShift);
-				}
-				int currentBits = (input >>> downShift) & (upMask);
-				// shift bits back up to match offset
-				currentBits = currentBits << upShift;
-				upMask = (byte) upMask << upShift;
-
-				dest[currentByte] = (byte) (dest[currentByte] & (~upMask));
-				// merge bytes~
-				dest[currentByte] = (byte) (dest[currentByte] | currentBits);
-				// System.out.println("new currentByte: " + dest[currentByte]);
-				count -= bitRoom;
-				currentOffset = 0;
-				currentByte++;
-			}
-			bitRoom = 8;
-			upShift = 0;
-			upMask = 255;
-			while (count >= 8) {
-				// find how many bits can be placed in current byte
-				// get those bits
-				// i.e, take upper 'bitsNeeded' of input, put to lower part of
-				// byte.
-				downShift = count - bitRoom;
-				if (DEBUG_LEV > 30) {
-					System.err
-							.println("count:offset:bitRoom:downShift:upShift:"
-									+ count + ":" + currentOffset + ":"
-									+ bitRoom + ":" + downShift + ":" + upShift);
-				}
-				int currentBits = (input >>> downShift) & (upMask);
-				dest[currentByte] = (byte) currentBits;
-				count -= bitRoom;
-				currentByte++;
-			}
-			if (count > 0) {// while(count > 0) {
-				// find how many bits can be placed in current byte
-				// bitRoom = 8-currentOffset;
-				// get those bits
-				// i.e, take upper 'bitsNeeded' of input, put to lower part of
-				// byte.
-				// downShift = count-bitRoom;
-				downShift = 0;
-				upShift = bitRoom - count;
-				upMask = 255 >>> upShift;
-
-				if (DEBUG_LEV > 30) {
-					System.err
-							.println("count:offset:bitRoom:downShift:upShift:"
-									+ count + ":" + currentOffset + ":"
-									+ bitRoom + ":" + downShift + ":" + upShift);
-				}
-				// int currentBits = (input >>> downShift) & (upMask);
-				int currentBits = input & upMask;
-				// shift bits back up to match offset
-				currentBits = currentBits << upShift;
-				upMask = (byte) upMask << upShift;
-
-				dest[currentByte] = (byte) (dest[currentByte] & (~upMask));
-				// merge bytes~
-				dest[currentByte] = (byte) (dest[currentByte] | currentBits);
-				// System.out.println("new currentByte: " + dest[currentByte]);
-				count -= bitRoom;
-				currentOffset = 0;
-				currentByte++;
-			}
-		}
-		if (DEBUG_LEV > 30)
-			System.err.println("EncodedElement::addInt : End");
 	}
 
 	/**
@@ -1073,16 +829,13 @@ public class EncodedElement {
 	public boolean padToByte() {
 		boolean padded = false;
 
-		// System.err.println("Usable bits: "+tempVal);
 		EncodedElement end = EncodedElement.getEnd_S(this);
 		int tempVal = end.usableBits;
 		if (tempVal % 8 != 0) {
 			int toWrite = 8 - (tempVal % 8);
 			end.addInt(0, toWrite);
-			/* FOR DEVEL ONLY: */
-			if ((this.getTotalBits() + offset) % 8 != 0)
-				System.err.println("EncodedElement::padToByte: SERIOUS ERROR! "
-						+ "Algorithm implemented is incorrect!!!");
+			/* Assert FOR DEVEL ONLY: */
+			assert ((this.getTotalBits() + offset) % 8 == 0);
 			padded = true;
 		}
 		return padded;
@@ -1131,7 +884,6 @@ public class EncodedElement {
 			byte partial = (this.usableBits % 8 == 0) ? 0 : data[stop];
 			nextEl.getCRC16(partial, this.usableBits % 8, crc);
 		}
-
 	}
 
 	protected void print() {
@@ -1154,5 +906,191 @@ public class EncodedElement {
 		System.err.println("\tleftoverBits: " + usableBits % 8);
 		if (next != null)
 			next.print(childCount);
+	}
+
+	protected static int packIntByBitsToByteBoundary(int[] input,
+			int[] inputBits, int inputIndex, int inputCount, int destPos,
+			byte[] dest) {
+		int bitsNeeded = destPos % 8;
+		if (bitsNeeded != 0)
+			bitsNeeded = 8 - bitsNeeded;
+		while (bitsNeeded > 0 && inputCount > 0) {
+			int inputVal = input[inputIndex];
+			int inBits = inputBits[inputIndex];
+			// if inBits > bitNeeded. shift value down, write what we need, done
+			// else: take what we can, increment input index, try next
+			if (inBits > bitsNeeded) {
+				inputVal = (inBits - bitsNeeded >= 32) ? 0
+						: inputVal >>> (inBits - bitsNeeded);
+				EncodedElement.addInt_new(inputVal, bitsNeeded, destPos, dest);
+				destPos += bitsNeeded;
+				inputBits[inputIndex] = inBits - bitsNeeded;
+				bitsNeeded = 0;
+			} else {
+				if (inBits > 0) {
+					EncodedElement.addInt_new(inputVal, inBits, destPos, dest);
+					destPos += inBits;
+					inputBits[inputIndex] = 0;
+					bitsNeeded -= inBits;
+				}
+				inputIndex++;
+				inputCount--;
+			}
+		}
+		if (inputCount == 0) {
+			inputIndex = -1;
+		}
+		return inputIndex;
+	}
+
+	/**
+	 * Pack a number of bits from each int of an array(within given limits)to
+	 * the end of this list.
+	 * 
+	 * @param inputA
+	 *            Array containing input values.
+	 * @param inputBits
+	 *            Array containing number of bits to use for each index packed.
+	 *            This array should be equal in size to the inputA array.
+	 * @param inputOffset
+	 *            Index of first usable index.
+	 * @param countA
+	 *            Number of indices to pack.
+	 * @param startPosIn
+	 *            First usable bit-level index in destination array(byte index =
+	 *            startPosIn/8, bit within that byte = startPosIn%8)
+	 * @param dest
+	 *            Destination array to store input values in. This array *must*
+	 *            be large enough to store all values or this method will fail
+	 *            in an undefined manner.
+	 */
+	protected static void packIntByBits(int[] inputA, int[] inputBits,
+			int inputIndex, int inputCount, int destPos, byte[] dest) {
+		int origInputIndex = inputIndex;
+		inputIndex = packIntByBitsToByteBoundary(inputA, inputBits, inputIndex,
+				inputCount, destPos, dest);
+		if (destPos % 8 > 0)
+			destPos = (destPos / 8 + 1) * 8;// put dest where we know it should
+											// be
+		if (inputIndex < 0)// done, no more to write.
+			return;
+
+		inputCount = inputCount - (inputIndex - origInputIndex);
+		inputCount = EncodedElement.compressIntArrayByBits(inputA, inputBits,
+				inputCount, inputIndex);
+		assert (destPos % 8 == 0);// sanity check.
+		if (inputCount > 1) {
+			int stopIndex = inputCount - 1;
+			EncodedElement
+					.mergeFullOnByte(inputA, stopIndex, dest, destPos / 8);
+			destPos += (stopIndex) * 32;
+		}
+		if (inputCount > 0) {
+			int index = inputCount - 1;
+			EncodedElement.addInt_new(inputA[index], inputBits[index], destPos,
+					dest);
+			destPos += inputBits[index];
+		}
+	}
+
+	protected static int cleanInts(int[] input, int[] inputBits,
+			int inputIndex, int count) {
+		int outIndex = 0;
+		for (int i = inputIndex; i < inputIndex + count; i++) {
+			if (inputBits[i] > 0) {
+				int mask = 0xFFFFFFFF >>> (32 - inputBits[i]);
+				inputBits[outIndex] = inputBits[i];
+				input[outIndex++] = input[i] & mask;
+			}
+		}
+		return outIndex;
+	}
+
+	protected static int compressIntArrayByBits(int[] input, int[] inputBits,
+			int inCount, int inputIndex) {
+		inCount = cleanInts(input, inputBits, inputIndex, inCount);
+
+		int outIndex = 0;
+		int workingVal = 0;
+		int workingBits = 0;
+		for (int i = 0; i < inCount; i++) {
+			// look at bits for next number:
+			// if workingBits+bits <= 32, shift int up and OR into workingVal;
+			// if workingBits+bits > 32, shift down and OR into workingVal, add
+			// to output, shift leftovers up and set workingVal
+			int bits = inputBits[i];
+			if (bits + workingBits <= 32) {
+				workingBits += bits;
+				workingVal |= (input[i] << (32 - workingBits));
+				if (workingBits == 32) {
+					inputBits[outIndex] = workingBits;
+					input[outIndex++] = workingVal;
+					workingBits = 0;
+					workingVal = 0;
+				}
+			} else {
+				workingBits += bits;
+				workingVal |= input[i] >>> (workingBits - 32);
+				inputBits[outIndex] = workingBits;
+				input[outIndex++] = workingVal;
+				workingBits = workingBits - 32;
+				workingVal = input[i] << (32 - workingBits);
+			}
+		}
+
+		if (workingBits > 0) {
+			inputBits[outIndex] = workingBits;
+			input[outIndex++] = workingVal >>> (32 - workingBits);
+		} else if (workingBits == 0 && outIndex == 0)// nothing written!
+			outIndex = -1;
+		return outIndex;
+	}
+
+	protected static void mergeFullOnByte(int[] input, int inCount,
+			byte[] dest, int destIndex) {
+		// System.err.println("mergeFullOnByte::begin  inBitCount: "+inCount+"  :: destBitOffset: "+destIndex);
+		int INPUT_WIDTH = Integer.SIZE;
+		int DEST_WIDTH = Byte.SIZE;
+		assert (inCount * (INPUT_WIDTH / DEST_WIDTH) <= dest.length - destIndex);// input
+																					// must
+																					// fit
+																					// fully
+																					// inside
+																					// dest
+		for (int i = 0; i < inCount; i++) {
+			int inVal = input[i];
+			dest[destIndex++] = (byte) (inVal >>> 24);
+			dest[destIndex++] = (byte) (inVal >>> 16);
+			dest[destIndex++] = (byte) (inVal >>> 8);
+			dest[destIndex++] = (byte) (inVal);
+		}
+	}
+
+	private static final int uRSHFT2(int value, int count) {
+		if (count >= 32)
+			return 0;
+		else
+			return value >>> count;
+	}
+
+	private static long uRSHFT_L(long value, int count) {
+		if (count >= 64)
+			return 0;
+		else
+			return value >>> count;
+	}
+
+	private static final int lSHFT2(int value, int count) {
+		if (count >= 32)
+			return 0;
+		else
+			return (value << count);
+	}
+
+	private static final long lSHFT_L(long value, int count) {
+		if (count >= 64)
+			return 0;
+		else
+			return value << count;
 	}
 }
