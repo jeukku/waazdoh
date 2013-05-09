@@ -23,8 +23,6 @@ import waazdoh.emodel.ETrack;
 
 
 public class WaveList {
-	private static final int MAX_WAVE_LENGTH = WaazdohInfo.DEFAULT_SAMPLERATE * 10;
-
 	private List<MWave> waves = new LinkedList<MWave>();
 	private MLogger log = MLogger.getLogger(this);
 	private MEnvironment env;
@@ -203,7 +201,7 @@ public class WaveList {
 
 	public synchronized void addSamples(float[] samples, int count) {
 		getLastWave().addSamples(samples, count);
-		if (getLastWave().getLength() > MAX_WAVE_LENGTH) {
+		if (getLastWave().getLength() > WaazdohInfo.getMaxWaveLength()) {
 			newWave();
 		}
 	}

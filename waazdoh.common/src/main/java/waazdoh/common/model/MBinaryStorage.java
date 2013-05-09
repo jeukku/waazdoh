@@ -101,7 +101,7 @@ public class MBinaryStorage {
 		}
 	}
 
-	public Binary getFloatStream(MID fsid) {
+	public Binary getBinary(MID fsid) {
 		synchronized (streams) {
 			Binary fs = findStream(fsid);
 			//
@@ -153,7 +153,7 @@ public class MBinaryStorage {
 			Collection<Binary> lwaves = streams;
 			for (Binary mWave : lwaves) {
 				try {
-					saveFloatStream(mWave);
+					saveBinary(mWave);
 				} catch (IOException e) {
 					e.printStackTrace();
 					log.error(e);
@@ -162,13 +162,13 @@ public class MBinaryStorage {
 		}
 	}
 
-	private void saveFloatStream(Binary fs) throws FileNotFoundException {
+	private void saveBinary(Binary fs) throws FileNotFoundException {
 		synchronized (streams) {
 			MCRC persistentWaveCRC = getPersistentWaveTimestamp(fs.getID());
 			MCRC fscrc = fs.getCRC();
 			if ((persistentWaveCRC == null || !persistentWaveCRC.equals(fscrc))
 					&& fs.isReady()) {
-				String datapath = getDataPath(fs.getID());
+				String datapath = getDataPath(fs);
 				log.info("saving wave datapath:" + datapath);
 				fs.save(new BufferedOutputStream(new FileOutputStream(datapath)));
 				crcs.put(fs.getID(), fs.getCRC());
@@ -191,13 +191,18 @@ public class MBinaryStorage {
 	public synchronized Binary loadPersistentStream(MID id)
 			throws FileNotFoundException {
 		synchronized (streams) {
-			String datapath = getDataPath(id);
-			log.info("loading persistent wave " + id + " datapath:" + datapath);
-			File f = new File(datapath);
-			if (f.exists()) {
-				Binary w;
-				w = new Binary(id, service);
-				return loadPersistentBinary(w);
+			Binary bin;
+			bin = new Binary(id, service);
+			if (bin.isOK()) {
+				String datapath = getDataPath(bin);
+				log.info("loading persistent wave " + id + " datapath:"
+						+ datapath);
+				File f = new File(datapath);
+				if (f.exists()) {
+					return loadPersistentBinary(bin);
+				} else {
+					return null;
+				}
 			} else {
 				return null;
 			}
@@ -206,7 +211,7 @@ public class MBinaryStorage {
 
 	private Binary loadPersistentBinary(Binary w) throws FileNotFoundException {
 		BufferedInputStream is = new BufferedInputStream(new FileInputStream(
-				getDataPath(w.getID())));
+				getDataPath(w)));
 		if (w.load(is)) {
 			return w;
 		} else {
@@ -215,8 +220,8 @@ public class MBinaryStorage {
 		}
 	}
 
-	public File getBinaryFile(MID id) {
-		return new File(getDataPath(id));
+	public File getBinaryFile(Binary bin) {
+		return new File(getDataPath(bin));
 	}
 
 	private MCRC getPersistentWaveTimestamp(MID id) {
@@ -235,8 +240,9 @@ public class MBinaryStorage {
 		}
 	}
 
-	private String getDataPath(MID id) {
-		String datapath = getWavePath(id) + id + ".bin";
+	private String getDataPath(Binary bin) {
+		String datapath = getWavePath(bin.getID()) + bin.getID() + "."
+				+ bin.getExtension();
 		return datapath;
 	}
 
@@ -296,9 +302,9 @@ public class MBinaryStorage {
 		}
 	}
 
-	public Binary newBinary(String string) {
+	public Binary newBinary(String string, String extension) {
 		synchronized (streams) {
-			Binary b = new Binary(service, string);
+			Binary b = new Binary(service, string, extension);
 			this.streams.add(b);
 			return b;
 		}

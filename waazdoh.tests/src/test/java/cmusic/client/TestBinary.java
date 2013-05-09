@@ -51,7 +51,7 @@ public class TestBinary extends TestCase {
 			}
 		};
 
-		Binary binary = new Binary(env.getService(), "test");
+		Binary binary = new Binary(env.getService(), "test", "test");
 		assertNotNull(binary.getCRC());
 		//
 		for (int i = 0; i < 100000; i++) {
@@ -62,7 +62,7 @@ public class TestBinary extends TestCase {
 		MCRC crc = binary.getCRC();
 		assertNotNull(crc);
 		//
-		Binary binary2 = new Binary(env.getService(), "test2");
+		Binary binary2 = new Binary(env.getService(), "test2", "test");
 		binary2.add(binary.asByteBuffer());
 		//
 		assertEquals(crc, binary2.getCRC());

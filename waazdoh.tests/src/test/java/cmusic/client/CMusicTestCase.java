@@ -65,7 +65,7 @@ public class CMusicTestCase extends TestCase {
 	}
 
 	protected MClient getNewClient() throws IOException {
-		boolean bind = usercounter > 0 ? true : false;
+		boolean bind = usercounter >= 0 ? true : false;
 		String username = "test_username_" + (usercounter++) + "@localhost";
 		return getNewClient(username, bind);
 	}

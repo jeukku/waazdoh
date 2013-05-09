@@ -60,13 +60,13 @@ public class TestPWaveSource implements MBinarySource {
 	}
 
 	@Override
-	public File getBinaryFile(MID id) {
-		return storage.getBinaryFile(id);
+	public File getBinaryFile(Binary b) {
+		return storage.getBinaryFile(b);
 	}
 
 	@Override
-	public Binary newBinary(String string) {
-		return storage.newBinary(string);
+	public Binary newBinary(String string, String extension) {
+		return storage.newBinary(string, extension);
 	}
 
 	@Override
@@ -114,12 +114,12 @@ public class TestPWaveSource implements MBinarySource {
 
 	@Override
 	public Binary get(MID fsid) {
-		return storage.getFloatStream(fsid);
+		return storage.getBinary(fsid);
 	}
 
 	@Override
 	public Binary getOrDownload(MID samplesid) {
-		Binary b = storage.getFloatStream(samplesid);
+		Binary b = storage.getBinary(samplesid);
 		if (b == null) {
 			b = new Binary(samplesid, service);
 			storage.addNewWave(b);

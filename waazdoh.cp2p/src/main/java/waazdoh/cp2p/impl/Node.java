@@ -190,15 +190,16 @@ public class Node {
 	}
 
 	public void check() {
-		if (tcpnode != null) {
-			synchronized (tcpnode) {
-				if (tcpnode.isConnected() && getMessagesSize() > 0) {
+		final TCPNode checknode = tcpnode;
+		if (checknode != null) {
+			synchronized (checknode) {
+				if (checknode.isConnected() && getMessagesSize() > 0) {
 					log.info("node ok and has messages " + tcpnode);
-					outputbytecount += tcpnode.sendMessages(getMessages());
+					outputbytecount += checknode.sendMessages(getMessages());
 				}
 
-				if (tcpnode != null & tcpnode.shouldGiveUp()) {
-					tcpnode.close();
+				if (checknode != null & checknode.shouldGiveUp()) {
+					checknode.close();
 					tcpnode = null;
 				}
 			}
@@ -208,7 +209,7 @@ public class Node {
 	public List<MMessage> incomingMessages(List<MMessage> messages) {
 		if (messages.size() > 0) {
 			updatePing();
-			
+
 			if (id == null) {
 				this.id = new MID(messages.get(0).getAttribute("sentby"));
 			}

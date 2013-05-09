@@ -11,23 +11,13 @@
 package waazdoh.cp2p.impl;
 
 import java.net.ConnectException;
-import java.net.InetSocketAddress;
 import java.util.List;
-import java.util.concurrent.Executors;
 
-import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MTimedFlag;
@@ -119,14 +109,7 @@ public class TCPNode {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				if (channel != null) {
-					log.info("closing channel " + channel);
-					channel.close();
-					channel = null;
-					if (connectionwaiter != null) {
-						connectionwaiter.trigger();
-					}
-				}
+				closeChannel();
 			}
 		}, "Node closing").start();
 	}
@@ -187,7 +170,7 @@ public class TCPNode {
 		trigger();
 	}
 
-	public void channelException(ChannelHandlerContext ctx, ExceptionEvent e) {
+	public synchronized void channelException(ChannelHandlerContext ctx, ExceptionEvent e) {
 		if (!(e.getCause() instanceof ConnectException)) {
 			log.info("Exception with " + host + ":" + port + " e:" + e);
 			log.error(e.getCause());
@@ -206,5 +189,16 @@ public class TCPNode {
 		List<MMessage> response = node.incomingMessages(messages);
 		sendMessages(response);
 
+	}
+
+	private synchronized void closeChannel() {
+		if (channel != null) {
+			log.info("closing channel " + channel);
+			channel.close();
+			channel = null;
+			if (connectionwaiter != null) {
+				connectionwaiter.trigger();
+			}
+		}
 	}
 }

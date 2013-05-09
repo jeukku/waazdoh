@@ -27,7 +27,6 @@ import waazdoh.cutils.UserID;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.service.CMService;
 
-
 public class Binary {
 	private Byte[] bytes = new Byte[10];
 	private int bytesindex = 0;
@@ -49,16 +48,18 @@ public class Binary {
 	private long usedtime;
 	private boolean ready;
 	private CMService service;
+	private String extension;
 
 	private static int count = 0;
 
-	public Binary(CMService service, String comment) {
+	public Binary(CMService service, String comment, String extension) {
 		this.service = service;
 		this.id = new MID();
 		if (service != null) {
 			this.creatorid = service.getUserID();
 		}
 		version = WaazdohInfo.version;
+		this.extension = extension;
 		this.comment = comment;
 
 		used();
@@ -82,6 +83,10 @@ public class Binary {
 
 	private void init() {
 		resetCRC();
+	}
+
+	public String getFilename() {
+		return getID().toString() + "." + extension;
 	}
 
 	public synchronized boolean load(InputStream is) {
@@ -188,12 +193,13 @@ public class Binary {
 		this.storedcrc = new MCRC(b.getAttributeLong("crc"));
 		this.creatorid = new UserID(b.getAttribute("creator"));
 		this.version = b.getAttribute("version");
+		this.extension = b.getAttribute("extension");
 		this.comment = b.getAttribute("comment");
 	}
 
 	private synchronized boolean loadFromService() {
 		JBeanResponse b = service.read(getID());
-		if (b!=null && b.isSuccess()) {
+		if (b != null && b.isSuccess()) {
 			log.info("loading Binary " + b);
 			load(b.getBean().find("binary"));
 			return true;
@@ -209,7 +215,7 @@ public class Binary {
 	}
 
 	public void save() {
-		creatorid = service.getUserID();	
+		creatorid = service.getUserID();
 		service.write(getID(), getBean());
 	}
 
@@ -241,6 +247,7 @@ public class Binary {
 		b.addAttribute("creator", creatorid.toString());
 		b.addAttribute("version", version);
 		b.addAttribute("comment", "" + comment);
+		b.addAttribute("extension", extension);
 		return b;
 	}
 
@@ -458,5 +465,9 @@ public class Binary {
 		} else {
 			return true;
 		}
+	}
+
+	public String getExtension() {
+		return extension;
 	}
 }

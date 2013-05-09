@@ -18,12 +18,12 @@ import waazdoh.common.waves.WaveGeneratorSample;
 import waazdoh.cutils.MTimedFlag;
 import waazdoh.emodel.ETrack;
 
-
 public class TestSong extends CMusicTestCase {
 	private static final int TRACK_LENGTH = WaazdohInfo.DEFAULT_SAMPLERATE * 12; // two
-																			// minutes
-																			// of
-																			// audio
+
+	// seconds
+	// of
+	// audio
 
 	public void testCreateSong() throws IOException {
 		MClient c = getNewClient();
@@ -55,8 +55,8 @@ public class TestSong extends CMusicTestCase {
 		assertEquals(songtext, s.getBean().toText());
 		//
 		MOutput boutputwave = s.getOutputWave();
-		assertTrue(boutputwave.getLength()>1000);
-		
+		assertTrue(boutputwave.getLength() > 1000);
+
 		compareOutputs(outputwave, boutputwave);
 		compareOutputs(outputwave, boutputwave);
 		//
@@ -78,8 +78,18 @@ public class TestSong extends CMusicTestCase {
 				ab = -ab;
 			}
 			if (ab > WaazdohInfo.MAX_RESOLUTION) {
+				index -= 100;
+				for (int count = 0; count < 200; count++) {
+					sa = outputwave.getSample(index);
+					sb = boutputwave.getSample(index);
+					a = sa.mix();
+					b = sb.mix();
+					
+					String mes = "i:" + index + " a!=b " + a + " b:" + b;
+					log.info(mes);
+					index++;
+				}
 				String mes = "i:" + index + " a!=b " + a + " b:" + b;
-				log.info(mes);
 				assertEquals("e", mes);
 			}
 

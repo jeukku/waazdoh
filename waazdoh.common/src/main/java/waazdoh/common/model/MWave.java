@@ -12,8 +12,7 @@ package waazdoh.common.model;
 
 import java.io.File;
 import java.io.IOException;
-import javaFlacEncoder.FLACFileOutputStream;
-import javaFlacEncoder.StreamConfiguration;
+import java.nio.ShortBuffer;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -29,7 +28,22 @@ import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.xml.JBean;
 
+import com.xuggle.mediatool.IMediaGenerator;
+import com.xuggle.mediatool.IMediaListener;
+import com.xuggle.mediatool.IMediaReader;
+import com.xuggle.mediatool.IMediaWriter;
+import com.xuggle.mediatool.MediaListenerAdapter;
+import com.xuggle.mediatool.ToolFactory;
+import com.xuggle.mediatool.event.IAudioSamplesEvent;
+import com.xuggle.xuggler.IAudioSamples;
+import com.xuggle.xuggler.ICodec;
+import com.xuggle.xuggler.IError;
+
 public class MWave {
+	private static final Object TYPE_FLAC = "flac";
+
+	private static final Object ENCODING_VORBIS = "ogg";
+
 	private MLogger log = MLogger.getLogger(this);
 
 	private FloatArray fs;
@@ -39,6 +53,8 @@ public class MWave {
 	private int samplespersecond;
 
 	private String type = "integers";
+	private String encoding = "flac";
+
 	private MID binaryid;
 
 	private boolean saved;
@@ -98,15 +114,17 @@ public class MWave {
 		this.start = b.getAttributeInt("start");
 		this.length = b.getAttributeInt("length");
 		this.binaryid = b.getIDAttribute("binaryid");
-		if(binaryid==null) {
-			// Random binaryid. Wave will never be ready, but wont cause exception either
+		if (binaryid == null) {
+			// Random binaryid. Wave will never be ready, but wont cause
+			// exception either
 			log.error("BinaryID null");
 			binaryid = new MID();
 		}
 		this.type = b.getAttribute("type");
+		this.encoding = b.getAttribute("encoding");
 		this.version = b.getAttribute("version");
 		this.id = b.getIDAttribute("id");
-		if(id==null) {
+		if (id == null) {
 			log.error("Invalid bean, but will load anyway");
 			id = new MID();
 		}
@@ -159,78 +177,27 @@ public class MWave {
 		env.getBinarySource().saveWaves();
 		AudioFormat format = new AudioFormat(samplespersecond, 16, 1, true,
 				false);
-		try {
-			File file = env.getBinarySource().getBinaryFile(binary.getID());
-			log.info("reading " + file + " exists:" + file.exists());
+		// try {
+		File file = env.getBinarySource().getBinaryFile(binary);
+		log.info("reading " + file + " exists:" + file.exists());
 
-			AudioInputStream flacAIS = new FlacAudioFileReader()
-					.getAudioInputStream(file);
-
-			// AudioFormat audioFormat = new AudioFormat(Encoding.PCM_SIGNED,
-			// flacAIS.getFormat().getSampleRate(), flacAIS.getFormat()
-			// .getSampleSizeInBits(), flacAIS.getFormat()
-			// .getChannels(),
-			// flacAIS.getFormat().getChannels() * 2, flacAIS.getFormat()
-			// .getSampleRate(), false);
-
-			AudioInputStream is = new FlacFormatConversionProvider()
-					.getAudioInputStream(format, flacAIS);
-			// AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE,
-			// wavfile);
-			// FlacFormatConversionProvider prov = new
-			// FlacFormatConversionProvider();
-			// AudioInputStream is = prov.getAudioInputStream(format,
-			// new AudioInputStream(bin.getInputStream(), new AudioFormat(
-			// prov.getSourceEncodings()[0], samplespersecond, 16,
-			// 1, 2, samplespersecond, true), length));
-
-			byte bs[] = new byte[2];
-			int index = 0;
-			while (index < length) {
-				int count = is.read(bs);
-				if (count == 0) {
-					break;
-				}
-
-				short a = (short) (bs[0] & 0xff);
-				short b = (short) ((bs[1] & 0xff) << 8);
-				short num = (short) (a + b);
-
-				if (index == 0) {
-					// TODO debug
-					log.info("getting sample as short " + num + " at " + index
-							+ " binary " + binary.getID());
-					log.info("getting sample as short " + num + " at " + index
-							+ " fs:" + getFS().length() + " bin:"
-							+ binary.getID());
-				}
-
-				getFS().add(1.0f * num / Short.MAX_VALUE);
-
-				index++;
-			}
-
-			if (length != getFS().length()) {
-				String s = "read different count of floats from binary than stored "
-						+ length + "!=" + getFS().length();
-				log.error("error " + s);
-				throw new RuntimeException(s);
-			}
-
-			log.info("reading floats from flac done " + binary.getID()
-					+ " read:" + index);
-			flacAIS.close();
-		} catch (IOException e) {
-			log.info("reading binary " + e + " got " + fs.length()
-					+ " floats with binaryid " + binaryid);
-			log.error(e);
-			fs = null;
-		} catch (UnsupportedAudioFileException e) {
-			log.info("reading binary " + e + " got " + fs.length()
-					+ " floats with binaryid " + binaryid);
-			log.error(e);
-			fs = null;
+		if (encoding.equals(TYPE_FLAC)) {
+			readXugglerFlac(binary, format, file);
 		}
+
+		if (length != getFS().length()) {
+			String s = "read different count of floats from binary than stored "
+					+ length + "!=" + getFS().length();
+			log.error("error " + s);
+			throw new RuntimeException(s);
+		}
+		/*
+		 * } catch (IOException e) { log.info("reading binary " + e + " got " +
+		 * fs.length() + " floats with binaryid " + binaryid); log.error(e); fs
+		 * = null; } catch (UnsupportedAudioFileException e) {
+		 * log.info("reading binary " + e + " got " + fs.length() +
+		 * " floats with binaryid " + binaryid); log.error(e); fs = null; }
+		 */
 
 		used();
 	}
@@ -239,7 +206,7 @@ public class MWave {
 	public String toString() {
 		return "NewWave[" + start + "->" + (start + getLength()) + "]["
 				+ getLength() + "]][" + (1.0f * getLength() / samplespersecond)
-				+ "][" + super.toString() + "]";
+				+ "][" + id + ":" + super.hashCode() + "]";
 	}
 
 	@Override
@@ -304,60 +271,16 @@ public class MWave {
 			if (okToEdit() && getLength() > 0) {
 				used();
 
-				Binary binary = env.getBinarySource().newBinary("" + this);
-				File file = env.getBinarySource().getBinaryFile(binary.getID());
+				Binary binary = null;
 				//
-				javaFlacEncoder.FLACEncoder enc = new javaFlacEncoder.FLACEncoder();
-				StreamConfiguration sc = new StreamConfiguration(1,
-						StreamConfiguration.DEFAULT_MIN_BLOCK_SIZE,
-						StreamConfiguration.DEFAULT_MAX_BLOCK_SIZE,
-						samplespersecond, 16);
-				enc.setStreamConfiguration(sc);
-
-				log.info("stream config " + sc + " with id " + binary.getID());
-
-				FLACFileOutputStream fos = new FLACFileOutputStream(file);
-				enc.setOutputStream(fos);
-				enc.openFLACStream();
-
-				int index = 0;
-				int samples[] = new int[getFS().length()];
-
-				while (index < samples.length) {
-					float f = getFS().getSample(index);
-					// short i = (short) ((f / 2 + 0.5f) * Short.MAX_VALUE);
-					short i = (short) (f * Short.MAX_VALUE);
-					if (index == 0) {
-						// TODO debug
-						log.info("adding sample as short " + i + "[" + f + "] "
-								+ " at " + index + " binary " + binary.getID());
-					}
-					samples[index++] = i;
-				}
-				//
-				boolean addsamples = enc.addSamples(samples, index);
-
-				int extrasamples = 1000000 - index;
-				if (extrasamples < 0) {
-					extrasamples = 0;
-				}
-				enc.addSamples(new int[extrasamples], extrasamples);
-
-				while (true) {
-					int encodedcount = enc.encodeSamples(index + extrasamples,
-							true);
-					index -= encodedcount;
-					if (encodedcount <= 0) {
-						break;
-					}
+				if (encoding.equals(TYPE_FLAC)) {
+					binary = createFlacXugglerBinary();
+				} else if (encoding.equals(ENCODING_VORBIS)) {
+					binary = createVorbisBinary();
 				}
 
-				log.info("encoded fully. Closing fos " + binary.getID()
-						+ " samplesleft:" + index + " wrote "
-						+ getFS().length());
-				fos.close();
 				//
-				if (addsamples) {
+				if (binary != null) {
 					binaryid = binary.getID();
 
 					boolean reloadsuccess = env.getBinarySource()
@@ -367,7 +290,7 @@ public class MWave {
 					if (reloadsuccess) {
 						binary.setReady();
 						binary.save(); //
-						log.info("creating binary done " + file + " id:"
+						log.info("creating binary done " + binary + " id:"
 								+ binary.getID()); // log.info("TEST calling binaryReady "+
 													// // binary.getID()); //
 													// binaryReady();
@@ -378,20 +301,97 @@ public class MWave {
 								+ binaryid);
 						return null;
 					}
-
 				} else {
-					log.error("failed to add samples to flac");
+					log.info("not creating binary length:" + getLength()
+							+ " oktoedit:" + okToEdit());
 				}
-				return binary;
-			} else {
-				log.info("not creating binary length:" + getLength()
-						+ " oktoedit:" + okToEdit());
-				return null;
 			}
 		} catch (IOException e) {
 			log.error(e);
-			return null;
 		}
+		return null;
+	}
+
+	private void readXugglerFlac(Binary binary, AudioFormat format, File file) {
+		IMediaListener myListener = new MediaListenerAdapter() {
+			public void onOpen(IMediaGenerator pipe) {
+				log.info("opened: " + ((IMediaReader) pipe).getUrl());
+			}
+
+			@Override
+			public void onAudioSamples(IAudioSamplesEvent event) {
+				IAudioSamples samples = event.getAudioSamples();
+				log.info("onaudiosamples " + samples.getNumSamples() + " "
+						+ " fs:" + getFS().length() + " " + samples);
+				ShortBuffer sb = samples.getByteBuffer().asShortBuffer();
+
+				for (int i = 0; i < sb.limit() && getFS().length() < length; i++) {
+					short num = sb.get(i);
+					getFS().add(1.0f * num / Short.MAX_VALUE);
+				}
+				//
+				super.onAudioSamples(event);
+			}
+		};
+
+		IMediaReader r = ToolFactory.makeReader(file.getAbsolutePath());
+		r.addListener(myListener);
+
+		while (true) {
+			IError p;
+			p = r.readPacket();
+			if (p != null) {
+				break;
+			}
+		}
+		//
+		log.info("read flac done");
+	}
+
+	private Binary createFlacXugglerBinary() throws IOException {
+
+		Binary binary = env.getBinarySource().newBinary("" + this, "flac");
+		File file = env.getBinarySource().getBinaryFile(binary);
+
+		ICodec codec = ICodec.findEncodingCodec(ICodec.ID.CODEC_ID_FLAC);
+		String flacfilepath = file.getAbsolutePath();
+		IMediaWriter writer = ToolFactory.makeWriter(flacfilepath);
+
+		writer.addAudioStream(0, 0, ICodec.ID.CODEC_ID_FLAC, 1,
+				this.samplespersecond);
+		//
+		int index = 0;
+		while (index < getFS().length()) {
+			short ss[] = new short[1024];
+			//
+			int ssindex = 0;
+			while (ssindex < ss.length && index < getFS().length()) {
+				float f = getFS().getSample(index);
+				// short i = (short) ((f / 2 + 0.5f) * Short.MAX_VALUE);
+				short i = (short) (f * Short.MAX_VALUE);
+				ss[ssindex] = i;
+				index++;
+				ssindex++;
+			}
+
+			writer.encodeAudio(0, ss);
+		}
+
+		int extrasamples = 6000;
+		writer.encodeAudio(0, new short[extrasamples]);
+
+		writer.close();
+		//
+		File nf = new File(flacfilepath);
+		nf.renameTo(file);
+
+		return binary;
+	}
+
+	private Binary createVorbisBinary() {
+		Binary binary = env.getBinarySource().newBinary("" + this, "ogg");
+		File file = env.getBinarySource().getBinaryFile(binary);
+		return binary;
 	}
 
 	public Binary getBinary() {
@@ -439,16 +439,17 @@ public class MWave {
 		JBean b = new JBean("wave");
 		if (binaryid == null) {
 			b.addAttribute("error", "no binaryid");
-		} else if(id==null) {
+		} else if (id == null) {
 			b.addAttribute("error", "no id");
 		} else {
 			b.addAttribute("binaryid", binaryid);
 			b.addAttribute("length", fs != null ? fs.length() : length);
 			b.addAttribute("type", type);
+			b.addAttribute("encoding", encoding);
 			b.addAttribute("version", version);
 			b.addAttribute("start", start);
 			b.addAttribute("id", id);
-		} 
+		}
 		return b;
 	}
 

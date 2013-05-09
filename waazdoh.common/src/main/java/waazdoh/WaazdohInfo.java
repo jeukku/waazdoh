@@ -10,8 +10,14 @@
  ******************************************************************************/
 package waazdoh;
 
+
 public class WaazdohInfo {
 	public final static String version = "0.2.2";
 	public static final int DEFAULT_SAMPLERATE = 44100;
 	public static final float MAX_RESOLUTION = 0.001f;
+
+	public static int getMaxWaveLength() {
+		int tensec = DEFAULT_SAMPLERATE * 10;
+		return tensec;
+	}
 }

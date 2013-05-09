@@ -20,7 +20,7 @@ import waazdoh.service.ReportingService;
 
 
 public interface MBinarySource {
-	Binary get(MID fsid);
+	Binary get(MID bin);
 
 	void saveWaves();
 
@@ -50,12 +50,13 @@ public interface MBinarySource {
 
 	void setReportingService(ReportingService rservice);
 
-	Binary newBinary(String string);
+	Binary newBinary(String string, String extension);
 
-	File getBinaryFile(MID id);
+	File getBinaryFile(Binary bin);
 
 	boolean reload(Binary binary);
 
 	Set<MID> getLocalObjectIDs();
+
 
 }

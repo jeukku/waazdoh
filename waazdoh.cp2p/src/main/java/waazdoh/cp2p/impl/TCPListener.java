@@ -77,7 +77,7 @@ public class TCPListener {
 				try {
 					bind = bootstrap.bind(new InetSocketAddress(port));
 				} catch (ChannelException e) {
-					log.error(e);
+					//log.error(e);
 					port++;
 				}
 			}
@@ -140,7 +140,7 @@ public class TCPListener {
 		public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
 				throws Exception {
 			log.info("got exception " + e);
-			log.error(e.getCause());
+			//log.error(e.getCause());
 		}
 	}
 

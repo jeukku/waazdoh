@@ -64,8 +64,8 @@ public class P2PBinarySource implements MBinarySource {
 	}
 
 	@Override
-	public File getBinaryFile(MID id) {
-		return this.storage.getBinaryFile(id);
+	public File getBinaryFile(Binary bin) {
+		return this.storage.getBinaryFile(bin);
 	}
 
 	@Override
@@ -123,7 +123,7 @@ public class P2PBinarySource implements MBinarySource {
 
 	@Override
 	public synchronized Binary get(MID fsid) {
-		Binary fs = storage.getFloatStream(fsid);
+		Binary fs = storage.getBinary(fsid);
 		return fs;
 	}
 
@@ -178,8 +178,8 @@ public class P2PBinarySource implements MBinarySource {
 	}
 
 	@Override
-	public Binary newBinary(String string) {
-		return storage.newBinary(string);
+	public Binary newBinary(String string, String extension) {
+		return storage.newBinary(string, extension);
 	}
 
 	private synchronized void addBinary(Binary stream) {
