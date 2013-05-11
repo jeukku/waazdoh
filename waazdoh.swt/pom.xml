@@ -91,22 +91,25 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.7</version> 
+				<version>1.7</version>
 				<executions>
 					<execution>
 						<id>default-cli</id>
 						<phase>install</phase>
 						<goals>
-						<goal>run</goal></goals>
+							<goal>run</goal>
+						</goals>
 						<configuration>
 							<tasks>
 								<!-- -->
-								 <zip destfile="${project.build.directory}/waazdoh-app-${app.arch}-distribution/bin${buildNumber}.zip">
-								 	<fileset dir="src/main/app/bin" />
-								</zip> 
-								 <zip destfile="${project.build.directory}/waazdoh-app-${app.arch}-distribution/jdk${java.version}.zip">
-								 	<fileset dir="${jdk}" />
-								</zip> 
+								<zip
+									destfile="${project.build.directory}/waazdoh-app-${app.arch}/bin${buildNumber}.zip">
+									<fileset dir="src/main/app/bin" />
+								</zip>
+								<zip
+									destfile="${project.build.directory}/waazdoh-app-${app.arch}/jdk${java.version}.zip">
+									<fileset dir="${jdk}" />
+								</zip>
 							</tasks>
 						</configuration>
 					</execution>
@@ -205,7 +208,7 @@
 				<swt.artifactId>org.eclipse.swt.win32.win32.x86_64</swt.artifactId>
 				<app.arch>windows_64</app.arch>
 				<doexe>true</doexe>
-    		    <jdk>${env.JAVA_HOME}</jdk>  
+				<jdk>${env.JAVA_HOME}</jdk>
 			</properties>
 		</profile>
 		<profile>
@@ -252,64 +255,6 @@
 			</properties>
 		</profile>
 
-		<profile>
-			<id>launch4j</id>
-			<activation>
-				<property>
-					<name>doexe</name>
-				</property>
-			</activation>
-
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
-						<artifactId>launch4j-plugin</artifactId>
-						<version>1.5.0.0</version>
-						<executions>
-							<execution>
-								<id>l4j-clui</id>
-								<phase>package</phase>
-								<goals>
-									<goal>launch4j</goal>
-								</goals>
-								<configuration>
-									<headerType>gui</headerType>
-									<outfile>src/main/app/bin/waazdoh.exe</outfile>
-									<jar>waazdoh-app-${app.arch}-with-dep.jar</jar>
-									<errTitle>Waazdoh</errTitle>
-									<dontWrapJar>true</dontWrapJar>
-									<classPath>
-										<mainClass>waazdoh.swt.AppLauncher</mainClass>
-										<addDependencies>false</addDependencies>
-										<preCp>anything</preCp>
-									</classPath>
-									<jre>
-										<path>../jre
-										</path>
-										<minVersion>1.5.0</minVersion>
-										<opts>
-											<opt>-Djava.util.logging.config.file=logging.properties</opt>
-										</opts>
-									</jre>
-									<versionInfo>
-										<fileVersion>${exe.version}</fileVersion>
-										<txtFileVersion>${exe.version}</txtFileVersion>
-										<fileDescription>Waazdog client</fileDescription>
-										<copyright>Copyright</copyright>
-										<productVersion>${exe.version}</productVersion>
-										<txtProductVersion>${exe.version}</txtProductVersion>
-										<productName>Waazdoh client</productName>
-										<internalName>waazdohclient</internalName>
-										<originalFilename>waazdoh.exe</originalFilename>
-									</versionInfo>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
 	</profiles>
 
 	<repositories>
@@ -327,5 +272,13 @@
 			<url>http://dev.joget.org/archiva/repository/internal</url>
 		</repository>
 	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>tycho-installer-plugin-repo</id>
+			<layout>default</layout>
+			<url>https://repository-katmatt.forge.cloudbees.com/snapshot/</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 </project>
