@@ -32,6 +32,12 @@
 
 	<target name="runmvn" depends="mvnwindows, mvnlinux">
 	</target>
+	    
+	<target name="deploy">
+		<ant target="runmvn">
+			<property name="args" value="install" />
+		</ant>	    
+	</target>
 	
 	<target name="clean">
 		<deltree dir="bin" />

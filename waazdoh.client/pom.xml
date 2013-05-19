@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>waazdoh.client</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.3-SNAPSHOT</version>
+	<version>1.0.4-SNAPSHOT</version>
 	<name>waazdoh.client</name>
 	<url>http://maven.apache.org</url>
 	<groupId>waazdoh</groupId>
@@ -129,19 +129,19 @@
 		<dependency>
 			<groupId>waazdoh</groupId>
 			<artifactId>waazdoh.common</artifactId>
-			<version>1.0.3-SNAPSHOT</version>
+			<version>1.0.4-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>waazdoh</groupId>
 			<artifactId>waazdoh.cutils</artifactId>
-			<version>1.0.3-SNAPSHOT</version>
+			<version>1.0.4-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>waazdoh</groupId>
 			<artifactId>waazdoh.cp2p</artifactId>
-			<version>1.0.3-SNAPSHOT</version>
+			<version>1.0.4-SNAPSHOT</version>
 		</dependency>
 
 		<!-- 

@@ -98,25 +98,25 @@
 		<dependency>
 			<groupId>waazdoh</groupId>
 			<artifactId>waazdoh.cutils</artifactId>
-			<version>1.0.3-SNAPSHOT</version>
+			<version>1.0.4-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>waazdoh</groupId>
 			<artifactId>waazdoh.cp2p</artifactId>
-			<version>1.0.3-SNAPSHOT</version>
+			<version>1.0.4-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>waazdoh</groupId>
 			<artifactId>waazdoh.common</artifactId>
-			<version>1.0.3-SNAPSHOT</version>
+			<version>1.0.4-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>waazdoh</groupId>
 			<artifactId>waazdoh.client</artifactId>
-			<version>1.0.3-SNAPSHOT</version>
+			<version>1.0.4-SNAPSHOT</version>
 		</dependency>
 
 		<!-- 
