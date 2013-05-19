@@ -15,7 +15,7 @@
 		<echo file="target/build.trig">Done</echo>
 
 		<ant target="runmvn">
-			<property name="args" value="install" />
+			<property name="args" value="compile" />
 		</ant>
 
 		<exec command="wget --delete-after  -t 3 -T 1  http://localhost:17000/shutdown" failonerror="false" failifexecutionfails="false" />
