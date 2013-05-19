@@ -8,7 +8,7 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.swt;
+package waazdoh.swt.views;
 
 import java.util.List;
 
@@ -35,6 +35,7 @@ import waazdoh.common.model.Song;
 import waazdoh.common.model.Track;
 import waazdoh.common.model.TrackGroup;
 import waazdoh.common.model.TrackGroupListener;
+import waazdoh.swt.TitleLayout;
 import waazdoh.swt.layouts.RowFillLayout;
 
 public class SongComposite extends Composite implements ESongListener {
@@ -99,6 +100,7 @@ public class SongComposite extends Composite implements ESongListener {
 		trackgroups.setLayout(trackgroupslayout);
 
 		scrolledComposite.setContent(trackgroups);
+		//
 		addTrackGroups();
 		//
 		Thread readychecker = new Thread(new Runnable() {
@@ -162,17 +164,8 @@ public class SongComposite extends Composite implements ESongListener {
 	}
 
 	private void add(TrackGroup trackgroup) {
-		Control[] cs = trackgroups.getChildren();
-		boolean found = false;
-		for (Control control : cs) {
-			if (control instanceof TrackGroupComposite) {
-				TrackGroupComposite tgc = (TrackGroupComposite) control;
-				if (tgc.getTrackgroup() == trackgroup) {
-					found = true;
-				}
-				// w += tgc.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
-			}
-		}
+		boolean found = isOnList(trackgroup);
+		//
 		if (!found) {
 			new TrackGroupComposite(song, trackgroup, trackgroups, app);
 		}
@@ -184,6 +177,18 @@ public class SongComposite extends Composite implements ESongListener {
 		});
 		//
 		updateSize();
+	}
+
+	private boolean isOnList(Object instance) {
+		Control[] cs = trackgroups.getChildren();
+		boolean found = false;
+		for (Control control : cs) {
+			SongPartComposite partc = (SongPartComposite) control;
+			if (partc.getObject() == instance) {
+				found = true;
+			}
+		}
+		return found;
 	}
 
 	public void updateSize() {

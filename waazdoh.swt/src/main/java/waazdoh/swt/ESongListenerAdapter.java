@@ -26,5 +26,4 @@ public class ESongListenerAdapter implements ESongListener {
 		// TODO Auto-generated method stub
 
 	}
-
 }

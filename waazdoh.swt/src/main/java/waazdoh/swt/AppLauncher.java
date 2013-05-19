@@ -13,7 +13,6 @@ package waazdoh.swt;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.StringTokenizer;
-import java.util.logging.LogManager;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;

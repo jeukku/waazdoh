@@ -275,9 +275,10 @@ public class Song {
 			output = new MOutput(env);
 
 			for (TrackGroup t : this.trackgroups) {
-				FloatStream groupstream = t.getStream();
-				output.add(groupstream);
+				FloatStream s = t.getStream();
+				output.add(s);
 			}
+
 		}
 
 		return output;

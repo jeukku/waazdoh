@@ -8,7 +8,7 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.swt;
+package waazdoh.swt.views;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -32,8 +32,10 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import waazdoh.app.App;
 import waazdoh.app.ESong;
 import waazdoh.common.model.MProgress;
-import waazdoh.common.model.Track;
 import waazdoh.common.model.ServiceObjectListener;
+import waazdoh.common.model.Track;
+import waazdoh.swt.AppListenerAdapter;
+import waazdoh.swt.ESongListenerAdapter;
 import waazdoh.swt.components.AudioCanvas;
 
 public class MixerTrackComposite extends Composite {

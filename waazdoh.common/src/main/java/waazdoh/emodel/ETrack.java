@@ -24,11 +24,11 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import waazdoh.WaazdohInfo;
+import waazdoh.common.model.AudioInfo;
 import waazdoh.common.model.MEnvironment;
 import waazdoh.common.model.MWave;
 import waazdoh.common.model.WaveList;
 import waazdoh.cutils.MLogger;
-
 
 public class ETrack {
 	private List<ETrackListener> listeners = new LinkedList<ETrack.ETrackListener>();
@@ -51,14 +51,16 @@ public class ETrack {
 
 	@Override
 	public String toString() {
-		return "ETrack[l:" + getLength() + "["
-				+ (getLength() / WaazdohInfo.DEFAULT_SAMPLERATE) + "]][" + waves
-				+ "]";
+		return "ETrack[l:" + getLength() + "[" + getLength().inSeconds()
+				+ "]][" + waves + "]";
 
 	}
 
-	public int getLength() {
-		return getLastWave().getStart() + getLastWave().getLength();
+	public AudioInfo getLength() {
+		AudioInfo l = new AudioInfo(getLastWave().getStart(),
+				WaazdohInfo.DEFAULT_SAMPLERATE);
+		l.add(getLastWave().getAudioInfo());
+		return l;
 	}
 
 	public void addSamples(float[] samples, int count) {
@@ -79,8 +81,8 @@ public class ETrack {
 
 	public void importFile(String sfile) throws UnsupportedAudioFileException,
 			IOException {
-		AudioFormat targetformat = new AudioFormat(WaazdohInfo.DEFAULT_SAMPLERATE,
-				16, 1, true, false);
+		AudioFormat targetformat = new AudioFormat(
+				WaazdohInfo.DEFAULT_SAMPLERATE, 16, 1, true, false);
 		AudioInputStream is = AudioSystem.getAudioInputStream(new File(sfile));
 		is = AudioSystem.getAudioInputStream(targetformat, is);
 

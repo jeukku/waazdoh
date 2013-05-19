@@ -36,8 +36,6 @@ public class Track implements ServiceObjectData {
 	private boolean muted;
 	private String version;
 
-	private float framerate = WaazdohInfo.DEFAULT_SAMPLERATE;
-
 	public Track(UserID creatorid, MEnvironment env) {
 		so = new ServiceObject("track", env, creatorid, this);
 
@@ -78,8 +76,8 @@ public class Track implements ServiceObjectData {
 		return true;
 	}
 
-	int getLength() {
-		return waves.getLength();
+	AudioInfo getLength() {
+		return waves.getAudioInfo();
 	}
 
 	public synchronized void checkWave(MProgress p) {
@@ -160,13 +158,8 @@ public class Track implements ServiceObjectData {
 		}
 
 		@Override
-		public float getSamplesPerSecond() {
-			return framerate;
-		}
-
-		@Override
-		public int getLength() {
-			return waves.getLength();
+		public AudioInfo getInfo() {
+			return waves.getAudioInfo();
 		}
 	}
 
@@ -232,7 +225,7 @@ public class Track implements ServiceObjectData {
 			return false;
 		}
 		//
-		for (int i = 0; i < getLength(); i++) {
+		for (int i = 0; i < getLength().getSampleCount(); i++) {
 			float ab = btrack.getSample(i) - getSample(i);
 			if (ab < 0) {
 				ab = -ab;

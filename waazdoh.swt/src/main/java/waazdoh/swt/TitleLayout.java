@@ -20,7 +20,7 @@ public class TitleLayout extends Layout {
 	/**
 	 * @param mainView
 	 */
-	TitleLayout() {
+	public TitleLayout() {
 	}
 	
 	@Override

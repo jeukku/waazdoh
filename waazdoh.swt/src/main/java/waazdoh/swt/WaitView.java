@@ -21,7 +21,6 @@ import waazdoh.app.App;
 import waazdoh.client.ClientListener;
 import waazdoh.client.MClient;
 import waazdoh.common.model.Song;
-import waazdoh.swt.AppListenerAdapter;
 
 public class WaitView extends Composite {
 

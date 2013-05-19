@@ -24,6 +24,7 @@ public class TrackGroup {
 	private static final String BEANNAME = "trackgroup";
 	private MID id;
 	private List<Track> tracks = new LinkedList<Track>();
+	private List<InstrumentTrack> instrumenttracks = new LinkedList<InstrumentTrack>();
 	// private Song song;
 	private static int counter = 1;
 	private String name = "TrackGroup" + (counter++);
@@ -40,6 +41,8 @@ public class TrackGroup {
 	private String version;
 	private MEnvironment env;
 	private MID copyof;
+	private AudioInfo audioinfo = new AudioInfo(0,
+			WaazdohInfo.DEFAULT_SAMPLERATE);
 
 	public TrackGroup(UserID user, MEnvironment env) {
 		this.env = env;
@@ -263,24 +266,13 @@ public class TrackGroup {
 	}
 
 	public FloatStream getStream() {
+		updateAudioInfo();
 		return new FloatStream() {
 			MOutput currentoutput = getOutputWave();
 
 			@Override
-			public int getLength() {
-				int length = 0;
-				List<Track> ts = tracks;
-				for (Track track : ts) {
-					if (track.getLength() > length) {
-						length = track.getLength();
-					}
-				}
-				return length;
-			}
-
-			@Override
-			public float getSamplesPerSecond() {
-				return WaazdohInfo.DEFAULT_SAMPLERATE;
+			public AudioInfo getInfo() {
+				return audioinfo;
 			}
 
 			@Override
@@ -288,6 +280,14 @@ public class TrackGroup {
 				return currentoutput.getSample(index);
 			}
 		};
+	}
+
+	private synchronized void updateAudioInfo() {
+		audioinfo = new AudioInfo(0, WaazdohInfo.DEFAULT_SAMPLERATE);
+		List<Track> ts = tracks;
+		for (Track track : ts) {
+			audioinfo.setIfLonger(track.getLength());
+		}
 	}
 
 	public void addListener(TrackGroupListener trackGroupListener) {
@@ -318,5 +318,13 @@ public class TrackGroup {
 		}
 		s += "]";
 		return s;
+	}
+
+	public InstrumentTrack newInstrumentTrack() {
+		synchronized (instrumenttracks) {
+			InstrumentTrack i = new InstrumentTrack(this, env, creatorid);
+			instrumenttracks.add(i);
+			return i;
+		}
 	}
 }

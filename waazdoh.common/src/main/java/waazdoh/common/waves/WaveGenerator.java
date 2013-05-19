@@ -14,7 +14,7 @@ import waazdoh.emodel.ETrack;
 
 public class WaveGenerator {
 	public void generate(ETrack t, int start, int length,
-			WaveGeneratorSample waveGeneratorSample) {
+			SampleStream waveGeneratorSample) {
 		float sample = start;
 		float[] samples = new float[1000];
 		int isamples = 0;

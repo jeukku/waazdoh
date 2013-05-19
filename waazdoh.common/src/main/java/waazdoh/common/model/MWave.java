@@ -48,7 +48,9 @@ public class MWave {
 
 	private FloatArray fs;
 
-	private int start, length;
+	private int start;
+
+	private AudioInfo audioinfo;
 	private long modified;
 	private int samplespersecond;
 
@@ -112,7 +114,7 @@ public class MWave {
 
 	private void parseBean(JBean b) {
 		this.start = b.getAttributeInt("start");
-		this.length = b.getAttributeInt("length");
+		this.audioinfo = new AudioInfo(b.get("audioinfo"));
 		this.binaryid = b.getIDAttribute("binaryid");
 		if (binaryid == null) {
 			// Random binaryid. Wave will never be ready, but wont cause
@@ -144,8 +146,13 @@ public class MWave {
 				}
 			}
 			getFS().addArray(fs2, count);
-			length = getFS().length();
+
+			updateAudioInfo();
 		}
+	}
+
+	private void updateAudioInfo() {
+		audioinfo = new AudioInfo(getFS().length(), samplespersecond);
 	}
 
 	private boolean okToEdit() {
@@ -185,12 +192,13 @@ public class MWave {
 			readXugglerFlac(binary, format, file);
 		}
 
-		if (length != getFS().length()) {
+		if (!audioinfo.isSame(getFS())) {
 			String s = "read different count of floats from binary than stored "
-					+ length + "!=" + getFS().length();
+					+ audioinfo + "!=" + getFS().length();
 			log.error("error " + s);
 			throw new RuntimeException(s);
 		}
+		
 		/*
 		 * } catch (IOException e) { log.info("reading binary " + e + " got " +
 		 * fs.length() + " floats with binaryid " + binaryid); log.error(e); fs
@@ -204,9 +212,10 @@ public class MWave {
 
 	@Override
 	public String toString() {
-		return "NewWave[" + start + "->" + (start + getLength()) + "]["
-				+ getLength() + "]][" + (1.0f * getLength() / samplespersecond)
-				+ "][" + id + ":" + super.hashCode() + "]";
+		return "NewWave[" + start + "->"
+				+ (start + getAudioInfo().getSampleCount()) + "][" + getAudioInfo()
+				+ "]][" + (getAudioInfo().inSeconds()) + "][" + id + ":"
+				+ super.hashCode() + "]";
 	}
 
 	@Override
@@ -224,10 +233,10 @@ public class MWave {
 	}
 
 	public synchronized boolean areSame(MWave bwave) {
-		if (getLength() != bwave.getLength()) {
+		if (getAudioInfo() != bwave.getAudioInfo()) {
 			return false;
 		}
-		for (int i = 0; i < getLength(); i++) {
+		for (int i = 0; i < getAudioInfo().getSampleCount(); i++) {
 			float ab = bwave.getSample(i) - getSample(i);
 			if (ab < 0) {
 				ab = -ab;
@@ -262,13 +271,16 @@ public class MWave {
 		return getFS().getSample(index);
 	}
 
-	public synchronized int getLength() {
-		return length;
+	public synchronized AudioInfo getAudioInfo() {
+		if (audioinfo == null) {
+			audioinfo = new AudioInfo(0, WaazdohInfo.DEFAULT_SAMPLERATE);
+		}
+		return audioinfo;
 	}
 
 	private synchronized Binary createBinary() {
 		try {
-			if (okToEdit() && getLength() > 0) {
+			if (okToEdit() && !getAudioInfo().isEmpty()) {
 				used();
 
 				Binary binary = null;
@@ -302,7 +314,7 @@ public class MWave {
 						return null;
 					}
 				} else {
-					log.info("not creating binary length:" + getLength()
+					log.info("not creating binary audioinfo:" + getAudioInfo()
 							+ " oktoedit:" + okToEdit());
 				}
 			}
@@ -325,7 +337,8 @@ public class MWave {
 						+ " fs:" + getFS().length() + " " + samples);
 				ShortBuffer sb = samples.getByteBuffer().asShortBuffer();
 
-				for (int i = 0; i < sb.limit() && getFS().length() < length; i++) {
+				for (int i = 0; i < sb.limit()
+						&& getFS().length() < audioinfo.getSampleCount(); i++) {
 					short num = sb.get(i);
 					getFS().add(1.0f * num / Short.MAX_VALUE);
 				}
@@ -409,7 +422,7 @@ public class MWave {
 	public synchronized boolean save() {
 		used();
 		if (env != null && !saved && getFS().length() > 0) {
-			length = getFS().length();
+			updateAudioInfo();
 
 			Binary binary = createBinary();
 			binaryid = binary.getID();
@@ -429,7 +442,7 @@ public class MWave {
 			return saved;
 		} else {
 			log.info("Not saving because env:" + env + " saved:" + saved
-					+ " fs.length:"
+					+ " fs.audioinfo:"
 					+ (getFS() != null ? getFS().length() : "NULL"));
 			return saved;
 		}
@@ -443,7 +456,9 @@ public class MWave {
 			b.addAttribute("error", "no id");
 		} else {
 			b.addAttribute("binaryid", binaryid);
-			b.addAttribute("length", fs != null ? fs.length() : length);
+			updateAudioInfo();
+			b.add("audioinfo", audioinfo.getBean());
+
 			b.addAttribute("type", type);
 			b.addAttribute("encoding", encoding);
 			b.addAttribute("version", version);

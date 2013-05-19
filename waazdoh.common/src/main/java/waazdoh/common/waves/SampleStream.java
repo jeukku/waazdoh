@@ -10,6 +10,6 @@
  ******************************************************************************/
 package waazdoh.common.waves;
 
-public interface WaveGeneratorSample {
+public interface SampleStream {
 	float getSample(float sample);
 }

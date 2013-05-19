@@ -27,7 +27,6 @@ import waazdoh.app.App;
 import waazdoh.client.MClient;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
-import waazdoh.swt.AppListenerAdapter;
 
 public class LoginScreen extends Composite {
 	private static final String PREF_AUTOLOGIN = "cmusic.app.autologin";

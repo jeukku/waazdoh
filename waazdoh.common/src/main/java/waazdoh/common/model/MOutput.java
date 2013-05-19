@@ -22,6 +22,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
+import waazdoh.WaazdohInfo;
 import waazdoh.cutils.MLogger;
 
 public class MOutput {
@@ -29,10 +30,8 @@ public class MOutput {
 	private List<FloatStream> floatstreams = new LinkedList<FloatStream>();
 
 	private long timestamp = System.currentTimeMillis();
-	private int length;
 	//
 	private MLogger log = MLogger.getLogger(this);
-	private float samplespersecond;
 	private final MEnvironment env;
 
 	public MOutput(MEnvironment env) {
@@ -49,27 +48,34 @@ public class MOutput {
 	}
 
 	public void add(FloatStream fs) {
+		log.info("adding " + fs.toString());
 		floatstreams.add(fs);
 		update();
 	}
 
 	@Override
 	public String toString() {
-		return "Output[ts:" + floatstreams.size() + "][l:" + length
-				/ samplespersecond + " sec][" + floatstreams + "]";
+		return "Output[ts:" + floatstreams.size() + "][l:"
+				+ getAudioInfo().inSeconds() + " sec][" + floatstreams + "]";
 	}
 
 	private void update() {
-		int length = 0;
-		for (FloatStream t : floatstreams) {
-			if (t.getLength() > length) {
-				length = t.getLength();
-			}
-			samplespersecond = t.getSamplesPerSecond();
-		}
-		this.length = length;
-		//
 		timestamp = System.currentTimeMillis();
+	}
+
+	public synchronized AudioInfo getAudioInfo() {
+		int samplesPerSecond = WaazdohInfo.DEFAULT_SAMPLERATE;
+
+		AudioInfo info = new AudioInfo(0, samplesPerSecond);
+		for (FloatStream t : floatstreams) {
+			if (t != null) {
+				AudioInfo sinfo = t.getInfo();
+				if (sinfo.getSampleCount() > info.getSampleCount()) {
+					info = sinfo;
+				}
+			}
+		}
+		return info;
 	}
 
 	public AudioSample getSample(int i) {
@@ -115,7 +121,7 @@ public class MOutput {
 			}
 
 			if (result == null) {
-				log.info("Output DONE " + getChannel(0).getLength());
+				log.info("Output DONE " + getChannel(0).getAudioInfo());
 				getChannel(0).setReady();
 				getChannel(1).setReady();
 				floatstreams.clear();
@@ -146,7 +152,7 @@ public class MOutput {
 	}
 
 	private boolean hasntGotEnoughData(int i) {
-		return channels.get(0).getLength() <= i;
+		return channels.get(0).getAudioInfo().getSampleCount() <= i;
 	}
 
 	private void addSamplesToChannel(List<AudioSample> list, int ichannel) {
@@ -166,14 +172,15 @@ public class MOutput {
 	}
 
 	public synchronized void writeWAV(OutputStream fos) throws IOException {
-		log.info("writing wav " + getLength() + " " + this);
-		AudioFormat format = new AudioFormat(samplespersecond, 16, 2, true,
-				true);
+		log.info("writing wav " + getAudioInfo() + " " + this);
+		AudioFormat format = new AudioFormat(getAudioInfo()
+				.getSamplesPerSecond(), 16, 2, true, true);
 
 		log.info("writing wav " + format);
 
-		byte[] data = new byte[2 * 2 * getLength()];
-		for (int i = 0; i < getLength(); i++) {
+		int sampleCount = getAudioInfo().getSampleCount();
+		byte[] data = new byte[2 * 2 * sampleCount];
+		for (int i = 0; i < sampleCount; i++) {
 			AudioSample sample = getSample(i);
 			int left = (short) (sample.fs[0] * Short.MAX_VALUE);
 			int right = (short) (sample.fs[1] * Short.MAX_VALUE);
@@ -186,14 +193,10 @@ public class MOutput {
 		}
 		//
 		ByteArrayInputStream bais = new ByteArrayInputStream(data);
-		AudioInputStream ais = new AudioInputStream(bais, format, getLength());
+		AudioInputStream ais = new AudioInputStream(bais, format, sampleCount);
 		AudioSystem.write(ais, AudioFileFormat.Type.WAVE, fos);
 		//
 		fos.close();
-	}
-
-	public int getLength() {
-		return length;
 	}
 
 	public void clearMemory(int time) {

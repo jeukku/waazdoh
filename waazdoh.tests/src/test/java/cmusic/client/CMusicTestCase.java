@@ -10,11 +10,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 import junit.framework.TestCase;
+import waazdoh.WaazdohInfo;
 import waazdoh.client.MClient;
 import waazdoh.client.rest.RestClient;
 import waazdoh.client.test.ServiceMock;
 import waazdoh.client.test.TestPWaveSource;
+import waazdoh.common.model.AudioInfo;
+import waazdoh.common.model.AudioSample;
 import waazdoh.common.model.MBinarySource;
+import waazdoh.common.model.MOutput;
 import waazdoh.cp2p.impl.P2PBinarySource;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
@@ -179,5 +183,38 @@ public class CMusicTestCase extends TestCase {
 
 	public void testTrue() {
 		assertTrue(true);
+	}
+
+	public void compareOutputs(MOutput outputwave, MOutput boutputwave) {
+		int index = 0;
+		AudioInfo audioInfo = outputwave.getAudioInfo();
+		while (index < audioInfo.getSampleCount()) {
+			AudioSample sa = outputwave.getSample(index);
+			AudioSample sb = boutputwave.getSample(index);
+			Float a = sa.mix();
+			Float b = sb.mix();
+
+			float ab = b - a;
+			if (ab < 0) {
+				ab = -ab;
+			}
+			if (ab > WaazdohInfo.MAX_RESOLUTION) {
+				index -= 100;
+				for (int count = 0; count < 200; count++) {
+					sa = outputwave.getSample(index);
+					sb = boutputwave.getSample(index);
+					a = sa.mix();
+					b = sb.mix();
+
+					String mes = "i:" + index + " a!=b " + a + " b:" + b;
+					log.info(mes);
+					index++;
+				}
+				String mes = "i:" + index + " a!=b " + a + " b:" + b;
+				assertEquals("e", mes);
+			}
+
+			index++;
+		}
 	}
 }

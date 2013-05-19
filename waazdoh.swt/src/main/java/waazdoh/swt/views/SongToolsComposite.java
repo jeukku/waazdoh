@@ -8,7 +8,7 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.swt;
+package waazdoh.swt.views;
 
 import java.util.Calendar;
 

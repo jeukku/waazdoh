@@ -173,7 +173,7 @@ public class TCPNode {
 	public synchronized void channelException(ChannelHandlerContext ctx, ExceptionEvent e) {
 		if (!(e.getCause() instanceof ConnectException)) {
 			log.info("Exception with " + host + ":" + port + " e:" + e);
-			log.error(e.getCause());
+			//log.error(e.getCause());
 		} else {
 			log.debug("Connection failed " + ctx);
 		}

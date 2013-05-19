@@ -10,6 +10,43 @@
  ******************************************************************************/
 package waazdoh.common.model;
 
-public class Instrument {
+import waazdoh.common.waves.SampleStream;
+import waazdoh.cutils.MID;
+import waazdoh.cutils.xml.JBean;
+
+public class Instrument implements ServiceObjectData {
 	private ServiceObject so;
+	private SampleStream source;
+
+	public Instrument(MEnvironment env) {
+		so = new ServiceObject("instrument", env, env.getUserID(), this);
+	}
+
+	public MID getID() {
+		return so.getID();
+	}
+
+	public void checkProgress(MProgress p) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public boolean parseBean(JBean bean) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public JBean getBean() {
+		JBean b = so.getBean();
+		return b;
+	}
+
+	public void load(MID id) {
+		so.load(id);
+	}
+
+	public void setSource(SampleStream source) {
+		this.source = source;
+	}
 }

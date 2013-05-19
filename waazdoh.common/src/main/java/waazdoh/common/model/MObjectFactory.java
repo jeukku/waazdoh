@@ -10,6 +10,7 @@
  ******************************************************************************/
 package waazdoh.common.model;
 
+import waazdoh.cutils.MID;
 import waazdoh.cutils.xml.JBean;
 
 public interface MObjectFactory {
@@ -17,5 +18,7 @@ public interface MObjectFactory {
 	MWave newWave(int start, MEnvironment env);
 
 	MWave newWave(JBean b, MEnvironment env);
+
+	Instrument getInstrument(MID id, MEnvironment env);
 
 }

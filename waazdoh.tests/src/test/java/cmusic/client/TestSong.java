@@ -7,14 +7,14 @@ import java.util.Map;
 
 import waazdoh.WaazdohInfo;
 import waazdoh.client.MClient;
-import waazdoh.common.model.AudioSample;
+import waazdoh.common.model.AudioInfo;
 import waazdoh.common.model.MOutput;
 import waazdoh.common.model.MProgress;
 import waazdoh.common.model.Song;
 import waazdoh.common.model.Track;
 import waazdoh.common.model.TrackGroup;
+import waazdoh.common.waves.SampleStream;
 import waazdoh.common.waves.WaveGenerator;
-import waazdoh.common.waves.WaveGeneratorSample;
 import waazdoh.cutils.MTimedFlag;
 import waazdoh.emodel.ETrack;
 
@@ -55,7 +55,7 @@ public class TestSong extends CMusicTestCase {
 		assertEquals(songtext, s.getBean().toText());
 		//
 		MOutput boutputwave = s.getOutputWave();
-		assertTrue(boutputwave.getLength() > 1000);
+		assertTrue(boutputwave.getAudioInfo().inSeconds() > 1);
 
 		compareOutputs(outputwave, boutputwave);
 		compareOutputs(outputwave, boutputwave);
@@ -65,45 +65,13 @@ public class TestSong extends CMusicTestCase {
 		compareOutputs(outputwave, boutputwave);
 	}
 
-	public void compareOutputs(MOutput outputwave, MOutput boutputwave) {
-		int index = 0;
-		while (index < outputwave.getLength()) {
-			AudioSample sa = outputwave.getSample(index);
-			AudioSample sb = boutputwave.getSample(index);
-			Float a = sa.mix();
-			Float b = sb.mix();
-
-			float ab = b - a;
-			if (ab < 0) {
-				ab = -ab;
-			}
-			if (ab > WaazdohInfo.MAX_RESOLUTION) {
-				index -= 100;
-				for (int count = 0; count < 200; count++) {
-					sa = outputwave.getSample(index);
-					sb = boutputwave.getSample(index);
-					a = sa.mix();
-					b = sb.mix();
-					
-					String mes = "i:" + index + " a!=b " + a + " b:" + b;
-					log.info(mes);
-					index++;
-				}
-				String mes = "i:" + index + " a!=b " + a + " b:" + b;
-				assertEquals("e", mes);
-			}
-
-			index++;
-		}
-	}
-
 	private void songTest(Song s, Song songb) {
 		assertTrue(songb.getTrackGroups().size() > 1);
 
 		MOutput aoutput = songb.getOutputWave();
 		if (s.getTrackGroups().get(0).getTracks().size() > 0) {
-			float length = aoutput.getLength();
-			assertTrue("song length " + length, length > 99.99);
+			AudioInfo length = aoutput.getAudioInfo();
+			assertTrue("song length " + length, length.getSampleCount() > 99.99);
 		}
 		assertEquals(s, songb);
 		//
@@ -193,7 +161,7 @@ public class TestSong extends CMusicTestCase {
 		ETrack et = s.newTrack();
 
 		WaveGenerator gen = new WaveGenerator();
-		gen.generate(et, 0, length, new WaveGeneratorSample() {
+		gen.generate(et, 0, length, new SampleStream() {
 			@Override
 			public float getSample(float sample) {
 				sample *= WaazdohInfo.DEFAULT_SAMPLERATE * 100;

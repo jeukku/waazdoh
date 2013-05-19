@@ -26,7 +26,8 @@ public class WaveList {
 	private List<MWave> waves = new LinkedList<MWave>();
 	private MLogger log = MLogger.getLogger(this);
 	private MEnvironment env;
-
+	private int samplespersecond = WaazdohInfo.DEFAULT_SAMPLERATE;
+			
 	public WaveList(MEnvironment env) {
 		this.env = env;
 		log.info("new wavelist with " + env.toString());
@@ -36,12 +37,12 @@ public class WaveList {
 		waves.add(wave);
 	}
 
-	public synchronized int getLength() {
-		int length = 0;
+	public synchronized AudioInfo getAudioInfo() {
+		AudioInfo info = new AudioInfo(0, samplespersecond);
 		for (MWave wave : waves) {
-			length += wave.getLength();
+			info.add(wave.getAudioInfo());
 		}
-		return length;
+		return info;
 	}
 
 	public synchronized void check(MProgress p) {
@@ -66,7 +67,7 @@ public class WaveList {
 
 		List<MWave> ws = this.waves;
 		for (MWave wave : ws) {
-			int wavelastindex = wave.getStart() + wave.getLength();
+			int wavelastindex = wave.getStart() + wave.getAudioInfo().getSampleCount();
 			if (wavelastindex > sample && sample >= wave.getStart()) {
 				if (sample == wave.getStart()) {
 					log.info("ODBG getWave(index) sample :" + sample);
@@ -174,7 +175,7 @@ public class WaveList {
 
 			// if not stored in service, we have to calculate the starting point
 			// base on current length
-			start = getLength();
+			start = getAudioInfo().getSampleCount();
 		}
 		//
 		MWave wave = env.getObjectFactory().newWave(start, env);
@@ -201,7 +202,7 @@ public class WaveList {
 
 	public synchronized void addSamples(float[] samples, int count) {
 		getLastWave().addSamples(samples, count);
-		if (getLastWave().getLength() > WaazdohInfo.getMaxWaveLength()) {
+		if (getLastWave().getAudioInfo().getSampleCount() > WaazdohInfo.getMaxWaveLength()) {
 			newWave();
 		}
 	}

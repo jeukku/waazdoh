@@ -8,7 +8,7 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.swt;
+package waazdoh.swt.views;
 
 import java.util.List;
 
@@ -34,6 +34,7 @@ import waazdoh.common.model.Track;
 import waazdoh.common.model.TrackGroup;
 import waazdoh.common.model.TrackGroupListener;
 import waazdoh.cutils.MLogger;
+import waazdoh.swt.TitleLayout;
 import waazdoh.swt.layouts.RowFillLayout;
 
 public class TrackGroupComposite extends Composite {

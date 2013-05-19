@@ -26,8 +26,8 @@ import org.eclipse.swt.widgets.Composite;
 import waazdoh.app.App;
 import waazdoh.app.ESong;
 import waazdoh.cutils.MLogger;
-import waazdoh.swt.AppListenerAdapter;
-import org.eclipse.swt.widgets.Label;
+import waazdoh.swt.views.SongComposite;
+import waazdoh.swt.views.SongToolsComposite;
 
 
 public class MainView extends Composite {

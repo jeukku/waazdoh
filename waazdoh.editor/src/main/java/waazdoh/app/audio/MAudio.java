@@ -382,8 +382,7 @@ public class MAudio {
 
 			log.info("output starting");
 
-			log.info("playing " + wave.getLength()
-					/ WaazdohInfo.DEFAULT_SAMPLERATE + " sec");
+			log.info("playing " + wave.getAudioInfo().inSeconds() + " sec");
 
 			long outputstarttime = System.currentTimeMillis();
 
