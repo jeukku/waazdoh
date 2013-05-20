@@ -3,6 +3,7 @@ package cmusic.client;
 import java.io.IOException;
 
 import waazdoh.client.MClient;
+import waazdoh.common.model.FloatStream;
 import waazdoh.common.model.Instrument;
 import waazdoh.common.model.InstrumentTrack;
 import waazdoh.common.model.MOutput;
@@ -17,22 +18,39 @@ public class TestTracker extends CMusicTestCase {
 
 	public void testTracker() throws IOException {
 		MClient c = getNewClient();
-		Song s = c.newSong();
-		assertNotNull(s);
-		TrackGroup tg = s.addTrackGroup();
+		Song asong = c.newSong();
+		assertNotNull(asong);
+		TrackGroup tg = asong.addTrackGroup();
 		assertNotNull(tg);
 		//
 		InstrumentTrack t = tg.newInstrumentTrack();
 		Instrument i = t.newInstrument();
 		i.setSource(new WaveOutput(440.0f));
 		//
-		t.add(new WNote(WNote.BASE, 0, WNote.getLengthInBeats(2)));
+		t.add(new WNote(WNote.BASE, 0, WNote.getLengthInBeats(12)));
 		//
-		MOutput aoutput = s.getOutputWave();
-		assertTrue(aoutput.getAudioInfo().inSeconds()>=1);
+		MOutput aoutput = asong.getOutputWave();
+		assertTrue(aoutput.getAudioInfo().inSeconds() >= 1);
 
-		s = c.loadSong(s.getID());
-		MOutput boutput = s.getOutputWave();
+		Song bsong = c.loadSong(asong.getID());
+		assertEquals(asong, bsong);
+		//
+		MOutput boutput = bsong.getOutputWave();
 		compareOutputs(aoutput, boutput);
+	}
+
+	//
+	public void testInstrument() throws IOException {
+		MClient c = getNewClient();
+		Song s = c.newSong();
+		TrackGroup tg = s.addTrackGroup();
+		assertNotNull(tg);
+		InstrumentTrack it = tg.newInstrumentTrack();
+		assertNotNull(it);
+		Instrument i = it.newInstrument();
+		assertNotNull(i);
+		i.setSource(new WaveOutput(440));
+		FloatStream stream = it.getStream();
+		assertNotNull(stream);
 	}
 }

@@ -116,6 +116,12 @@ public class TrackGroup {
 		for (Track track : ts) {
 			btracks.add("id").setValue(track.getID().toString());
 		}
+		
+		List<InstrumentTrack> its = this.instrumenttracks;
+		JBean itracks = bt.add("itracks").add("list");
+		for (InstrumentTrack instrumentTrack : its) {
+			itracks.add("id").setValue(instrumentTrack.getID());
+		}
 		//
 		return bt;
 	}
@@ -130,6 +136,14 @@ public class TrackGroup {
 			int index = 0;
 			for (Track track : tracks) {
 				if (tg.tracks.get(index++).equals(track)) {
+					return false;
+				}
+			}
+			//
+			index = 0;
+			List<InstrumentTrack> itracks = instrumenttracks;
+			for (InstrumentTrack instrumentTrack : itracks) {
+				if (tg.instrumenttracks.get(index++).equals(instrumentTrack)) {
 					return false;
 				}
 			}

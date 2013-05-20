@@ -37,7 +37,7 @@ public class AudioInfo {
 	}
 
 	public JBean getBean() {
-		JBean b = new JBean("length");
+		JBean b = new JBean("info");
 		b.addAttribute("samples", samples);
 		b.addAttribute("persec", samplespersecond);
 		return b;

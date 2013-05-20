@@ -358,4 +358,8 @@ public class JBean implements Comparable<JBean> {
 			return this;
 		}
 	}
+
+	public void setValue(MID id) {
+		setValue(id.toString());
+	}
 }
