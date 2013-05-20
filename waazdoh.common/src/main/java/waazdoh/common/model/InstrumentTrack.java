@@ -73,7 +73,7 @@ public class InstrumentTrack implements ServiceObjectData {
 		return o.getID();
 	}
 
-	public FloatStream getStream() {
+	public AudioSampleStream getStream() {
 		// TODO Auto-generated method stub
 		return null;
 	}

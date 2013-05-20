@@ -27,7 +27,7 @@ import waazdoh.cutils.MLogger;
 
 public class MOutput {
 	private List<WaveList> channels;
-	private List<FloatStream> floatstreams = new LinkedList<FloatStream>();
+	private List<AudioSampleStream> floatstreams = new LinkedList<AudioSampleStream>();
 
 	private long timestamp = System.currentTimeMillis();
 	//
@@ -47,7 +47,7 @@ public class MOutput {
 		return timestamp;
 	}
 
-	public void add(FloatStream fs) {
+	public void add(AudioSampleStream fs) {
 		log.info("adding " + fs.toString());
 		floatstreams.add(fs);
 		update();
@@ -67,7 +67,7 @@ public class MOutput {
 		int samplesPerSecond = WaazdohInfo.DEFAULT_SAMPLERATE;
 
 		AudioInfo info = new AudioInfo(0, samplesPerSecond);
-		for (FloatStream t : floatstreams) {
+		for (AudioSampleStream t : floatstreams) {
 			if (t != null) {
 				AudioInfo sinfo = t.getInfo();
 				if (sinfo.getSampleCount() > info.getSampleCount()) {
@@ -88,7 +88,7 @@ public class MOutput {
 
 			int nindex = i + addindex;
 
-			for (FloatStream floatstream : floatstreams) {
+			for (AudioSampleStream floatstream : floatstreams) {
 				if (floatstream != null) {
 					AudioSample sample = floatstream.read(nindex);
 					if (result == null && sample != null) {
@@ -143,7 +143,7 @@ public class MOutput {
 	}
 
 	private boolean hasGotStreams() {
-		for (FloatStream floatstream : floatstreams) {
+		for (AudioSampleStream floatstream : floatstreams) {
 			if (floatstream != null) {
 				return true;
 			}

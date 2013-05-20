@@ -3,7 +3,7 @@ package cmusic.client;
 import java.io.IOException;
 
 import waazdoh.client.MClient;
-import waazdoh.common.model.FloatStream;
+import waazdoh.common.model.AudioSampleStream;
 import waazdoh.common.model.Instrument;
 import waazdoh.common.model.InstrumentTrack;
 import waazdoh.common.model.MOutput;
@@ -50,7 +50,7 @@ public class TestTracker extends CMusicTestCase {
 		Instrument i = it.newInstrument();
 		assertNotNull(i);
 		i.setSource(new WaveOutput(440));
-		FloatStream stream = it.getStream();
+		AudioSampleStream stream = it.getStream();
 		assertNotNull(stream);
 	}
 }

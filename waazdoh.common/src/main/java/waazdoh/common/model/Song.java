@@ -275,7 +275,7 @@ public class Song {
 			output = new MOutput(env);
 
 			for (TrackGroup t : this.trackgroups) {
-				FloatStream s = t.getStream();
+				AudioSampleStream s = t.getStream();
 				output.add(s);
 			}
 

@@ -130,7 +130,7 @@ public class Track implements ServiceObjectData {
 		return new TrackStream();
 	}
 
-	public class TrackStream implements FloatStream {
+	public class TrackStream implements AudioSampleStream {
 		public TrackStream() {
 		}
 

@@ -279,9 +279,9 @@ public class TrackGroup {
 		return false;
 	}
 
-	public FloatStream getStream() {
+	public AudioSampleStream getStream() {
 		updateAudioInfo();
-		return new FloatStream() {
+		return new AudioSampleStream() {
 			MOutput currentoutput = getOutputWave();
 
 			@Override

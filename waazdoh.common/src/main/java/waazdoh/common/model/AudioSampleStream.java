@@ -10,7 +10,7 @@
  ******************************************************************************/
 package waazdoh.common.model;
 
-public interface FloatStream {
+public interface AudioSampleStream {
 	AudioSample read(int i);
 
 	AudioInfo getInfo();
