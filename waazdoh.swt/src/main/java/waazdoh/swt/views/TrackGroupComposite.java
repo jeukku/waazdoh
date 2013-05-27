@@ -33,6 +33,7 @@ import waazdoh.common.model.MProgress;
 import waazdoh.common.model.Track;
 import waazdoh.common.model.TrackGroup;
 import waazdoh.common.model.TrackGroupListener;
+import waazdoh.common.model.WaveTrack;
 import waazdoh.cutils.MLogger;
 import waazdoh.swt.TitleLayout;
 import waazdoh.swt.layouts.RowFillLayout;
@@ -117,7 +118,14 @@ public class TrackGroupComposite extends Composite {
 		}
 	}
 
-	private void add(Track eTrack) {
+	private void add(Track track) {
+		if (track instanceof WaveTrack) {
+			WaveTrack wtrack = (WaveTrack) track;
+			add(wtrack);
+		}
+	}
+
+	private void add(WaveTrack eTrack) {
 		new MixerTrackComposite(app, song, eTrack, ctracks);
 		layout();
 		ctracks.layout();

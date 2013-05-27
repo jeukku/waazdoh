@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Display;
 import waazdoh.WaazdohInfo;
 import waazdoh.common.model.MOutput;
 import waazdoh.common.model.MProgress;
-import waazdoh.common.model.Track;
+import waazdoh.common.model.WaveTrack;
 
 public class AudioCanvas extends Canvas {
 	private float zoom = 1;
@@ -168,12 +168,12 @@ public class AudioCanvas extends Canvas {
 		reset();
 	}
 
-	public void setOutput(final Track track) {
+	public void setOutput(final WaveTrack track) {
 		input = new CanvasInput() {
 			@Override
 			public Float getSample(int channel, int sample) {
 				if (track != null) {
-					Float f = track.getSample(sample);
+					Float f = track.getViewSample(sample);
 					return f;
 				} else {
 					return null;
@@ -183,7 +183,7 @@ public class AudioCanvas extends Canvas {
 			@Override
 			public MProgress getProgress() {
 				MProgress p = new MProgress();
-				track.checkWave(p);
+				track.checkProgress(p);
 				return p;
 			}
 		};

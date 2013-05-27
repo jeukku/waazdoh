@@ -13,7 +13,7 @@ package waazdoh.swt;
 import waazdoh.app.ESong;
 import waazdoh.app.swing.AppListener;
 import waazdoh.client.MClient;
-import waazdoh.common.model.Track;
+import waazdoh.common.model.WaveTrack;
 
 public class AppListenerAdapter implements AppListener {
 
@@ -30,7 +30,7 @@ public class AppListenerAdapter implements AppListener {
 	}
 
 	@Override
-	public void recordingTrackChanged(Track changedtrack) {
+	public void recordingTrackChanged(WaveTrack changedtrack) {
 		// TODO Auto-generated method stub
 
 	}

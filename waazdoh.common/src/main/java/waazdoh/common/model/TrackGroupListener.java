@@ -10,8 +10,7 @@
  ******************************************************************************/
 package waazdoh.common.model;
 
-
 public interface TrackGroupListener {
 
-	void trackAdded(WaveTrack etrack);
+	void trackAdded(Track etrack);
 }

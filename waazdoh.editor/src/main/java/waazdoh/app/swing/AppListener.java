@@ -12,7 +12,7 @@ package waazdoh.app.swing;
 
 import waazdoh.app.ESong;
 import waazdoh.client.MClient;
-import waazdoh.common.model.Track;
+import waazdoh.common.model.WaveTrack;
 
 public interface AppListener {
 
@@ -20,7 +20,7 @@ public interface AppListener {
 
 	void clientAdded(MClient c);
 
-	void recordingTrackChanged(Track changedtrack);
+	void recordingTrackChanged(WaveTrack changedtrack);
 
 	void error(String title, String message, Exception e);
 

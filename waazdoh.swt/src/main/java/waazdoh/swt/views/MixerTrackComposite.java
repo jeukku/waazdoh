@@ -33,19 +33,19 @@ import waazdoh.app.App;
 import waazdoh.app.ESong;
 import waazdoh.common.model.MProgress;
 import waazdoh.common.model.ServiceObjectListener;
-import waazdoh.common.model.Track;
+import waazdoh.common.model.WaveTrack;
 import waazdoh.swt.AppListenerAdapter;
 import waazdoh.swt.ESongListenerAdapter;
 import waazdoh.swt.components.AudioCanvas;
 
 public class MixerTrackComposite extends Composite {
 	private static final int VOLUMEMAX = 10000;
-	private Track track;
+	private WaveTrack track;
 	private ESong song;
 	private AudioCanvas canvas;
 	private Label lready;
 
-	public MixerTrackComposite(final App app, ESong s, Track eTrack,
+	public MixerTrackComposite(final App app, ESong s, WaveTrack eTrack,
 			final Composite parent) {
 		super(parent, SWT.BORDER);
 		this.track = eTrack;
@@ -181,7 +181,7 @@ public class MixerTrackComposite extends Composite {
 
 		app.addListener(new AppListenerAdapter() {
 			@Override
-			public void recordingTrackChanged(Track changedtrack) {
+			public void recordingTrackChanged(WaveTrack changedtrack) {
 				if (changedtrack != track) {
 					brecord.setSelection(false);
 				} else {
@@ -207,7 +207,7 @@ public class MixerTrackComposite extends Composite {
 
 	public void checkReady() {
 		MProgress p = new MProgress();
-		track.checkWave(p);
+		track.checkProgress(p);
 		//
 		lready.setText("" + p.getPersentage() + "%");
 	}

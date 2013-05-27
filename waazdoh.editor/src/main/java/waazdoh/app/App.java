@@ -27,7 +27,7 @@ import waazdoh.client.ClientListener;
 import waazdoh.client.MClient;
 import waazdoh.common.model.MBinarySource;
 import waazdoh.common.model.Song;
-import waazdoh.common.model.Track;
+import waazdoh.common.model.WaveTrack;
 import waazdoh.cp2p.impl.P2PBinarySource;
 import waazdoh.cutils.AppPreferences;
 import waazdoh.cutils.MLogger;
@@ -45,7 +45,7 @@ public class App {
 	//
 	private List<AppListener> listeners = new LinkedList<AppListener>();
 	private ESong _currentsong;
-	private Track recordingtrack;
+	private WaveTrack recordingtrack;
 	private MPreferences preferences;
 
 	private MLogger log = MLogger.getLogger(this);
@@ -124,7 +124,7 @@ public class App {
 		}
 	}
 
-	private void fireRecordingTrackChanged(Track track) {
+	private void fireRecordingTrackChanged(WaveTrack track) {
 		List<AppListener> ls = listeners;
 		for (AppListener appListener : ls) {
 			appListener.recordingTrackChanged(track);
@@ -251,7 +251,7 @@ public class App {
 		client.stop();
 	}
 
-	public void setRecording(ESong song, Track track) {
+	public void setRecording(ESong song, WaveTrack track) {
 		this.setCurrentSong(song);
 		this.recordingtrack = track;
 		fireRecordingTrackChanged(track);

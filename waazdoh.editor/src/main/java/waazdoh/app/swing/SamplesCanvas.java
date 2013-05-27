@@ -14,17 +14,17 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
-import waazdoh.common.model.Track;
+import waazdoh.common.model.WaveTrack;
 
 
 public class SamplesCanvas extends JPanel
 {
-	private Track track;
+	private WaveTrack track;
 	private float end = 1000;
 	private float start;
 	private float zoom = 1;
 	
-	public SamplesCanvas(Track track2) {
+	public SamplesCanvas(WaveTrack track2) {
 		this.track = track2;
 		setOpaque(false);
 		// setPreferredSize(new Dimension(100000, 10));
@@ -40,7 +40,7 @@ public class SamplesCanvas extends JPanel
 		//
 		float currentsample = start;
 		for (int x = 0; x < getWidth(); x++) {
-			Float fsample = track.getSample((int) currentsample);
+			Float fsample = track.getViewSample((int) currentsample);
 			float sample = fsample!=null?fsample:0;
 			int y = (int) (sample * getHeight() / 2);
 			int middle = getHeight() / 2;
