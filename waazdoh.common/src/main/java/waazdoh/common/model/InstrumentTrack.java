@@ -145,6 +145,7 @@ public class InstrumentTrack implements ServiceObjectData, Track {
 	private MOutput getOutputWave() {
 		if (output == null) {
 			// TODO I bet this is going to be buggy, ugly and slow
+			Collections.sort(notes);
 			output = new MOutput(o.getEnvironment());
 			output.add(new AudioSampleStream() {
 				private int lastnoteindex = 0;
@@ -152,7 +153,6 @@ public class InstrumentTrack implements ServiceObjectData, Track {
 
 				@Override
 				public AudioSample read(int sampleindex) {
-					Collections.sort(notes);
 
 					float truetime = 1.0f * sampleindex
 							/ WaazdohInfo.DEFAULT_SAMPLERATE;
