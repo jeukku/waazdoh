@@ -3,42 +3,71 @@ package waazdoh.common.model;
 import waazdoh.cutils.xml.JBean;
 
 public class WNote implements Comparable<WNote> {
-	private static final int TICKS_PER_BEAT = 1024;
 	public static final int BASE = 0;
-	private int time;
+	private NoteTime time;
+	private NoteTime length;
 	private int note;
-	private int length;
 
-	public WNote(int note, int i, int j) {
-		this.note = note;
-		this.time = i;
-		this.length = j;
+	public static final double BASE_FREQ_MULTIPLIER = Math.pow(2.0, 1.0 / 12.0);
+
+	public WNote(int nnote, NoteTime ntime, NoteTime nlength) {
+		this.note = nnote;
+		this.time = ntime;
+		this.length = nlength;
 	}
 
 	public WNote(JBean bnote) {
 		note = bnote.getAttributeInt("note");
-		time = bnote.getAttributeInt("time");
-		length = bnote.getAttributeInt("length");
+		time = new NoteTime(bnote.getAttributeFloat("time"));
+		length = new NoteTime(bnote.getAttributeFloat("length"));
 	}
 
 	@Override
 	public int compareTo(WNote o) {
-		if (o.time < time) {
+		if (o == this) {
+			return 0;
+		} else if (o.time.isGreaterThan(time)) {
 			return -1;
 		} else {
 			return 1;
 		}
 	}
 
-	public static int getLengthInBeats(int i) {
-		return i * TICKS_PER_BEAT;
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof WNote) {
+			WNote o = (WNote) obj;
+			if (o.getBean().equals(getBean())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public JBean getBean() {
 		JBean b = new JBean("hit");
-		b.addAttribute("time", time);
+		b.addAttribute("time", time.getValue());
 		b.addAttribute("note", note);
-		b.addAttribute("length", length);
+		b.addAttribute("length", length.getValue());
 		return b;
+	}
+
+	public NoteTime getTime() {
+		return time;
+	}
+
+	public NoteTime getLength() {
+		return length;
+	}
+
+	public float getHz() {
+		float hz = (float) (440.0 * Math.pow(BASE_FREQ_MULTIPLIER, note));
+		return hz;
+	}
+
+	@Override
+	public String toString() {
+		return "WNote[" + note + "," + getHz() + ", " + getTime() + ", "
+				+ getLength() + "]";
 	}
 }

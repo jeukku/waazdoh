@@ -282,6 +282,15 @@ public class JBean implements Comparable<JBean> {
 		}
 	}
 
+	public float getAttributeFloat(String aname) {
+		String s = getAttribute(aname);
+		if (s != null) {
+			return Float.parseFloat(s);
+		} else {
+			return 0;
+		}
+	}
+
 	public Boolean getAttributeBoolean(String aname) {
 		String s = getAttribute(aname);
 		if (s != null) {
@@ -349,6 +358,10 @@ public class JBean implements Comparable<JBean> {
 
 	public UserID getUserAttribute(String string) {
 		return new UserID(getAttribute(string));
+	}
+
+	public void addAttribute(String name, float value) {
+		this.addAttribute(name, "" + value);
 	}
 
 	public JBean getRoot() {

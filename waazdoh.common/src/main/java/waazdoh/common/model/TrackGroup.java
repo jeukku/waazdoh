@@ -24,7 +24,6 @@ public class TrackGroup {
 	private static final String BEANNAME = "trackgroup";
 	private MID id;
 	private List<Track> tracks = new LinkedList<Track>();
-	private List<InstrumentTrack> instrumenttracks = new LinkedList<InstrumentTrack>();
 	// private Song song;
 	private static int counter = 1;
 	private String name = "TrackGroup" + (counter++);
@@ -43,6 +42,7 @@ public class TrackGroup {
 	private MID copyof;
 	private AudioInfo audioinfo = new AudioInfo(0,
 			WaazdohInfo.DEFAULT_SAMPLERATE);
+	private int tempo = 120;
 
 	public TrackGroup(UserID user, MEnvironment env) {
 		this.env = env;
@@ -78,11 +78,12 @@ public class TrackGroup {
 		modified = btrack.getAttributeLong("modified");
 		creatorid = btrack.getUserAttribute("creator");
 		version = btrack.getAttribute("version");
+		tempo = btrack.getAttributeInt("tempo");
 		//
 		boolean ret = true;
 		List<JBean> btracks = btrack.get("tracks").get("list").getChildren();
 		for (JBean jBean : btracks) {
-			Track track = new Track(creatorid, env);
+			WaveTrack track = new WaveTrack(creatorid, env);
 			if (track.load(new MID(jBean.getValue()))) {
 				if (!tracks.add(track)) {
 					ret = false;
@@ -110,19 +111,14 @@ public class TrackGroup {
 		bt.addAttribute("creator", creatorid.toString());
 		bt.addAttribute("version", version);
 		bt.addAttribute("copyof", "" + copyof);
+		bt.addAttribute("tempo", tempo);
 		//
 		List<Track> ts = this.tracks;
 		JBean btracks = bt.add("tracks").add("list");
 		for (Track track : ts) {
 			btracks.add("id").setValue(track.getID().toString());
 		}
-		
-		List<InstrumentTrack> its = this.instrumenttracks;
-		JBean itracks = bt.add("itracks").add("list");
-		for (InstrumentTrack instrumentTrack : its) {
-			itracks.add("id").setValue(instrumentTrack.getID());
-		}
-		//
+
 		return bt;
 	}
 
@@ -140,14 +136,6 @@ public class TrackGroup {
 				}
 			}
 			//
-			index = 0;
-			List<InstrumentTrack> itracks = instrumenttracks;
-			for (InstrumentTrack instrumentTrack : itracks) {
-				if (tg.instrumenttracks.get(index++).equals(instrumentTrack)) {
-					return false;
-				}
-			}
-			//
 			return true;
 		} else {
 			return false;
@@ -155,6 +143,8 @@ public class TrackGroup {
 	}
 
 	public synchronized boolean save() {
+		updateAudioInfo();
+		//
 		if (!env.getUserID().equals(creatorid)) {
 			copyof = getID().copy();
 			id = new MID();
@@ -183,13 +173,13 @@ public class TrackGroup {
 		return id;
 	}
 
-	public Track newTrack() {
-		Track t = new Track(creatorid, env);
+	public WaveTrack newTrack() {
+		WaveTrack t = new WaveTrack(creatorid, env);
 		addTrack(t);
 		return t;
 	}
 
-	private Track addTrack(Track t) {
+	private WaveTrack addTrack(WaveTrack t) {
 		modified();
 		synchronized (tracks) {
 			tracks.add(t);
@@ -226,16 +216,12 @@ public class TrackGroup {
 		env.getService().publish(getID());
 	}
 
-	public Float getSample(int isample) {
-		if (!muted) {
-			float f = 0;
-			for (Track t : tracks) {
-				f += t.getSample(isample);
-			}
-			return f;
-		} else {
-			return null;
+	public Float getViewSample(int isample) {
+		float f = 0;
+		for (Track t : tracks) {
+			f += t.getViewSample(isample);
 		}
+		return f;
 	}
 
 	public void setName(String string) {
@@ -253,17 +239,20 @@ public class TrackGroup {
 
 	public void checkTracks(MProgress p) {
 		for (Track t : tracks) {
-			t.checkWave(p);
+			t.checkProgress(p);
 		}
 	}
 
 	private MOutput getOutputWave() {
 		if (currentoutput == null
 				|| isSomeTrackModifiedAfter(currentoutput.getTimestamp())) {
+			updateAudioInfo();
+			//
 			MOutput output = new MOutput(env);
 			for (Track t : tracks) {
 				output.add(t.getStream());
 			}
+
 			log.info("outputwave " + output);
 			currentoutput = output;
 		}
@@ -276,6 +265,7 @@ public class TrackGroup {
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -300,8 +290,9 @@ public class TrackGroup {
 		audioinfo = new AudioInfo(0, WaazdohInfo.DEFAULT_SAMPLERATE);
 		List<Track> ts = tracks;
 		for (Track track : ts) {
-			audioinfo.setIfLonger(track.getLength());
+			audioinfo.setIfLonger(track.getAudioInfo());
 		}
+
 	}
 
 	public void addListener(TrackGroupListener trackGroupListener) {
@@ -335,10 +326,14 @@ public class TrackGroup {
 	}
 
 	public InstrumentTrack newInstrumentTrack() {
-		synchronized (instrumenttracks) {
+		synchronized (tracks) {
 			InstrumentTrack i = new InstrumentTrack(this, env, creatorid);
-			instrumenttracks.add(i);
+			tracks.add(i);
 			return i;
 		}
+	}
+
+	public int getTempo() {
+		return tempo;
 	}
 }

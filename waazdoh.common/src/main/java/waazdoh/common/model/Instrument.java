@@ -10,6 +10,7 @@
  ******************************************************************************/
 package waazdoh.common.model;
 
+import waazdoh.common.waves.InstrumentValues;
 import waazdoh.common.waves.SampleStream;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.xml.JBean;
@@ -48,5 +49,9 @@ public class Instrument implements ServiceObjectData {
 
 	public void setSource(SampleStream source) {
 		this.source = source;
+	}
+
+	public Float getSample(WNote note, InstrumentValues values) {
+		return source.getSample(note, values);
 	}
 }

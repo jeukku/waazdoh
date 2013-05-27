@@ -10,6 +10,10 @@
  ******************************************************************************/
 package waazdoh.common.waves;
 
+import sun.awt.SunHints.Value;
+import waazdoh.WaazdohInfo;
+import waazdoh.common.model.NoteTime;
+import waazdoh.common.model.WNote;
 import waazdoh.emodel.ETrack;
 
 public class WaveGenerator {
@@ -18,8 +22,15 @@ public class WaveGenerator {
 		float sample = start;
 		float[] samples = new float[1000];
 		int isamples = 0;
+		DefInstrumentValues values = new DefInstrumentValues();		//
+		WNote note = new WNote(0, new NoteTime(0), new NoteTime(1));
+		
+		values.setTempo(120);
 		while (sample <= start + length + 0.001) {
-			float fsample = (float) waveGeneratorSample.getSample(sample);
+			values.setSample((int) sample);
+			values.setTime(1.0f* sample / WaazdohInfo.DEFAULT_SAMPLERATE);
+			//
+			float fsample = (float) waveGeneratorSample.getSample(note, values);
 			samples[isamples++] = fsample;
 			if (isamples >= samples.length) {
 				t.addSamples(samples, isamples);

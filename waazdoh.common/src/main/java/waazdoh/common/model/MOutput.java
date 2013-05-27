@@ -33,6 +33,7 @@ public class MOutput {
 	//
 	private MLogger log = MLogger.getLogger(this);
 	private final MEnvironment env;
+	private AudioInfo info;
 
 	public MOutput(MEnvironment env) {
 		this.env = env;
@@ -60,21 +61,25 @@ public class MOutput {
 	}
 
 	private void update() {
+		info = null;
 		timestamp = System.currentTimeMillis();
 	}
 
 	public synchronized AudioInfo getAudioInfo() {
-		int samplesPerSecond = WaazdohInfo.DEFAULT_SAMPLERATE;
+		if (info == null) {
+			int samplesPerSecond = WaazdohInfo.DEFAULT_SAMPLERATE;
 
-		AudioInfo info = new AudioInfo(0, samplesPerSecond);
-		for (AudioSampleStream t : floatstreams) {
-			if (t != null) {
-				AudioInfo sinfo = t.getInfo();
-				if (sinfo.getSampleCount() > info.getSampleCount()) {
-					info = sinfo;
+			info = new AudioInfo(0, samplesPerSecond);
+			for (AudioSampleStream t : floatstreams) {
+				if (t != null) {
+					AudioInfo sinfo = t.getInfo();
+					if (sinfo.getSampleCount() > info.getSampleCount()) {
+						info = sinfo;
+					}
 				}
 			}
 		}
+		//
 		return info;
 	}
 

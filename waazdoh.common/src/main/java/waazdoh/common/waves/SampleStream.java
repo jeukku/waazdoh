@@ -10,6 +10,8 @@
  ******************************************************************************/
 package waazdoh.common.waves;
 
+import waazdoh.common.model.WNote;
+
 public interface SampleStream {
-	float getSample(float sample);
+	Float getSample(WNote note, InstrumentValues values);
 }

@@ -11,8 +11,10 @@ import waazdoh.common.model.AudioInfo;
 import waazdoh.common.model.MOutput;
 import waazdoh.common.model.MProgress;
 import waazdoh.common.model.Song;
-import waazdoh.common.model.Track;
 import waazdoh.common.model.TrackGroup;
+import waazdoh.common.model.WNote;
+import waazdoh.common.model.WaveTrack;
+import waazdoh.common.waves.InstrumentValues;
 import waazdoh.common.waves.SampleStream;
 import waazdoh.common.waves.WaveGenerator;
 import waazdoh.cutils.MTimedFlag;
@@ -41,7 +43,7 @@ public class TestSong extends CMusicTestCase {
 		s.setName(songname);
 		c.save(s);
 		MProgress p = new MProgress();
-		s.getTrackGroups().get(0).getTracks().get(0).checkWave(p);
+		s.getTrackGroups().get(0).getTracks().get(0).checkProgress(p);
 		assertTrue(p.ready());
 
 		assertTrue(c.publish(s));
@@ -163,16 +165,15 @@ public class TestSong extends CMusicTestCase {
 		WaveGenerator gen = new WaveGenerator();
 		gen.generate(et, 0, length, new SampleStream() {
 			@Override
-			public float getSample(float sample) {
-				sample *= WaazdohInfo.DEFAULT_SAMPLERATE * 100;
+			public Float getSample(WNote note, InstrumentValues values) {
+				int sample = values.getSample();
+				sample *= 100;
 				sample /= length;
 				return (float) Math.sin(sample * sample);
-				// return sample/length;
-				// return (float)Math.random()-0.5f;
 			}
 		});
 		//
-		Track t = tg.newTrack();
+		WaveTrack t = tg.newTrack();
 		t.setName("testname" + new Date());
 		t.replaceWave(et);
 	}
