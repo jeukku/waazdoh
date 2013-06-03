@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Text;
 
 import waazdoh.app.App;
 import waazdoh.app.ESong;
+import waazdoh.common.model.InstrumentTrack;
 import waazdoh.common.model.MProgress;
 import waazdoh.common.model.Track;
 import waazdoh.common.model.TrackGroup;
@@ -65,7 +66,7 @@ public class TrackGroupComposite extends Composite {
 		Composite ctop = new Composite(this, SWT.NONE);
 
 		Composite cbuttons = new Composite(this, SWT.NONE);
-		cbuttons.setLayout(new RowLayout(SWT.HORIZONTAL));
+		cbuttons.setLayout(new RowLayout(SWT.VERTICAL));
 
 		Button bnewtrack = new Button(cbuttons, SWT.NONE);
 		bnewtrack.addSelectionListener(new SelectionAdapter() {
@@ -76,6 +77,17 @@ public class TrackGroupComposite extends Composite {
 			}
 		});
 		bnewtrack.setText("New Tack");
+
+		Button bnewitrack = new Button(cbuttons, SWT.NONE);
+		bnewitrack.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// createTestTrack();
+				trackgroup.newInstrumentTrack();
+			}
+		});
+		bnewitrack.setText("New Insturment Track");
+
 		ctop.setLayout(new GridLayout(2, false));
 
 		final Text lgroupname = new Text(ctop, SWT.BORDER);
@@ -122,7 +134,16 @@ public class TrackGroupComposite extends Composite {
 		if (track instanceof WaveTrack) {
 			WaveTrack wtrack = (WaveTrack) track;
 			add(wtrack);
+		} else if (track instanceof InstrumentTrack) {
+			InstrumentTrack itrack = (InstrumentTrack) track;
+			add(itrack);
 		}
+	}
+
+	private void add(InstrumentTrack itrack) {
+		new InstrumentTrackComposite(app, song, itrack, ctracks);
+		layout();
+		ctracks.layout();
 	}
 
 	private void add(WaveTrack eTrack) {
