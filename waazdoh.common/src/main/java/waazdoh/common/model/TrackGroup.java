@@ -179,7 +179,7 @@ public class TrackGroup {
 		return t;
 	}
 
-	private WaveTrack addTrack(WaveTrack t) {
+	private Track addTrack(Track t) {
 		modified();
 		synchronized (tracks) {
 			tracks.add(t);
@@ -328,7 +328,7 @@ public class TrackGroup {
 	public InstrumentTrack newInstrumentTrack() {
 		synchronized (tracks) {
 			InstrumentTrack i = new InstrumentTrack(this, env, creatorid);
-			tracks.add(i);
+			addTrack(i);
 			return i;
 		}
 	}

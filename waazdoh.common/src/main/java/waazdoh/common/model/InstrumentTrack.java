@@ -21,6 +21,7 @@ public class InstrumentTrack implements ServiceObjectData, Track {
 	private MOutput output;
 	private AudioInfo info;
 	private Curve volume = new Curve();
+	private boolean muted;
 
 	public InstrumentTrack(TrackGroup ngroup, MEnvironment env, UserID creatorid) {
 		group = ngroup;
@@ -106,7 +107,7 @@ public class InstrumentTrack implements ServiceObjectData, Track {
 		private float time;
 		private NoteTime notetime;
 		private int sample;
-		
+
 		public void setTime(float truetime) {
 			this.time = truetime;
 
@@ -126,7 +127,6 @@ public class InstrumentTrack implements ServiceObjectData, Track {
 		public NoteTime getNotetime() {
 			return notetime;
 		}
-
 
 		public void setNoteTime(NoteTime notetime) {
 			this.notetime = notetime;
@@ -235,7 +235,9 @@ public class InstrumentTrack implements ServiceObjectData, Track {
 
 	@Override
 	public void clearMemory(int time) {
-		output.clearMemory(time);
+		if (output != null) {
+			output.clearMemory(time);
+		}
 	}
 
 	public AudioInfo getAudioInfo() {
@@ -244,5 +246,25 @@ public class InstrumentTrack implements ServiceObjectData, Track {
 
 	public long getModifytime() {
 		return o.getModifytime();
+	}
+
+	public ServiceObject getServiceObject() {
+		return o;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public Curve getVolume() {
+		return volume;
+	}
+
+	public boolean isMuted() {
+		return muted;
+	}
+
+	public void setMute(boolean selection) {
+		this.muted = selection;
 	}
 }
