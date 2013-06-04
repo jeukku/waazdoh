@@ -13,7 +13,7 @@ import waazdoh.cutils.xml.JBean;
 public class InstrumentTrack implements ServiceObjectData, Track {
 	private static final int TICKS_PER_BEAT = 1024;
 	//
-	private String name;
+	private String name = "track";
 	private ServiceObject o;
 	private TrackGroup group;
 	private Instrument instrument;
@@ -61,7 +61,9 @@ public class InstrumentTrack implements ServiceObjectData, Track {
 	}
 
 	public void checkProgress(MProgress p) {
-		instrument.checkProgress(p);
+		if (instrument != null) {
+			instrument.checkProgress(p);
+		}
 	}
 
 	public Instrument newInstrument() {
