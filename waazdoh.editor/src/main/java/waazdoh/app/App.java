@@ -27,6 +27,7 @@ import waazdoh.client.ClientListener;
 import waazdoh.client.MClient;
 import waazdoh.common.model.MBinarySource;
 import waazdoh.common.model.Song;
+import waazdoh.common.model.TrackGroup;
 import waazdoh.common.model.WaveTrack;
 import waazdoh.cp2p.impl.P2PBinarySource;
 import waazdoh.cutils.AppPreferences;
@@ -132,7 +133,10 @@ public class App {
 	}
 
 	private void clientLoggedIn() {
-		client.newSong(); // TODO remove
+		Song s = client.newSong(); // TODO remove
+		TrackGroup tg = s.addTrackGroup();
+		tg.newInstrumentTrack();
+		tg.newTrack();
 	}
 
 	private void clientSongLoaded(Song song) {
