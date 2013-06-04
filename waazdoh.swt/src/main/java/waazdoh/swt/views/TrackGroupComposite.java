@@ -166,7 +166,7 @@ public class TrackGroupComposite extends Composite {
 				//
 				Control[] cs = ctracks.getChildren();
 				for (Control control : cs) {
-					MixerTrackComposite ctrack = (MixerTrackComposite) control;
+					WComponentComposite ctrack = (WComponentComposite) control;
 					ctrack.checkReady();
 				}
 			}

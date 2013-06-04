@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 import waazdoh.app.App;
 import waazdoh.app.ESong;
@@ -33,12 +34,15 @@ import waazdoh.common.model.InstrumentTrack;
 import waazdoh.common.model.MProgress;
 import waazdoh.common.model.ServiceObjectListener;
 import waazdoh.swt.ESongListenerAdapter;
+import waazdoh.swt.components.InsturmentTrackCanvas;
 
-public class InstrumentTrackComposite extends Composite {
+public class InstrumentTrackComposite extends Composite implements
+		WComponentComposite {
 	private static final int VOLUMEMAX = 10000;
 	private InstrumentTrack track;
 	private ESong song;
 	private Label lready;
+	private InsturmentTrackCanvas canvas;
 
 	public InstrumentTrackComposite(final App app, ESong s,
 			InstrumentTrack itrack, final Composite parent) {
@@ -118,15 +122,21 @@ public class InstrumentTrackComposite extends Composite {
 		svolume.setMaximum(VOLUMEMAX);
 		svolume.setMinimum(0);
 		svolume.setSelection((int) (track.getVolume().getLevel() * VOLUMEMAX));
-		new Label(bottom, SWT.NONE);
-		new Label(bottom, SWT.NONE);
-		new Label(bottom, SWT.NONE);
-		new Label(bottom, SWT.NONE);
 
 		lready = new Label(bottom, SWT.NONE);
 		lready.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false,
 				1, 1));
 		lready.setText("is ready?");
+
+		canvas = new InsturmentTrackCanvas(this, SWT.BORDER);
+		GridData gd_canvas = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+		gd_canvas.heightHint = 59;
+		canvas.setLayoutData(gd_canvas);
+		canvas.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_WIDGET_DARK_SHADOW));
+		canvas.setTrack(track);
+		canvas.setZoom(s.getZoom());
+
 		svolume.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event arg0) {
@@ -151,13 +161,11 @@ public class InstrumentTrackComposite extends Composite {
 	}
 
 	protected void trackModified() {
-		// TODO Auto-generated method stub
-		
+		canvas.reset();
 	}
 
 	protected void setZoom(int zoom) {
-		// TODO Auto-generated method stub
-		
+		canvas.setZoom(zoom);
 	}
 
 	public void checkReady() {

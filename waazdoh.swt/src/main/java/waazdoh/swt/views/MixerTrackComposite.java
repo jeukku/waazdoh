@@ -38,7 +38,8 @@ import waazdoh.swt.AppListenerAdapter;
 import waazdoh.swt.ESongListenerAdapter;
 import waazdoh.swt.components.AudioCanvas;
 
-public class MixerTrackComposite extends Composite {
+public class MixerTrackComposite extends Composite implements
+		WComponentComposite {
 	private static final int VOLUMEMAX = 10000;
 	private WaveTrack track;
 	private ESong song;
@@ -126,7 +127,8 @@ public class MixerTrackComposite extends Composite {
 				track.replaceWave(app.importTrack(sfile));
 			}
 		});
-		bimport.setText("Import");
+		bimport.setToolTipText("Import");
+		bimport.setText("I");
 		//
 		Composite bottom = new Composite(composite, SWT.NONE);
 		bottom.setLayoutData(new RowData(205, 25));
@@ -146,10 +148,6 @@ public class MixerTrackComposite extends Composite {
 		svolume.setMaximum(VOLUMEMAX);
 		svolume.setMinimum(0);
 		svolume.setSelection((int) (track.getVolume().getLevel() * VOLUMEMAX));
-		new Label(bottom, SWT.NONE);
-		new Label(bottom, SWT.NONE);
-		new Label(bottom, SWT.NONE);
-		new Label(bottom, SWT.NONE);
 
 		lready = new Label(bottom, SWT.NONE);
 		lready.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false,
