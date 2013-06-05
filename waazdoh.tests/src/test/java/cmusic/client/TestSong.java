@@ -161,7 +161,6 @@ public class TestSong extends CMusicTestCase {
 
 	private void addTrack(Song s, final int length, TrackGroup tg) {
 		ETrack et = s.newTrack();
-
 		WaveGenerator gen = new WaveGenerator();
 		gen.generate(et, 0, length, new SampleStream() {
 			@Override

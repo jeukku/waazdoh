@@ -183,8 +183,8 @@ public class SongComposite extends Composite implements ESongListener {
 		Control[] cs = trackgroups.getChildren();
 		boolean found = false;
 		for (Control control : cs) {
-			SongPartComposite partc = (SongPartComposite) control;
-			if (partc.getObject() == instance) {
+			TrackGroupComposite partc = (TrackGroupComposite) control;
+			if (partc.getTrackgroup() == instance) {
 				found = true;
 			}
 		}
