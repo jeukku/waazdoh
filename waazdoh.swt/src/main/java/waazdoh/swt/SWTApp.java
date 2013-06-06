@@ -175,8 +175,8 @@ public class SWTApp {
 			}
 		});
 		//
-		shell.setSize(672, 198);
-		shell.setMaximized(true);
+		shell.setSize(300, 500);
+		shell.setMaximized(false);
 		shell.setText("Waazdoh");
 		GridLayout gl_shell = new GridLayout(1, false);
 		gl_shell.verticalSpacing = 1;
@@ -216,6 +216,7 @@ public class SWTApp {
 		}
 
 		shell.layout();
+		shell.pack();
 	}
 
 	private void createInfo(Shell shell) {
@@ -244,6 +245,7 @@ public class SWTApp {
 	private void clientLoggedIn() {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
+				shell.setMaximized(true);
 				createMenu();
 			}
 		});
