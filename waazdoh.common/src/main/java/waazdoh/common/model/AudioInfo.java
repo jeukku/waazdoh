@@ -44,7 +44,7 @@ public class AudioInfo {
 	}
 
 	public void setIfLonger(AudioInfo length) {
-		if (length.samples > samples) {
+		if (length!=null && length.samples > samples) {
 			samples = length.samples;
 		}
 	}

@@ -15,11 +15,6 @@ import java.io.IOException;
 import java.nio.ShortBuffer;
 
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.UnsupportedAudioFileException;
-
-import org.kc7bfi.jflac.sound.spi.FlacAudioFileReader;
-import org.kc7bfi.jflac.sound.spi.FlacFormatConversionProvider;
 
 import waazdoh.MJob;
 import waazdoh.WaazdohInfo;

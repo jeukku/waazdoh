@@ -11,8 +11,6 @@ import waazdoh.cutils.UserID;
 import waazdoh.cutils.xml.JBean;
 
 public class InstrumentTrack implements ServiceObjectData, Track {
-	private static final int TICKS_PER_BEAT = 1024;
-	//
 	private String name = "track";
 	private ServiceObject o;
 	private TrackGroup group;
@@ -34,7 +32,9 @@ public class InstrumentTrack implements ServiceObjectData, Track {
 		JBean b = o.getBean();
 		b.addAttribute("name", name);
 		b.addAttribute("groupid", group.getID());
-		b.addAttribute("instrument", instrument.getID());
+		if (instrument != null) {
+			b.addAttribute("instrument", instrument.getID());
+		}
 		//
 		JBean n = b.add("notes");
 		for (WNote note : notes) {
