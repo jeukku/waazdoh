@@ -31,8 +31,8 @@ public class MBeanStorage {
 	private String path;
 
 	public MBeanStorage(MPreferences preferences) {
-		this.path = preferences.get(MPreferences.LOCAL_PATH, MPreferences.LOCAL_PATH_DEFAULT) + File.separator
-				+ "beans";
+		this.path = preferences.get(MPreferences.LOCAL_PATH,
+				MPreferences.LOCAL_PATH_DEFAULT) + File.separator + "beans";
 		File file = new File(path);
 		file.mkdirs();
 	}
@@ -92,7 +92,7 @@ public class MBeanStorage {
 			try {
 				ret.add(new MID(string));
 			} catch (Exception e) {
-				log.error(e);	
+				log.error("Exteption " + e + " with " + string + " in " + path);
 			}
 		}
 		return ret;
