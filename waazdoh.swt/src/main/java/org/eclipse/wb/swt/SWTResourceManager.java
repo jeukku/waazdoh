@@ -1,13 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2013 Juuso Vilmunen.
+ * Copyright (c) 2011 Google, Inc.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
- * 
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
  * Contributors:
- *     Juuso Vilmunen - initial API and implementation
- ******************************************************************************/
+ *    Google, Inc. - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.wb.swt;
 
 import java.io.FileInputStream;

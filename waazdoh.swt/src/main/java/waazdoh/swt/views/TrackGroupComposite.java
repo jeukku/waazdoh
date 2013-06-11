@@ -38,6 +38,7 @@ import waazdoh.common.model.WaveTrack;
 import waazdoh.cutils.MLogger;
 import waazdoh.swt.TitleLayout;
 import waazdoh.swt.layouts.RowFillLayout;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class TrackGroupComposite extends Composite {
 	private TrackGroup trackgroup;
@@ -63,12 +64,24 @@ public class TrackGroupComposite extends Composite {
 		//
 		setLayout(new TitleLayout());
 
-		Composite ctop = new Composite(this, SWT.NONE);
+		Composite ctop = new Composite(this, SWT.BORDER);
 
-		Composite cbuttons = new Composite(this, SWT.NONE);
-		cbuttons.setLayout(new RowLayout(SWT.VERTICAL));
+		GridLayout gl_ctop = new GridLayout(4, false);
+		gl_ctop.marginWidth = 0;
+		gl_ctop.marginHeight = 1;
+		gl_ctop.verticalSpacing = 1;
+		ctop.setLayout(gl_ctop);
 
-		Button bnewtrack = new Button(cbuttons, SWT.NONE);
+		final Text lgroupname = new Text(ctop, SWT.BORDER);
+		lgroupname
+				.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.BOLD));
+		GridData gd_lgroupname = new GridData(SWT.LEFT, SWT.CENTER, true,
+				false, 1, 1);
+		gd_lgroupname.widthHint = 297;
+		lgroupname.setLayoutData(gd_lgroupname);
+		lgroupname.setText("trackgroup");
+
+		Button bnewtrack = new Button(ctop, SWT.NONE);
 		bnewtrack.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -78,7 +91,7 @@ public class TrackGroupComposite extends Composite {
 		});
 		bnewtrack.setText("New Tack");
 
-		Button bnewitrack = new Button(cbuttons, SWT.NONE);
+		Button bnewitrack = new Button(ctop, SWT.NONE);
 		bnewitrack.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -88,15 +101,8 @@ public class TrackGroupComposite extends Composite {
 		});
 		bnewitrack.setText("New Insturment Track");
 
-		ctop.setLayout(new GridLayout(2, false));
-
-		final Text lgroupname = new Text(ctop, SWT.BORDER);
-		lgroupname.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true,
-				false, 1, 1));
-		lgroupname.setText("trackgroup");
-
 		lready = new Label(ctop, SWT.NONE);
-		lready.setText("is ready?");
+		lready.setText("0%");
 		lgroupname.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent arg0) {

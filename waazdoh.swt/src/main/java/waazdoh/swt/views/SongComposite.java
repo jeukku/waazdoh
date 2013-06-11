@@ -37,6 +37,7 @@ import waazdoh.common.model.TrackGroup;
 import waazdoh.common.model.TrackGroupListener;
 import waazdoh.swt.TitleLayout;
 import waazdoh.swt.layouts.RowFillLayout;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class SongComposite extends Composite implements ESongListener {
 	private ESong song;
@@ -60,12 +61,20 @@ public class SongComposite extends Composite implements ESongListener {
 		//
 		getSong().addSongListener(this);
 		Composite cbuttons = new Composite(this, SWT.NONE);
+		cbuttons.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		RowLayout rl_cbuttons = new RowLayout(SWT.HORIZONTAL);
+		rl_cbuttons.marginBottom = 1;
+		rl_cbuttons.marginLeft = 1;
+		rl_cbuttons.marginRight = 1;
+		rl_cbuttons.marginTop = 1;
+		rl_cbuttons.spacing = 4;
 		rl_cbuttons.center = true;
 		cbuttons.setLayout(rl_cbuttons);
 
 		final Text songname = new Text(cbuttons, SWT.NONE);
-		songname.setLayoutData(new RowData(164, 21));
+		songname.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.BOLD));
+		songname.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+		songname.setLayoutData(new RowData(237, 21));
 		songname.setText(getSong().getName());
 		songname.addModifyListener(new ModifyListener() {
 			@Override
@@ -84,7 +93,8 @@ public class SongComposite extends Composite implements ESongListener {
 		bnewtg.setText("New Trackgroup");
 
 		lready = new Label(cbuttons, SWT.NONE);
-		lready.setText("is ready?");
+		lready.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+		lready.setText("0%");
 		scrolledComposite = new ScrolledComposite(this, SWT.BORDER
 				| SWT.V_SCROLL);
 		scrolledComposite.setExpandHorizontal(true);
