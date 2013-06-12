@@ -221,6 +221,7 @@ public class SWTApp {
 
 	private void createInfo(Shell shell) {
 		linfo = new Label(shell, SWT.NONE);
+		linfo.setFont(SWTResourceManager.getFont("Segoe UI", 7, SWT.NORMAL));
 		linfo.setText("Info");
 
 		final Display display = shell.getDisplay();

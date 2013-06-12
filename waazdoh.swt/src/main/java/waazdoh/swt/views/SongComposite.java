@@ -93,6 +93,8 @@ public class SongComposite extends Composite implements ESongListener {
 		bnewtg.setText("New Trackgroup");
 
 		lready = new Label(cbuttons, SWT.NONE);
+		lready.setAlignment(SWT.RIGHT);
+		lready.setLayoutData(new RowData(30, SWT.DEFAULT));
 		lready.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lready.setText("0%");
 		scrolledComposite = new ScrolledComposite(this, SWT.BORDER

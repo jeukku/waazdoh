@@ -183,7 +183,9 @@ public class AudioCanvas extends Canvas {
 			@Override
 			public MProgress getProgress() {
 				MProgress p = new MProgress();
-				track.checkProgress(p);
+				if (track != null) {
+					track.checkProgress(p);
+				}
 				return p;
 			}
 		};

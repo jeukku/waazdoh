@@ -64,7 +64,7 @@ public class TrackGroupComposite extends Composite {
 		//
 		setLayout(new TitleLayout());
 
-		Composite ctop = new Composite(this, SWT.BORDER);
+		Composite ctop = new Composite(this, SWT.NONE);
 
 		GridLayout gl_ctop = new GridLayout(4, false);
 		gl_ctop.marginWidth = 0;
@@ -102,6 +102,10 @@ public class TrackGroupComposite extends Composite {
 		bnewitrack.setText("New Insturment Track");
 
 		lready = new Label(ctop, SWT.NONE);
+		lready.setAlignment(SWT.CENTER);
+		GridData gd_lready = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_lready.widthHint = 43;
+		lready.setLayoutData(gd_lready);
 		lready.setText("0%");
 		lgroupname.addModifyListener(new ModifyListener() {
 			@Override

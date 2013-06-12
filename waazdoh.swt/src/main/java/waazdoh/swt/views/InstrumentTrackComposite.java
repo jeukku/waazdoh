@@ -115,7 +115,7 @@ public class InstrumentTrackComposite extends Composite implements
 
 		final Spinner svolume = new Spinner(bottom, SWT.NONE);
 		svolume.setDigits(2);
-		GridData gd_svolume = new GridData(SWT.LEFT, SWT.CENTER, false, false,
+		GridData gd_svolume = new GridData(SWT.CENTER, SWT.CENTER, false, false,
 				1, 1);
 		gd_svolume.heightHint = 22;
 		svolume.setLayoutData(gd_svolume);
@@ -124,11 +124,14 @@ public class InstrumentTrackComposite extends Composite implements
 		svolume.setSelection((int) (track.getVolume().getLevel() * VOLUMEMAX));
 
 		lready = new Label(bottom, SWT.NONE);
-		lready.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false,
-				1, 1));
-		lready.setText("is ready?");
+		lready.setAlignment(SWT.CENTER);
+		GridData gd_lready = new GridData(SWT.RIGHT, SWT.CENTER, false, false,
+				1, 1);
+		gd_lready.widthHint = 32;
+		lready.setLayoutData(gd_lready);
+		lready.setText("0%");
 
-		canvas = new InsturmentTrackCanvas(this, SWT.BORDER);
+		canvas = new InsturmentTrackCanvas(this, SWT.NONE);
 		GridData gd_canvas = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		gd_canvas.heightHint = 59;
 		canvas.setLayoutData(gd_canvas);

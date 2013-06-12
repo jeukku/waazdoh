@@ -48,7 +48,7 @@ public class MixerTrackComposite extends Composite implements
 
 	public MixerTrackComposite(final App app, ESong s, WaveTrack eTrack,
 			final Composite parent) {
-		super(parent, SWT.BORDER);
+		super(parent, SWT.NONE);
 		this.track = eTrack;
 		this.song = s;
 		GridLayout gridLayout = new GridLayout(2, false);
@@ -153,6 +153,7 @@ public class MixerTrackComposite extends Composite implements
 		lready.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false,
 				1, 1));
 		lready.setText("is ready?");
+
 		svolume.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event arg0) {
