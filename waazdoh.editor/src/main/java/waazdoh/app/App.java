@@ -25,9 +25,12 @@ import waazdoh.app.audio.MAudioListener;
 import waazdoh.app.swing.AppListener;
 import waazdoh.client.ClientListener;
 import waazdoh.client.MClient;
+import waazdoh.common.model.InstrumentTrack;
 import waazdoh.common.model.MBinarySource;
+import waazdoh.common.model.NoteTime;
 import waazdoh.common.model.Song;
 import waazdoh.common.model.TrackGroup;
+import waazdoh.common.model.WNote;
 import waazdoh.common.model.WaveTrack;
 import waazdoh.cp2p.impl.P2PBinarySource;
 import waazdoh.cutils.AppPreferences;
@@ -133,10 +136,18 @@ public class App {
 	}
 
 	private void clientLoggedIn() {
-		Song s = client.newSong(); // TODO remove
-		TrackGroup tg = s.addTrackGroup();
-		tg.newInstrumentTrack();
-		tg.newTrack();
+		if (getPreferences().get(MPreferences.SERVICE_URL, "").indexOf(
+				"localhost") >= 0) {
+			Song s = client.newSong(); // TODO remove
+			TrackGroup tg = s.addTrackGroup();
+			InstrumentTrack it = tg.newInstrumentTrack();
+			for (int i = 0; i < 200; i++) {
+				int inote = (int) (Math.random() * 20);
+				it.add(new WNote(inote, new NoteTime(1.0f / 8 * i),
+						new NoteTime(0.9f / 8)));
+			}
+			tg.newTrack();
+		}
 	}
 
 	private void clientSongLoaded(Song song) {
@@ -301,7 +312,7 @@ public class App {
 	}
 
 	public int getAudioBuffer() {
-		return getPreferences().getInteger("audio.buffer", 8800);
+		return getPreferences().getInteger("audio.buffer", 176000);
 	}
 
 	private int getAudioSampleSkip() {
