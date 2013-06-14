@@ -1,7 +1,7 @@
 "Waazdoh Music" client software with a GPL license.
 
-- P2P network to transfer audio files.
-- Rest client to store and search objects in service.
-- SWT application to record and edit songs.
+This repository is empties and content is moved to:
+https://github.com/jeukku/waazdoh.client
+https://github.com/jeukku/waazdoh.music.common
+https://github.com/jeukku/waazdoh.music.swt
 
-http://waazdoh.com/about
