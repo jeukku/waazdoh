@@ -6,6 +6,7 @@ import java.util.List;
 
 import waazdoh.WaazdohInfo;
 import waazdoh.common.waves.InstrumentValues;
+import waazdoh.common.waves.WaveOutput;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.UserID;
 import waazdoh.cutils.xml.JBean;
@@ -25,6 +26,8 @@ public class InstrumentTrack implements ServiceObjectData, Track {
 		group = ngroup;
 		o = new ServiceObject("itrack", env, creatorid, this);
 		volume.setLevel(0.5f);
+		instrument = newInstrument();
+		instrument.setSource(new WaveOutput());
 	}
 
 	@Override
@@ -142,6 +145,12 @@ public class InstrumentTrack implements ServiceObjectData, Track {
 			this.sample = sample;
 		}
 
+	}
+
+	public List<WNote> getNotes() {
+		List<WNote> ns = new LinkedList(notes);
+		Collections.sort(ns);
+		return ns;
 	}
 
 	private MOutput getOutputWave() {
@@ -268,5 +277,9 @@ public class InstrumentTrack implements ServiceObjectData, Track {
 
 	public void setMute(boolean selection) {
 		this.muted = selection;
+	}
+
+	public float getTempo() {
+		return group.getTempo();
 	}
 }

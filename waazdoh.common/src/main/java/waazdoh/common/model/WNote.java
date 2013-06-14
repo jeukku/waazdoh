@@ -65,9 +65,14 @@ public class WNote implements Comparable<WNote> {
 		return hz;
 	}
 
+	public int getNote() {
+		return note;
+	}
+
 	@Override
 	public String toString() {
 		return "WNote[" + note + "," + getHz() + ", " + getTime() + ", "
 				+ getLength() + "]";
 	}
+
 }
