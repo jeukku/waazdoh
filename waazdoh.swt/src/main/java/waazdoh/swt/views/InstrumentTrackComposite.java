@@ -135,8 +135,7 @@ public class InstrumentTrackComposite extends Composite implements
 		GridData gd_canvas = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		gd_canvas.heightHint = 59;
 		canvas.setLayoutData(gd_canvas);
-		canvas.setBackground(SWTResourceManager
-				.getColor(SWT.COLOR_WIDGET_DARK_SHADOW));
+		canvas.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		canvas.setTrack(track);
 		canvas.setZoom(s.getZoom());
 
